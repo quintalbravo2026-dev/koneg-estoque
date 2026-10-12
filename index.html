@@ -1557,7 +1557,11 @@ const firestoreDb = {
     document.title = nome;
     const img = $('impressao').querySelector('img');
     if (img && !img.complete) await new Promise((res) => { img.onload = img.onerror = res; });
-    window.print();
+    if (window.KonegApp && window.KonegApp.imprimir) {
+      // Dentro do app Android: usa a impressão do celular (imprimir ou salvar em PDF)
+      window.KonegApp.imprimir(nome);
+      setTimeout(() => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } }, 3000);
+    } else window.print();
   });
   window.addEventListener('afterprint', () => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } });
 
