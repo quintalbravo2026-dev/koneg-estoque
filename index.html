@@ -329,6 +329,14 @@ html, body { margin: 0; }
 #impressao .ass { margin-top: 4mm; font-size: 9pt; break-inside: avoid; }
 #impressao .ass img { display: block; height: 14mm; margin: 1mm 0 0 18mm; }
 #impressao .ass .linha { width: 70mm; border-bottom: .7pt solid #000; height: 12mm; }
+
+.ck-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ck-acoes .btn { flex: 1 1 10rem; justify-content: center; min-height: 44px; }
+.ck-acoes #ck-del[aria-pressed="true"] { background: var(--danger); color: #fff; border-color: var(--danger); }
+.ck-form { border: 1px solid var(--line); border-radius: var(--r); }
+.ck-aviso { margin: 0; padding: 10px 12px; border-radius: var(--r); background: var(--danger-soft); color: var(--danger); font-size: 14px; }
+.loja.excluir { border-color: var(--danger); color: var(--danger); }
+.loja.excluir::after { content: "✕" !important; transform: none !important; border: 0 !important; width: auto !important; height: auto !important; font-size: 14px; color: var(--danger); }
 </style>
 </head>
 <body>
@@ -374,6 +382,26 @@ html, body { margin: 0; }
     </div>
     <h1>Check List</h1>
   </header>
+  <div class="ck-acoes">
+    <button class="btn primary" id="ck-add" type="button" aria-expanded="false" aria-controls="ck-addform">+ Adicionar loja</button>
+    <button class="btn danger" id="ck-del" type="button" aria-pressed="false">Excluir loja</button>
+  </div>
+  <div class="addform ck-form" id="ck-addform" hidden>
+    <label class="fld grow" for="ck-nome"><span>Nome da loja</span><input id="ck-nome" type="text" autocomplete="off" placeholder="Ex.: Coop Centro"></label>
+    <label class="fld grow" for="ck-cidade"><span>Cidade</span><input id="ck-cidade" type="text" autocomplete="off" list="ck-cidades-lista" placeholder="Ex.: Santo André"></label>
+    <datalist id="ck-cidades-lista"></datalist>
+    <div class="addacts">
+      <button class="btn primary" id="ck-add-ok" type="button">Adicionar</button>
+      <button class="btn" id="ck-add-no" type="button">Cancelar</button>
+    </div>
+    <p class="adderr" id="ck-add-err" hidden></p>
+  </div>
+  <div class="confirm ck-form" id="ck-confirm" hidden>
+    <p id="ck-confirm-txt"></p>
+    <button class="btn solid-danger" id="ck-confirm-ok" type="button">Excluir loja</button>
+    <button class="btn" id="ck-confirm-no" type="button">Cancelar</button>
+  </div>
+  <p class="ck-aviso" id="ck-aviso" hidden>Toque na loja que você quer excluir. Para sair sem excluir, toque em "Concluir".</p>
   <input class="search ck-busca" id="ck-busca" type="search" placeholder="Buscar loja…" aria-label="Buscar loja">
   <div class="ck-cidades" id="ck-lojas"></div>
 </main>
@@ -551,7 +579,7 @@ html, body { margin: 0; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const fbApp = initializeApp(window.FIREBASE_CONFIG);
@@ -1031,31 +1059,113 @@ const firestoreDb = {
   ];
   const semAcento = (t) => String(t).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const slugLoja = (t) => semAcento(t).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  // Lojas ficam no banco (coleção "lojas"); CIDADES acima é só a lista inicial
+  let LOJAS = [];
   const LOJAS_POR_ID = new Map();
-  CIDADES.forEach(([cidade, lojas]) => lojas.forEach((nome) => LOJAS_POR_ID.set(slugLoja(nome), { nome, cidade })));
+  let lojasCarregadas = false, pararLojas = null, rotaPendente = false, modoExcluir = false, lojaAlvo = null;
+  function agruparLojas() {
+    const ordemCid = new Map();
+    LOJAS.forEach((l) => { const o = ordemCid.get(l.cidade); if (o === undefined || l.ordem < o) ordemCid.set(l.cidade, l.ordem); });
+    return [...ordemCid.keys()].sort((x, y) => ordemCid.get(x) - ordemCid.get(y))
+      .map((c) => [c, LOJAS.filter((l) => l.cidade === c).sort((x, y) => x.ordem - y.ordem)]);
+  }
   function desenharLojas() {
-    const q = semAcento($('ck-busca').value.trim());
     const box = $('ck-lojas'); box.replaceChildren();
+    if (!lojasCarregadas) { const p = document.createElement('p'); p.className = 'ck-nada'; p.textContent = 'Carregando lojas…'; box.appendChild(p); return; }
+    const q = semAcento($('ck-busca').value.trim());
     let total = 0;
-    CIDADES.forEach(([cidade, lojas]) => {
-      const vis = lojas.filter((n) => !q || semAcento(n).includes(q) || semAcento(cidade).includes(q));
+    agruparLojas().forEach(([cidade, lojas]) => {
+      const vis = lojas.filter((l) => !q || semAcento(l.nome).includes(q) || semAcento(cidade).includes(q));
       if (!vis.length) return;
       total += vis.length;
       const sec = document.createElement('section'); sec.className = 'ck-cidade';
       const h2 = document.createElement('h2'); h2.textContent = cidade;
       const sm = document.createElement('small'); sm.textContent = String(vis.length); h2.appendChild(sm);
       const grid = document.createElement('div'); grid.className = 'ck-grid';
-      vis.forEach((nome) => {
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'loja'; b.textContent = nome;
-        b.addEventListener('click', () => { location.hash = 'loja-' + slugLoja(nome); });
+      vis.forEach((l) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'loja' + (modoExcluir ? ' excluir' : ''); b.textContent = l.nome;
+        if (modoExcluir) b.setAttribute('aria-label', 'Excluir ' + l.nome);
+        b.addEventListener('click', () => { if (modoExcluir) pedirExclusao(l); else location.hash = 'loja-' + l.id; });
         grid.appendChild(b);
       });
       sec.append(h2, grid); box.appendChild(sec);
     });
-    if (!total) { const p = document.createElement('p'); p.className = 'ck-nada'; p.textContent = 'Nenhuma loja encontrada.'; box.appendChild(p); }
+    if (!total) { const p = document.createElement('p'); p.className = 'ck-nada'; p.textContent = LOJAS.length ? 'Nenhuma loja encontrada.' : 'Nenhuma loja cadastrada. Use "+ Adicionar loja".'; box.appendChild(p); }
+    const dl = $('ck-cidades-lista'); dl.replaceChildren();
+    agruparLojas().forEach(([c]) => { const o = document.createElement('option'); o.value = c; dl.appendChild(o); });
   }
   $('ck-busca').addEventListener('input', desenharLojas);
   desenharLojas();
+
+  async function iniciarLojas() {
+    try {
+      const f = await getDoc(fsDoc(fs, 'config', 'lojas'));
+      if (!f.exists() || !f.data().semeado) {
+        const lote = writeBatch(fs); let k = 0;
+        CIDADES.forEach(([c, ls]) => ls.forEach((n) => { lote.set(fsDoc(fs, 'lojas', slugLoja(n)), { nome: n, cidade: c, ordem: k++ }); }));
+        lote.set(fsDoc(fs, 'config', 'lojas'), { semeado: true });
+        await lote.commit();
+      }
+    } catch (_) {}
+    if (pararLojas) pararLojas();
+    pararLojas = fsSnap(fsCol(fs, 'lojas'), (snap) => {
+      LOJAS = snap.docs.map((d) => { const v = d.data(); return { id: d.id, nome: String(v.nome || d.id), cidade: String(v.cidade || 'Outras'), ordem: Number(v.ordem) || 0 }; });
+      LOJAS_POR_ID.clear(); LOJAS.forEach((l) => LOJAS_POR_ID.set(l.id, { nome: l.nome, cidade: l.cidade }));
+      lojasCarregadas = true; desenharLojas();
+      if (rotaPendente) { rotaPendente = false; rota(); }
+    }, () => { lojasCarregadas = true; desenharLojas(); });
+  }
+  function pararLojasBanco() { if (pararLojas) { pararLojas(); pararLojas = null; } LOJAS = []; LOJAS_POR_ID.clear(); lojasCarregadas = false; }
+
+  // Incluir loja
+  function abrirAddLoja(abrir) {
+    $('ck-addform').hidden = !abrir; $('ck-add').setAttribute('aria-expanded', String(abrir)); $('ck-add-err').hidden = true;
+    if (abrir) { sairExcluir(); $('ck-nome').value = ''; $('ck-cidade').value = ''; $('ck-nome').focus(); }
+  }
+  const erroLoja = (t) => { $('ck-add-err').textContent = t; $('ck-add-err').hidden = false; };
+  $('ck-add').addEventListener('click', () => abrirAddLoja($('ck-addform').hidden));
+  $('ck-add-no').addEventListener('click', () => abrirAddLoja(false));
+  ['ck-nome', 'ck-cidade'].forEach((k) => $(k).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') $('ck-add-ok').click(); if (ev.key === 'Escape') abrirAddLoja(false); }));
+  $('ck-add-ok').addEventListener('click', async () => {
+    const nome = $('ck-nome').value.trim().replace(/\s+/g, ' ');
+    let cidade = $('ck-cidade').value.trim().replace(/\s+/g, ' ');
+    if (!nome) { erroLoja('Escreva o nome da loja.'); $('ck-nome').focus(); return; }
+    if (!cidade) { erroLoja('Escreva a cidade da loja.'); $('ck-cidade').focus(); return; }
+    const igualCid = agruparLojas().map(([c]) => c).find((c) => semAcento(c) === semAcento(cidade));
+    if (igualCid) cidade = igualCid;
+    const id = slugLoja(nome);
+    if (!id) { erroLoja('Use letras ou números no nome da loja.'); return; }
+    if (LOJAS_POR_ID.has(id)) { erroLoja(`Já existe uma loja chamada "${LOJAS_POR_ID.get(id).nome}".`); return; }
+    const ordem = LOJAS.reduce((m, l) => Math.max(m, l.ordem), -1) + 1;
+    $('ck-add-ok').disabled = true;
+    try {
+      await setDoc(fsDoc(fs, 'lojas', id), { nome, cidade, ordem });
+      abrirAddLoja(false); $('ck-busca').value = ''; desenharLojas();
+    } catch (e) {
+      erroLoja(e && e.code === 'permission-denied' ? 'Seu e-mail não tem permissão para incluir lojas.' : 'Não foi possível salvar. Verifique a internet.');
+    } finally { $('ck-add-ok').disabled = false; }
+  });
+
+  // Excluir loja
+  function sairExcluir() { modoExcluir = false; $('ck-del').setAttribute('aria-pressed', 'false'); $('ck-del').textContent = 'Excluir loja'; $('ck-aviso').hidden = true; $('ck-confirm').hidden = true; lojaAlvo = null; desenharLojas(); }
+  $('ck-del').addEventListener('click', () => {
+    if (modoExcluir) { sairExcluir(); return; }
+    abrirAddLoja(false);
+    modoExcluir = true; $('ck-del').setAttribute('aria-pressed', 'true'); $('ck-del').textContent = 'Concluir'; $('ck-aviso').hidden = false; desenharLojas();
+  });
+  function pedirExclusao(l) {
+    lojaAlvo = l;
+    $('ck-confirm-txt').textContent = `Excluir a loja ${l.nome} (${l.cidade})? Os check lists já feitos nela continuam guardados e voltam a aparecer se a loja for incluída de novo com o mesmo nome.`;
+    $('ck-confirm').hidden = false; $('ck-confirm').scrollIntoView({ block: 'center', behavior: 'smooth' }); $('ck-confirm-ok').focus({ preventScroll: true });
+  }
+  $('ck-confirm-no').addEventListener('click', () => { $('ck-confirm').hidden = true; lojaAlvo = null; });
+  $('ck-confirm-ok').addEventListener('click', async () => {
+    if (!lojaAlvo) return;
+    const alvo = lojaAlvo; $('ck-confirm-ok').disabled = true;
+    try { await deleteDoc(fsDoc(fs, 'lojas', alvo.id)); $('ck-confirm').hidden = true; lojaAlvo = null; }
+    catch (e) { $('ck-confirm-txt').textContent = e && e.code === 'permission-denied' ? 'Seu e-mail não tem permissão para excluir lojas.' : 'Não foi possível excluir. Verifique a internet.'; }
+    finally { $('ck-confirm-ok').disabled = false; }
+  });
   $('lj-voltar').addEventListener('click', () => { location.hash = 'checklist'; });
 
   // ===== Check list de manutenção preventiva (modelo da planilha) =====
@@ -1434,6 +1544,7 @@ const firestoreDb = {
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
     const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
     const loja = lj ? { id: m[1], ...lj } : null;
+    if (m && !lj && !lojasCarregadas) rotaPendente = true;
     const noForm = !!(loja && m[2]);
     $('app').hidden = h !== '#estoque';
     $('tela-checklist').hidden = h !== '#checklist';
@@ -1451,7 +1562,7 @@ const firestoreDb = {
     if (location.hash !== '#' + go) location.hash = go; else rota();
   }));
   $('btn-menu').addEventListener('click', () => { abrirAdd(false); location.hash = 'menu'; });
-  $('ck-menu').addEventListener('click', () => { location.hash = 'menu'; });
+  $('ck-menu').addEventListener('click', () => { sairExcluir(); abrirAddLoja(false); location.hash = 'menu'; });
   $('m-sair').addEventListener('click', () => signOut(auth));
 
   onAuthStateChanged(auth, (u) => {
@@ -1459,13 +1570,14 @@ const firestoreDb = {
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; fecharHistorico();
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir();
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
     $('tela-login').hidden = true; logado = true; rota();
     $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || '';
     db = firestoreDb; podeEditar = true; $('pct').disabled = false;
+    iniciarLojas();
     parar.push(db.collection('itens').onSnapshot((snap) => {
       const novo = new Map();
       snap.docs.forEach((d) => { const v = d.data(); if (v) novo.set(d.id, v); });
