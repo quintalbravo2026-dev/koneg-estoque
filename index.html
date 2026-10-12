@@ -165,6 +165,58 @@ html, body { margin: 0; }
 .rs-acoes #rs-wpp { grid-column: 1 / -1; }
 .rs-msg { margin: 0; text-align: center; font-size: 13px; color: #fff; min-height: 1em; }
 .rodape { margin: 0; text-align: center; font-size: 12px; color: var(--muted); font-family: var(--font-mono); letter-spacing: .03em; }
+/* ===== Celular ===== */
+@media (max-width: 640px) {
+  .wrap { padding: 16px 12px 32px; gap: 14px; }
+  h1 { font-size: 30px; }
+  .topline { gap: 6px; }
+  .userbar { font-size: 12px; gap: 8px; }
+  .userbar .btn { padding: 6px 10px; font-size: 13px; }
+  input, .fld input, .search, .pct-input, .qty input, .preco input { font-size: 16px; } /* evita zoom automático no iPhone */
+
+  .tiles { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { padding: 12px 12px; gap: 4px; }
+  .tile .lbl { font-size: 12px; }
+  .tile .big { font-size: 22px; }
+  .tile .sub { font-size: 12px; }
+  .tile .pct-input { width: 3.6rem; padding: 3px 4px; }
+
+  .bar { padding: 10px; gap: 8px; }
+  .bar > * { flex: 1 1 calc(50% - 4px); justify-content: center; min-height: 42px; box-sizing: border-box; }
+  #btn-add, .search, #btn-resumo { flex-basis: 100%; }
+  #btn-add { order: 1; } .search { order: 2; } #btn-resumo { order: 3; } #btn-zerados { order: 4; } #btn-zerar { order: 5; }
+  .bar .btn { white-space: normal; text-align: center; line-height: 1.2; }
+
+  .addform { padding: 12px 10px; }
+  .addform .fld.grow { flex-basis: 100%; }
+  .addform .fld:not(.grow) { flex: 1 1 calc(50% - 6px); }
+  .addform .fld:not(.grow) input { width: 100%; }
+  .addacts { flex-basis: 100%; }
+  .addacts .btn { flex: 1; justify-content: center; min-height: 42px; }
+  .confirm .btn { flex: 1; justify-content: center; min-height: 42px; }
+
+  .tbl { overflow: visible; }
+  #tabela thead { display: none; }
+  #tabela, #tabela tbody { display: block; }
+  #tabela tr { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "nome valor" "qtd preco"; gap: 10px 12px; align-items: center; padding: 12px; border-bottom: 1px solid var(--line); }
+  #tabela tr:last-child { border-bottom: 0; }
+  #tabela td { display: block; padding: 0; border: 0; min-width: 0; white-space: normal; text-align: left; }
+  #tabela td:nth-child(1) { grid-area: nome; font-size: 15px; min-width: 0; }
+  #tabela td:nth-child(2) { grid-area: qtd; }
+  #tabela td:nth-child(3) { grid-area: preco; justify-self: end; }
+  #tabela td:nth-child(4) { grid-area: valor; justify-self: end; font-weight: 600; font-size: 15px; }
+  #tabela .vbar { min-width: 0; }
+  #tabela .vbar i { display: none; }
+  .qty button { width: 40px; height: 40px; font-size: 20px; }
+  .qty input { width: 3rem; height: 40px; }
+  .preco input { width: 6.6rem; height: 40px; }
+  .foot { padding: 10px 12px; }
+}
+@media (max-width: 360px) {
+  .tiles { grid-template-columns: 1fr; }
+  .preco input { width: 5.6rem; }
+  .qty button { width: 34px; }
+}
 </style>
 </head>
 <body>
@@ -245,7 +297,7 @@ html, body { margin: 0; }
       <span class="status" id="status" aria-live="polite"></span>
     </div>
   </section>
-  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026 · resumo para WhatsApp</p>
+  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026</p>
 <div class="rs-overlay" id="rs-overlay" hidden>
   <div class="rs-dialog" role="dialog" aria-modal="true" aria-label="Resumo do estoque">
     <div class="rs-card" id="rs-card">
@@ -536,7 +588,7 @@ const firestoreDb = {
       estado.k = 'nome'; estado.dir = 1; estado.busca = ''; $('busca').value = '';
       if (estado.esconderZerados && q === 0) $('btn-zerados').click(); else render();
       const tr = rows.get(id);
-      if (tr) { tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      if (tr) { tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); setTimeout(() => tr.classList.remove('flash'), 1000); tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
       status(`${novo.nome} adicionado`, 'ok');
       abrirAdd(true);
     } catch (e) {
