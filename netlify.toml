@@ -47,12 +47,8 @@
   status = 200
   force = true
 
+# O Netlify trata /painel e /painel/ como o mesmo endereço: uma regra só, sem redirecionar
 [[redirects]]
   from = "/painel"
-  to = "/painel/"
-  status = 301
-
-[[redirects]]
-  from = "/painel/"
   to = "/index.html"
   status = 200
