@@ -421,14 +421,65 @@ html, body { margin: 0; }
   #tabela.editando .nm-in { width: auto; flex: 1 1 auto; min-width: 0; }
   #tabela.editando .it-del { margin-left: 0; flex: none; min-height: 38px; }
 }
+
+/* Carregamento, sem acesso e funcionários */
+.boot { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center; color: var(--muted); }
+.boot p { margin: 0; max-width: 28rem; }
+.fu-desc { margin: 6px 0 0; color: var(--muted); max-width: 40rem; }
+.fu-novo { justify-content: center; min-height: 46px; }
+.fu-perms { flex-basis: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px 10px; margin: 0; background: var(--panel); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 2px 14px; }
+.fu-perms legend { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 0 4px; }
+.fu-ok { margin: 0; padding: 10px 12px; border-radius: var(--r); background: rgba(31,122,77,.12); color: var(--ok); font-size: 14px; }
+.fu-lista { display: flex; flex-direction: column; }
+.fu-item { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.fu-item:last-child { border-bottom: 0; }
+.fu-item.off { opacity: .65; }
+.fu-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.fu-top b { font-size: 16px; }
+.fu-top .em { font-size: 13px; color: var(--muted); font-family: var(--font-mono); word-break: break-all; }
+.fu-chip { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: rgba(31,122,77,.14); color: var(--ok); }
+.fu-chip.off { background: var(--line); color: var(--muted); }
+.fu-item .fu-perms { background: var(--bg); }
+.fu-bts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fu-bts .btn { font-size: 13px; padding: 7px 10px; }
+.fu-bts .btn.conf { background: var(--danger); color: #fff; border-color: var(--danger); }
+.ck-aviso-perm { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.loja:disabled { cursor: default; opacity: .75; }
+.loja:disabled::after { content: "" !important; }
 </style>
 </head>
 <body>
+<div class="boot" id="carregando" role="status">
+  <span class="eyebrow">Koneg Manutenção</span>
+  <p id="carregando-txt">Carregando o painel…</p>
+</div>
+<script>
+  // Se o painel não carregar em 12 s, mostra o motivo em vez de uma tela em branco
+  setTimeout(function () {
+    var c = document.getElementById('carregando');
+    if (!c || c.hidden) return;
+    var t = document.getElementById('carregando-txt');
+    t.textContent = location.protocol === 'http:'
+      ? 'Este endereço ainda está sem o cadeado de segurança (https). Abra pelo endereço com https:// ou tente de novo daqui a pouco.'
+      : 'Não foi possível carregar o painel. Verifique a internet e recarregue a página.';
+  }, 12000);
+</script>
+
+<main class="login" id="tela-semacesso" hidden>
+  <div class="login-card">
+    <span class="eyebrow">Koneg Manutenção</span>
+    <h1>Acesso não liberado</h1>
+    <p id="sa-txt">Este e-mail ainda não tem acesso ao painel. Peça ao administrador para liberar.</p>
+    <span class="userbar"><span id="sa-email"></span></span>
+    <button class="btn primary" id="sa-sair" type="button">Sair</button>
+  </div>
+</main>
+
 <main class="login" id="tela-login" hidden>
   <div class="login-card">
     <span class="eyebrow">Koneg Manutenção</span>
-    <h1>Estoque</h1>
-    <p>Entre com o e-mail e a senha cadastrados para ver e editar o estoque.</p>
+    <h1>Painel</h1>
+    <p>Entre com o e-mail e a senha cadastrados.</p>
     <label class="fld grow" for="l-email"><span>E-mail</span><input id="l-email" type="email" autocomplete="username" inputmode="email"></label>
     <label class="fld grow" for="l-senha"><span>Senha</span><input id="l-senha" type="password" autocomplete="current-password"></label>
     <button class="btn primary" id="l-entrar" type="button">Entrar</button>
@@ -454,6 +505,11 @@ html, body { margin: 0; }
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11.5l1.5 1.5 3-3"/><path d="M8.5 16.5l1.5 1.5 3-3"/><path d="M15 12h1.5M15 17h1.5"/></svg>
         <span class="mi-t">Check List</span>
         <span class="mi-d">Conferências e verificações</span>
+      </button>
+      <button class="mitem adm" type="button" data-go="funcionarios" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.4c2.5-.3 4.3 1.2 5 3.8"/></svg>
+        <span class="mi-t">Funcionários</span>
+        <span class="mi-d">Criar acessos e escolher o que cada um pode fazer</span>
       </button>
     </nav>
   </div>
@@ -499,9 +555,38 @@ html, body { margin: 0; }
     <button class="btn" id="ck-confirm-no" type="button">Cancelar</button>
   </div>
   <p class="ck-aviso ck-aviso-edit" id="ck-aviso-edit" hidden>Toque na loja que você quer editar. Para sair, toque em "Concluir".</p>
+  <p class="ck-aviso ck-aviso-perm" id="ck-aviso-perm" hidden>Seu acesso permite emitir o relatório do mês. Para preencher check lists, peça liberação ao administrador.</p>
   <p class="ck-aviso" id="ck-aviso" hidden>Toque na loja que você quer excluir. Para sair sem excluir, toque em "Concluir".</p>
   <input class="search ck-busca" id="ck-busca" type="search" placeholder="Buscar loja…" aria-label="Buscar loja">
   <div class="ck-cidades" id="ck-lojas"></div>
+</main>
+
+<main class="wrap" id="tela-func" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="fu-menu" type="button">← Voltar ao menu</button>
+    </div>
+    <span class="eyebrow">Administração</span>
+    <h1>Funcionários</h1>
+    <p class="fu-desc">Crie o acesso de cada funcionário e escolha o que ele pode fazer. Só o administrador vê esta tela.</p>
+  </header>
+  <button class="btn primary fu-novo" id="fu-novo" type="button" aria-expanded="false" aria-controls="fu-form">+ Adicionar funcionário</button>
+  <div class="addform ck-form" id="fu-form" hidden>
+    <label class="fld grow" for="fu-nome"><span>Nome</span><input id="fu-nome" type="text" autocomplete="off" placeholder="Ex.: João Silva"></label>
+    <label class="fld grow" for="fu-email"><span>E-mail</span><input id="fu-email" type="email" autocomplete="off" inputmode="email" placeholder="joao@email.com"></label>
+    <label class="fld grow" for="fu-senha"><span>Senha inicial (mín. 6 caracteres)</span><input id="fu-senha" type="text" autocomplete="off"></label>
+    <fieldset class="fu-perms" id="fu-perms-novo"><legend>O que ele pode fazer</legend></fieldset>
+    <div class="addacts">
+      <button class="btn primary" id="fu-criar" type="button">Criar acesso</button>
+      <button class="btn" id="fu-cancelar" type="button">Cancelar</button>
+    </div>
+    <p class="adderr" id="fu-err" hidden></p>
+  </div>
+  <p class="fu-ok" id="fu-ok" role="status" hidden></p>
+  <section class="card" aria-label="Lista de funcionários">
+    <div class="lj-tit">Funcionários com acesso</div>
+    <div id="fu-lista" class="fu-lista"></div>
+  </section>
 </main>
 
 <main class="wrap" id="tela-relatorio" hidden>
@@ -701,7 +786,7 @@ html, body { margin: 0; }
 </html>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, getDocs, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -754,8 +839,8 @@ const firestoreDb = {
     $('t-venda').textContent = carregado ? brl.format(total * percentual / 100) : '—';
     if (!carregado) return;
     if (!$('lead').dataset.erro) $('lead').hidden = true;
-    $('btn-zerar').disabled = !podeEditar || comEstoque === 0;
-    $('btn-add').disabled = !podeEditar;
+    $('btn-zerar').disabled = !podeEditar || !P.admin || comEstoque === 0;
+    $('btn-add').disabled = !podeEditar || !P.admin;
   }
 
   function linha(id) {
@@ -837,13 +922,13 @@ const firestoreDb = {
       tdNome.querySelector('.it-del').setAttribute('aria-label', 'Excluir ' + r.nome);
       const inp = tdQ.querySelector('input');
       if (document.activeElement !== inp) inp.value = r.quantidade;
-      inp.disabled = !podeEditar;
-      tdQ.querySelector('.menos').disabled = !podeEditar || r.quantidade === 0;
-      tdQ.querySelector('.mais').disabled = !podeEditar;
+      inp.disabled = !podeEditar || !podeQtd();
+      tdQ.querySelector('.menos').disabled = !podeEditar || !podeQtd() || r.quantidade === 0;
+      tdQ.querySelector('.mais').disabled = !podeEditar || !podeQtd();
       inp.setAttribute('aria-label', 'Quantidade de ' + r.nome);
       const pin = tdP.querySelector('input');
       if (document.activeElement !== pin) pin.value = fmtPreco(r.preco);
-      pin.disabled = !podeEditar;
+      pin.disabled = !podeEditar || !P.admin;
       pin.setAttribute('aria-label', 'Preço de ' + r.nome);
       const vb = tdV.querySelector('.vbar');
       vb.firstChild.textContent = brl.format(r.valor);
@@ -880,7 +965,7 @@ const firestoreDb = {
 
   async function mudarPreco(id, v, el) {
     const it = itens.get(id);
-    if (!db || !it || !podeEditar) return;
+    if (!db || !it || !podeEditar || !P.admin) return;
     if (Number(it.preco) === v) { render(); return; }
     itens.set(id, { ...it, preco: v });
     render();
@@ -894,7 +979,7 @@ const firestoreDb = {
 
   async function mudar(id, q) {
     const it = itens.get(id);
-    if (!db || !it || !podeEditar || Number(it.quantidade) === q) return;
+    if (!db || !it || !podeEditar || !podeQtd() || Number(it.quantidade) === q) return;
     itens.set(id, { ...it, quantidade: q });
     render();
     status('Salvando…');
@@ -1260,6 +1345,7 @@ const firestoreDb = {
         const b = document.createElement('button'); b.type = 'button'; b.className = 'loja' + (modoExcluir ? ' excluir' : modoEditar ? ' editar' : ''); b.textContent = l.nome;
         if (modoExcluir) b.setAttribute('aria-label', 'Excluir ' + l.nome);
         if (modoEditar) b.setAttribute('aria-label', 'Editar ' + l.nome);
+        if (!P.admin && !P.checklist) b.disabled = true;
         b.addEventListener('click', () => { if (modoExcluir) pedirExclusao(l); else if (modoEditar) abrirEdicao(l); else location.hash = 'loja-' + l.id; });
         grid.appendChild(b);
       });
@@ -1560,7 +1646,7 @@ const firestoreDb = {
     ITENS.forEach((it) => pintarItem(idItem(it[1])));
     progresso();
     desenharAssinatura(ck.assinatura || null);
-    $('fm-excluir').hidden = !ck.id;
+    $('fm-excluir').hidden = !ck.id || !P.admin;
     $('fm-confirm').hidden = true;
     ckStatus(ck.id ? 'Salvo' : '');
   }
@@ -1603,7 +1689,7 @@ const firestoreDb = {
         if (ck === alvo && location.hash === `#loja-${loja.id}/novo`) history.replaceState(null, '', `#loja-${loja.id}/ck-${alvo.id}`);
       }
       await setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null));
-      if (ck === alvo) { ckStatus('Salvo', 'ok'); $('fm-excluir').hidden = false; }
+      if (ck === alvo) { ckStatus('Salvo', 'ok'); $('fm-excluir').hidden = !P.admin; }
     }).catch((e) => {
       ckStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar' : 'Não foi possível salvar. Verifique a internet.', 'erro');
     });
@@ -1905,10 +1991,148 @@ const firestoreDb = {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/checklist/sw.js', { scope: '/checklist/' }).catch(() => {});
   }
 
+  // ===== Administrador, funcionários e permissões =====
+  const ADMIN_EMAIL = 'kayowan@hotmail.com';
+  const PERMS = [
+    ['estoqueVer', 'Ver o estoque'],
+    ['estoqueQtd', 'Alterar quantidades no estoque'],
+    ['checklist', 'Fazer e editar check lists'],
+    ['relatorio', 'Emitir o relatório do mês'],
+  ];
+  const SEM_PERM = { admin: false, estoqueVer: false, estoqueQtd: false, checklist: false, relatorio: false };
+  let P = { ...SEM_PERM };
+  const podeQtd = () => P.admin || P.estoqueQtd;
+  const podeEstoque = () => P.admin || P.estoqueVer || P.estoqueQtd;
+  const podeCk = () => P.admin || P.checklist || P.relatorio;
+  function permitido(h) {
+    if (h === '#estoque') return podeEstoque();
+    if (h === '#checklist') return podeCk();
+    if (h === '#relatorio') return P.admin || P.relatorio;
+    if (h === '#funcionarios') return P.admin;
+    if (h.startsWith('#loja-')) return P.admin || P.checklist;
+    return true;
+  }
+  function aplicarPermissoes() {
+    const a = P.admin;
+    document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
+    document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
+    document.querySelector('.mitem[data-go="funcionarios"]').hidden = !a;
+    document.querySelector('.mitem[data-go="estoque"] .mi-d').textContent = a ? 'Ver e editar itens, quantidades e preços' : podeQtd() ? 'Ver o estoque e alterar quantidades' : 'Consultar o estoque';
+    ['btn-add', 'btn-editar', 'btn-zerar'].forEach((k) => { $(k).hidden = !a; });
+    $('pct').disabled = !a;
+    ['ck-add', 'ck-edit', 'ck-del'].forEach((k) => { $(k).hidden = !a; });
+    $('ck-rel').hidden = !(a || P.relatorio);
+    $('ck-aviso-perm').hidden = a || P.checklist || !P.relatorio;
+    $('lj-novo').hidden = !(a || P.checklist);
+  }
+
+  // Tela de funcionários
+  let pararFunc = null, funcLista = [];
+  const caixasPerm = (box, valores, aoMudar) => {
+    box.querySelectorAll('label').forEach((l) => l.remove());
+    PERMS.forEach(([k, t]) => {
+      const lb = document.createElement('label'); lb.className = 'rl-chk';
+      const c = document.createElement('input'); c.type = 'checkbox'; c.dataset.perm = k; c.checked = !!(valores && valores[k]);
+      if (aoMudar) c.addEventListener('change', () => aoMudar(k, c.checked, c));
+      lb.append(c, ' ' + t); box.appendChild(lb);
+    });
+  };
+  caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true });
+  const lerPerms = (box) => Object.fromEntries(PERMS.map(([k]) => [k, !!box.querySelector(`input[data-perm="${k}"]`)?.checked]));
+  function mostrarOk(t) { $('fu-ok').textContent = t; $('fu-ok').hidden = !t; }
+  function abrirFormFunc(abrir) {
+    $('fu-form').hidden = !abrir; $('fu-novo').setAttribute('aria-expanded', String(abrir)); $('fu-err').hidden = true;
+    if (abrir) { mostrarOk(''); $('fu-nome').value = ''; $('fu-email').value = ''; $('fu-senha').value = ''; caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true }); $('fu-nome').focus(); }
+  }
+  $('fu-novo').addEventListener('click', () => abrirFormFunc($('fu-form').hidden));
+  $('fu-cancelar').addEventListener('click', () => abrirFormFunc(false));
+  $('fu-menu').addEventListener('click', () => { abrirFormFunc(false); location.hash = 'menu'; });
+  const erroFunc = (t) => { $('fu-err').textContent = t; $('fu-err').hidden = false; };
+  let authCadastro = null;
+  $('fu-criar').addEventListener('click', async () => {
+    if (!P.admin) return;
+    const nome = $('fu-nome').value.trim().replace(/\s+/g, ' ');
+    const email = $('fu-email').value.trim().toLowerCase();
+    const senha = $('fu-senha').value;
+    const perms = lerPerms($('fu-perms-novo'));
+    if (!nome) { erroFunc('Escreva o nome do funcionário.'); $('fu-nome').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroFunc('Escreva um e-mail válido.'); $('fu-email').focus(); return; }
+    if (email === ADMIN_EMAIL) { erroFunc('Este é o e-mail do administrador.'); return; }
+    if (funcLista.some((f) => f.email === email)) { erroFunc('Este e-mail já está na lista de funcionários.'); return; }
+    if (senha.length < 6) { erroFunc('A senha inicial precisa ter pelo menos 6 caracteres.'); $('fu-senha').focus(); return; }
+    if (!PERMS.some(([k]) => perms[k])) { erroFunc('Marque pelo menos uma coisa que ele pode fazer.'); return; }
+    $('fu-criar').disabled = true; $('fu-err').hidden = true;
+    let jaTinhaConta = false;
+    try {
+      if (!authCadastro) authCadastro = getAuth(initializeApp(window.FIREBASE_CONFIG, 'cadastro'));
+      await createUserWithEmailAndPassword(authCadastro, email, senha);
+      await signOut(authCadastro).catch(() => {});
+    } catch (e) {
+      const c = e && e.code;
+      if (c === 'auth/email-already-in-use') jaTinhaConta = true;
+      else {
+        $('fu-criar').disabled = false;
+        erroFunc(c === 'auth/weak-password' ? 'Senha fraca. Use pelo menos 6 caracteres.'
+          : c === 'auth/invalid-email' ? 'E-mail inválido.'
+          : c === 'auth/network-request-failed' ? 'Sem internet. Tente de novo.'
+          : c === 'auth/operation-not-allowed' ? 'O login por e-mail e senha está desligado no Firebase.'
+          : 'Não foi possível criar o acesso (' + (c || 'erro') + ').');
+        return;
+      }
+    }
+    try {
+      await setDoc(fsDoc(fs, 'usuarios', email), { nome, email, ativo: true, permissoes: perms, criadoEm: new Date().toISOString() });
+      abrirFormFunc(false);
+      mostrarOk(jaTinhaConta
+        ? `${nome} foi liberado. Esse e-mail já tinha conta: ele entra com a senha que já usa ou pelo "Esqueci a senha".`
+        : `Acesso criado. Passe para ${nome}: e-mail ${email} e a senha inicial que você definiu.`);
+    } catch (e) {
+      erroFunc(e && e.code === 'permission-denied' ? 'Sem permissão para salvar. Confira se as regras novas do Firestore foram publicadas.' : 'Não foi possível salvar. Verifique a internet.');
+    } finally { $('fu-criar').disabled = false; }
+  });
+  function desenharFunc() {
+    const box = $('fu-lista'); box.replaceChildren();
+    if (!funcLista.length) { const p = document.createElement('p'); p.className = 'rl-msg'; p.textContent = 'Nenhum funcionário cadastrado ainda.'; box.appendChild(p); return; }
+    funcLista.slice().sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR')).forEach((f) => {
+      const it = document.createElement('div'); it.className = 'fu-item' + (f.ativo ? '' : ' off');
+      const top = document.createElement('div'); top.className = 'fu-top';
+      const nm = document.createElement('div'); const b = document.createElement('b'); b.textContent = f.nome || f.email; const em = document.createElement('div'); em.className = 'em'; em.textContent = f.email; nm.append(b, em);
+      const chip = document.createElement('span'); chip.className = 'fu-chip' + (f.ativo ? '' : ' off'); chip.textContent = f.ativo ? 'Ativo' : 'Desativado';
+      top.append(nm, chip);
+      const fs1 = document.createElement('fieldset'); fs1.className = 'fu-perms'; const lg = document.createElement('legend'); lg.textContent = 'Pode'; fs1.appendChild(lg);
+      caixasPerm(fs1, f.permissoes || {}, async (k, v, c) => {
+        try { await updateDoc(fsDoc(fs, 'usuarios', f.email), { ['permissoes.' + k]: v }); mostrarOk(`Permissões de ${f.nome || f.email} atualizadas.`); }
+        catch (_) { c.checked = !v; mostrarOk('Não foi possível salvar a permissão.'); }
+      });
+      const bts = document.createElement('div'); bts.className = 'fu-bts';
+      const bAt = document.createElement('button'); bAt.type = 'button'; bAt.className = 'btn'; bAt.textContent = f.ativo ? 'Desativar acesso' : 'Reativar acesso';
+      bAt.addEventListener('click', async () => { try { await updateDoc(fsDoc(fs, 'usuarios', f.email), { ativo: !f.ativo }); mostrarOk(f.ativo ? `${f.nome} não consegue mais entrar.` : `${f.nome} pode entrar de novo.`); } catch (_) { mostrarOk('Não foi possível alterar.'); } });
+      const bSenha = document.createElement('button'); bSenha.type = 'button'; bSenha.className = 'btn'; bSenha.textContent = 'Enviar e-mail para trocar a senha';
+      bSenha.addEventListener('click', async () => { try { await sendPasswordResetEmail(auth, f.email); mostrarOk(`Enviamos para ${f.email} um link para criar nova senha.`); } catch (_) { mostrarOk('Não foi possível enviar o e-mail.'); } });
+      const bRem = document.createElement('button'); bRem.type = 'button'; bRem.className = 'btn danger'; bRem.textContent = 'Remover';
+      bRem.addEventListener('click', async () => {
+        if (!bRem.classList.contains('conf')) { bRem.classList.add('conf'); bRem.textContent = 'Confirmar remoção?'; setTimeout(() => { bRem.classList.remove('conf'); bRem.textContent = 'Remover'; }, 4000); return; }
+        try { await deleteDoc(fsDoc(fs, 'usuarios', f.email)); mostrarOk(`${f.nome || f.email} foi removido e não entra mais no painel.`); } catch (_) { mostrarOk('Não foi possível remover.'); }
+      });
+      bts.append(bAt, bSenha, bRem);
+      it.append(top, fs1, bts); box.appendChild(it);
+    });
+  }
+  function ouvirFuncionarios() {
+    if (pararFunc) return;
+    pararFunc = fsSnap(fsCol(fs, 'usuarios'), (snap) => { funcLista = snap.docs.map((d) => ({ email: d.id, ...d.data() })); desenharFunc(); },
+      () => { $('fu-lista').replaceChildren(Object.assign(document.createElement('p'), { className: 'rl-msg', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+  }
+  function pararFuncionarios() { if (pararFunc) { pararFunc(); pararFunc = null; } funcLista = []; }
+  $('sa-sair').addEventListener('click', () => signOut(auth));
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
     if (!logado) return;
+    if (!permitido(location.hash)) history.replaceState(null, '', APP_CK ? '#checklist' : '#menu');
+    $('tela-func').hidden = location.hash !== '#funcionarios';
+    if (location.hash === '#funcionarios') ouvirFuncionarios();
     if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
@@ -1925,7 +2149,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio';
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios';
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -1937,33 +2161,64 @@ const firestoreDb = {
   $('ck-menu').addEventListener('click', () => { sairExcluir(); sairEditar(); abrirAddLoja(false); location.hash = 'menu'; });
   $('m-sair').addEventListener('click', () => signOut(auth));
 
-  onAuthStateChanged(auth, (u) => {
+  function sairDeTudo() {
     parar.forEach((f) => f()); parar = [];
-    if (!u) {
-      db = null; itens = new Map(); carregado = false;
-      rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; $('tela-relatorio').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir(); sairEditar();
-      $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
+    db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
+    rows.forEach((tr) => tr.remove()); rows.clear();
+    logado = false;
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); sairExcluir(); sairEditar(); alternarEdicao(false);
+  }
+  async function descobrirPerfil(u) {
+    const email = String(u.email || '').toLowerCase();
+    if (email === ADMIN_EMAIL) return { admin: true, estoqueVer: true, estoqueQtd: true, checklist: true, relatorio: true };
+    try {
+      const d = await getDoc(fsDoc(fs, 'usuarios', email));
+      if (!d.exists()) return null;
+      const v = d.data();
+      if (!v.ativo) return 'desativado';
+      return { ...SEM_PERM, ...Object.fromEntries(PERMS.map(([k]) => [k, !!(v.permissoes && v.permissoes[k])])) };
+    } catch (_) { return null; }
+  }
+  onAuthStateChanged(auth, async (u) => {
+    $('carregando').hidden = true;
+    sairDeTudo();
+    if (!u) { $('tela-login').hidden = false; $('l-senha').value = ''; return; }
+    $('tela-login').hidden = true;
+    $('carregando').hidden = false; $('carregando-txt').textContent = 'Carregando o painel…';
+    const perfil = await descobrirPerfil(u);
+    if (auth.currentUser !== u) return;
+    $('carregando').hidden = true;
+    if (!perfil || perfil === 'desativado' || (APP_CK && !(perfil.admin || perfil.checklist || perfil.relatorio))) {
+      $('sa-email').textContent = u.email || '';
+      $('sa-txt').textContent = perfil === 'desativado' ? 'Seu acesso foi desativado. Fale com o administrador.'
+        : perfil ? 'Seu acesso não inclui o Check List. Fale com o administrador.'
+        : 'Este e-mail ainda não tem acesso ao painel. Peça ao administrador para liberar.';
+      $('tela-semacesso').hidden = false;
       return;
     }
-    $('tela-login').hidden = true; logado = true; rota();
+    P = perfil;
+    aplicarPermissoes();
+    db = firestoreDb; podeEditar = true;
     $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || ''; $('a-email').textContent = u.email || '';
-    db = firestoreDb; podeEditar = true; $('pct').disabled = false;
-    iniciarLojas();
-    parar.push(db.collection('itens').onSnapshot((snap) => {
-      const novo = new Map();
-      snap.docs.forEach((d) => { const v = d.data(); if (v) novo.set(d.id, v); });
-      itens = novo; carregado = true; render();
-    }, (e) => {
-      $('lead').hidden = false; $('lead').dataset.erro = '1';
-      $('lead').textContent = e && e.code === 'permission-denied'
-        ? 'Este e-mail não tem permissão para ver o estoque. Peça ao responsável para liberar seu acesso.'
-        : 'A lista parou de atualizar. Recarregue a página.';
-    }));
-    parar.push(db.doc('config/geral').onSnapshot((d) => {
-      const v = d.exists ? Number(d.data().percentual) : 40;
-      if (Number.isFinite(v)) { percentual = v; if (document.activeElement !== $('pct')) $('pct').value = v; totais(); }
-    }, () => {}));
+    logado = true; rota();
+    if (podeCk()) iniciarLojas();
+    if (podeEstoque()) {
+      parar.push(db.collection('itens').onSnapshot((snap) => {
+        const novo = new Map();
+        snap.docs.forEach((d) => { const v = d.data(); if (v) novo.set(d.id, v); });
+        itens = novo; carregado = true; render();
+      }, (e) => {
+        $('lead').hidden = false; $('lead').dataset.erro = '1';
+        $('lead').textContent = e && e.code === 'permission-denied'
+          ? 'Este e-mail não tem permissão para ver o estoque. Peça ao administrador para liberar seu acesso.'
+          : 'A lista parou de atualizar. Recarregue a página.';
+      }));
+      parar.push(db.doc('config/geral').onSnapshot((d) => {
+        const v = d.exists ? Number(d.data().percentual) : 40;
+        if (Number.isFinite(v)) { percentual = v; if (document.activeElement !== $('pct')) $('pct').value = v; totais(); }
+      }, () => {}));
+    }
   });
 })();
 </script>

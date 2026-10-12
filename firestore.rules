@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Administrador: acesso total
+    function admin() {
+      return request.auth != null && request.auth.token.email == 'kayowan@hotmail.com';
+    }
+    // Funcionário cadastrado e ativo (cadastro em usuarios/<e-mail>)
+    function perfil() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.token.email)).data;
+    }
+    function funcionario() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.token.email))
+        && perfil().ativo == true;
+    }
+    function pode(p) {
+      return admin() || (funcionario() && perfil().permissoes[p] == true);
+    }
+
+    match /usuarios/{email} {
+      allow read: if admin() || (request.auth != null && request.auth.token.email == email);
+      allow write: if admin();
+    }
+
+    match /itens/{id} {
+      allow read: if pode('estoqueVer') || pode('estoqueQtd');
+      allow create, delete: if admin();
+      allow update: if admin()
+        || (pode('estoqueQtd') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantidade']));
+    }
+
+    match /config/{doc} {
+      allow read: if admin() || funcionario();
+      allow write: if admin();
+    }
+
+    match /lojas/{id} {
+      allow read: if admin() || funcionario();
+      allow write: if admin();
+    }
+
+    match /checklists/{id} {
+      allow read: if pode('checklist') || pode('relatorio');
+      allow create, update: if pode('checklist');
+      allow delete: if admin();
+    }
+  }
+}
