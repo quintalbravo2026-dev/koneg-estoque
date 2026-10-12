@@ -555,6 +555,9 @@ html, body { margin: 0; }
 #impressao .doc .fotos-imp figure { margin: 0; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .fotos-imp img { width: 100%; height: 62mm; object-fit: contain; background: #f2f2f2; display: block; border: .5pt solid #999; }
 #impressao .doc .fotos-imp figcaption { font-size: 9.5pt; margin-top: 1mm; }
+
+.cnpj-busca { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; text-transform: none; letter-spacing: 0; }
+.cnpj-busca .btn { font-size: 13px; padding: 7px 10px; }
 </style>
 </head>
 <body>
@@ -2726,6 +2729,7 @@ const firestoreDb = {
     cliEdit = c ? { ...c } : { nome: '', cnpj: '', contato: '', telefone: '', email: '', endereco: '', cidade: '', obs: '' };
     const box = $('cl-campos'); box.replaceChildren();
     CLIENTE_CAMPOS.forEach((def) => box.appendChild(campoEl(['cl-' + def[0], def[1], def[2], def[3]], cliEdit[def[0]], (v) => { cliEdit[def[0]] = v; })));
+    prepararBuscaCnpj();
     $('cl-excluir').hidden = !c; $('cl-excluir').classList.remove('conf'); $('cl-excluir').textContent = 'Excluir cliente';
     $('cl-err').hidden = true;
     $('cl-form').hidden = false; $('cl-novo').setAttribute('aria-expanded', 'true');
@@ -2759,6 +2763,77 @@ const firestoreDb = {
     try { await deleteDoc(fsDoc(fs, 'clientes', cliEdit.id)); fecharCliente(); }
     catch (_) { $('cl-err').textContent = 'Não foi possível excluir.'; $('cl-err').hidden = false; }
   });
+
+
+  // Busca automática dos dados da empresa pelo CNPJ (BrasilAPI, com CNPJ.ws como reserva)
+  const soDigitos = (t) => String(t || '').replace(/\D/g, '');
+  const mascaraCnpj = (d) => d.length === 14 ? d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5') : d;
+  const titulo = (t) => String(t || '').toLowerCase().replace(/(^|\s|-|\/)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Das|Dos|E)\b/g, (m) => m.toLowerCase());
+  const fone = (t) => { const d = soDigitos(t); return d.length === 10 ? d.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3') : d.length === 11 ? d.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3') : (t || ''); };
+  async function consultarCnpj(d) {
+    try {
+      const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`);
+      if (r.status === 404 || r.status === 400) return { erro: 'CNPJ não encontrado na Receita Federal.' };
+      if (r.ok) {
+        const j = await r.json();
+        return {
+          nome: j.razao_social, fantasia: j.nome_fantasia, situacao: j.descricao_situacao_cadastral,
+          endereco: [[j.descricao_tipo_de_logradouro, j.logradouro].filter(Boolean).join(' '), j.numero, j.complemento, j.bairro].filter((x) => x && String(x).trim()).join(', ') + (j.cep ? ` - CEP ${String(j.cep).replace(/^(\d{5})(\d{3})$/, '$1-$2')}` : ''),
+          cidade: [j.municipio, j.uf].filter(Boolean).join('/'), telefone: fone(j.ddd_telefone_1), email: j.email,
+        };
+      }
+    } catch (_) {}
+    try {
+      const r = await fetch(`https://publica.cnpj.ws/cnpj/${d}`);
+      if (r.status === 404 || r.status === 400) return { erro: 'CNPJ não encontrado na Receita Federal.' };
+      if (r.status === 429) return { erro: 'Muitas consultas seguidas. Espere um minuto e tente de novo.' };
+      if (r.ok) {
+        const j = await r.json(); const e = j.estabelecimento || {};
+        return {
+          nome: j.razao_social, fantasia: e.nome_fantasia, situacao: e.situacao_cadastral,
+          endereco: [[e.tipo_logradouro, e.logradouro].filter(Boolean).join(' '), e.numero, e.complemento, e.bairro].filter((x) => x && String(x).trim()).join(', ') + (e.cep ? ` - CEP ${String(e.cep).replace(/^(\d{5})(\d{3})$/, '$1-$2')}` : ''),
+          cidade: [e.cidade && e.cidade.nome, e.estado && e.estado.sigla].filter(Boolean).join('/'), telefone: fone((e.ddd1 || '') + (e.telefone1 || '')), email: e.email,
+        };
+      }
+    } catch (_) {}
+    return { erro: 'Não foi possível consultar agora. Verifique a internet ou preencha à mão.' };
+  }
+  function prepararBuscaCnpj() {
+    const inp = $('ed-cl-cnpj'); if (!inp) return;
+    const lb = inp.closest('label');
+    const linha = document.createElement('div'); linha.className = 'cnpj-busca';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = 'Buscar dados do CNPJ';
+    const st = document.createElement('span'); st.className = 'ed-dica'; st.setAttribute('aria-live', 'polite');
+    linha.append(b, st); lb.appendChild(linha);
+    let ultimo = '';
+    const buscar = async (forcar) => {
+      const d = soDigitos(inp.value);
+      if (d.length !== 14) { if (forcar) st.textContent = 'Digite os 14 números do CNPJ.'; return; }
+      if (!forcar && d === ultimo) return;
+      ultimo = d;
+      inp.value = mascaraCnpj(d); cliEdit.cnpj = inp.value;
+      st.textContent = 'Buscando na Receita Federal…'; b.disabled = true;
+      const r = await consultarCnpj(d);
+      b.disabled = false;
+      if (!cliEdit) return;
+      if (r.erro) { st.textContent = r.erro; return; }
+      const mapa = { nome: titulo(r.nome) ? String(r.nome).toUpperCase() : '', endereco: titulo(r.endereco).replace(/ - Cep /, ' - CEP '), cidade: titulo(r.cidade).replace(/\/(\w\w)$/i, (m, uf) => '/' + uf.toUpperCase()), telefone: r.telefone, email: String(r.email || '').toLowerCase() };
+      let n = 0;
+      Object.entries(mapa).forEach(([k, v]) => {
+        if (!v) return;
+        if (!forcar && String(cliEdit[k] || '').trim()) return;
+        cliEdit[k] = v; const f = $('ed-cl-' + k); if (f) f.value = v; n++;
+      });
+      if (r.fantasia && !String(cliEdit.obs || '').includes(r.fantasia)) {
+        cliEdit.obs = [`Nome fantasia: ${r.fantasia}`, cliEdit.obs].filter(Boolean).join('\n'); const f = $('ed-cl-obs'); if (f) f.value = cliEdit.obs;
+      }
+      const sit = r.situacao && !/ativa/i.test(r.situacao) ? ` Atenção: situação na Receita: ${r.situacao}.` : '';
+      st.textContent = (n ? 'Dados preenchidos pela Receita Federal. Confira antes de salvar.' : 'Os campos já estavam preenchidos; toque em "Buscar dados do CNPJ" para substituir.') + sit;
+    };
+    inp.addEventListener('input', () => { if (soDigitos(inp.value).length === 14) buscar(false); });
+    inp.addEventListener('change', () => buscar(false));
+    b.addEventListener('click', () => buscar(true));
+  }
 
   // Seletor de cliente cadastrado dentro do orçamento / relatório
   function seletorCliente() {
