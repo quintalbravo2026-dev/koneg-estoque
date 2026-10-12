@@ -465,7 +465,8 @@ html, body { margin: 0; }
 .loja:disabled { cursor: default; opacity: .75; }
 .loja:disabled::after { content: "" !important; }
 
-.mitem.nf { text-decoration: none; }
+.mitem.nf, .mitem.mail { text-decoration: none; }
+.mitem.mail svg { background: rgba(31, 122, 77, .12); }
 .mitem.nf svg { background: rgba(27, 42, 107, .1); }
 
 .ad-tit { font-size: clamp(30px, 5vw, 40px); margin-top: 6px; }
@@ -545,7 +546,7 @@ html, body { margin: 0; }
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
         <span class="mi-t">Administração</span>
-        <span class="mi-d">Funcionários e nota fiscal</span>
+        <span class="mi-d">Funcionários, nota fiscal e e-mail</span>
       </button>
     </nav>
   </div>
@@ -616,6 +617,11 @@ html, body { margin: 0; }
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14.5h7M9 18h4"/></svg>
         <span class="mi-t">Nota Fiscal</span>
         <span class="mi-d">Emissor Nacional de NFS-e (MEI) · abre em outra aba</span>
+      </a>
+      <a class="mitem mail" href="https://webmail-seguro.com.br/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6 8.5-6"/></svg>
+        <span class="mi-t">E-mail</span>
+        <span class="mi-d">Webmail do @koneg.com.br (Locaweb) · abre em outra aba</span>
       </a>
     </nav>
   </div>
