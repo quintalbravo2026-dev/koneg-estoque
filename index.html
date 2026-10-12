@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Estoque 2026 · Koneg</title>
+<title>Estoque · Koneg</title>
 <!--MANIFEST-->
 <link rel="icon" href="/icones/favicon-64.png">
 <script>
@@ -361,13 +361,49 @@ html, body { margin: 0; }
 .app-ck #ck-menu { display: none; }
 .app-ck .ck-topo-app { display: flex; }
 .ck-topo-app { display: none; justify-content: space-between; align-items: center; gap: 8px; width: 100%; }
+
+/* Relatório mensal */
+.ck-acoes .rl-abrir { flex-basis: 100%; }
+.rl-filtros { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.rl-filtros .fld input { max-width: 14rem; text-align: left; font-family: var(--font-body); }
+.rl-lojas-topo { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 12px; }
+.rl-cont { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+.rl-chk { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; min-height: 36px; }
+.rl-chk input { width: 20px; height: 20px; accent-color: #1f7a4d; flex: none; }
+.rl-lojas { display: flex; flex-direction: column; gap: 10px; max-height: 22rem; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px; background: var(--bg); }
+.rl-cid { display: flex; flex-direction: column; }
+.rl-cid > .rl-chk { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.rl-cid .rl-itens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); padding-left: 30px; }
+.rl-previa { overflow-x: auto; }
+.rl-previa table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rl-previa th, .rl-previa td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: normal; font-weight: 400; min-width: 0; }
+.rl-previa th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; position: static; }
+.rl-previa td.n { text-align: right; font-family: var(--font-mono); }
+.rl-previa tr.sem td { color: var(--muted); }
+.rl-previa .nok { color: var(--danger); font-weight: 600; }
+.rl-previa tfoot td { font-weight: 700; border-bottom: 0; }
+.rl-msg { padding: 18px 16px; color: var(--muted); text-align: center; margin: 0; }
+.rl-imprimir { justify-content: center; min-height: 48px; font-size: 15px; }
+@media (max-width: 640px) { .rl-previa .hide-n { display: none; } }
+
+/* Relatório impresso */
+#impressao .folha { break-after: page; page-break-after: always; }
+#impressao .folha:last-child { break-after: auto; page-break-after: auto; }
+#impressao .rel h1 { font-size: 15pt; font-style: italic; margin: 0 0 1mm; }
+#impressao .rel .sub { font-size: 9pt; margin: 0 0 4mm; }
+#impressao .rel table { border: 1.2pt solid #000; }
+#impressao .rel td, #impressao .rel th { border: .6pt solid #000; padding: 1.2mm 1.5mm; font-size: 8.5pt; height: auto; white-space: normal; text-align: left; vertical-align: top; color: #000; }
+#impressao .rel th { background: #d9d9d9; font-weight: 700; position: static; text-transform: none; letter-spacing: 0; color: #000; }
+#impressao .rel td.n { text-align: center; }
+#impressao .rel tr.sem td { color: #555; }
+#impressao .rel tfoot td { font-weight: 700; background: #f0f0f0; }
 </style>
 </head>
 <body>
 <main class="login" id="tela-login" hidden>
   <div class="login-card">
     <span class="eyebrow">Koneg Manutenção</span>
-    <h1>Estoque 2026</h1>
+    <h1>Estoque</h1>
     <p>Entre com o e-mail e a senha cadastrados para ver e editar o estoque.</p>
     <label class="fld grow" for="l-email"><span>E-mail</span><input id="l-email" type="email" autocomplete="username" inputmode="email"></label>
     <label class="fld grow" for="l-senha"><span>Senha</span><input id="l-senha" type="password" autocomplete="current-password"></label>
@@ -410,6 +446,7 @@ html, body { margin: 0; }
   <div class="ck-acoes">
     <button class="btn primary" id="ck-add" type="button" aria-expanded="false" aria-controls="ck-addform">+ Adicionar loja</button>
     <button class="btn danger" id="ck-del" type="button" aria-pressed="false">Excluir loja</button>
+    <button class="btn rl-abrir" id="ck-rel" type="button">Relatório do mês</button>
   </div>
   <div class="addform ck-form" id="ck-addform" hidden>
     <label class="fld grow" for="ck-nome"><span>Nome da loja</span><input id="ck-nome" type="text" autocomplete="off" placeholder="Ex.: Coop Centro"></label>
@@ -429,6 +466,30 @@ html, body { margin: 0; }
   <p class="ck-aviso" id="ck-aviso" hidden>Toque na loja que você quer excluir. Para sair sem excluir, toque em "Concluir".</p>
   <input class="search ck-busca" id="ck-busca" type="search" placeholder="Buscar loja…" aria-label="Buscar loja">
   <div class="ck-cidades" id="ck-lojas"></div>
+</main>
+
+<main class="wrap" id="tela-relatorio" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="rl-voltar" type="button">← Voltar às lojas</button>
+    </div>
+    <span class="eyebrow">Check List</span>
+    <h1>Relatório do mês</h1>
+  </header>
+  <section class="card rl-filtros" aria-label="Filtros do relatório">
+    <label class="fld" for="rl-mes"><span>Mês</span><input id="rl-mes" type="month"></label>
+    <div class="rl-lojas-topo">
+      <label class="rl-chk rl-todas"><input type="checkbox" id="rl-todas" checked> <b>Todas as lojas</b></label>
+      <span class="rl-cont" id="rl-cont"></span>
+    </div>
+    <div class="rl-lojas" id="rl-lojas"></div>
+    <label class="rl-chk"><input type="checkbox" id="rl-folhas" checked> Incluir a folha completa de cada check list</label>
+  </section>
+  <section class="card" aria-label="Prévia do relatório">
+    <div class="lj-tit" id="rl-tit">Prévia</div>
+    <div class="rl-previa" id="rl-previa"></div>
+  </section>
+  <button class="btn primary rl-imprimir" id="rl-imprimir" type="button">Imprimir / salvar PDF</button>
 </main>
 
 <main class="wrap" id="tela-loja" hidden>
@@ -507,7 +568,7 @@ html, body { margin: 0; }
       <button class="btn voltar" id="btn-menu" type="button">← Voltar ao menu</button>
       <span class="userbar"><span id="u-email"></span><button class="btn" id="btn-sair" type="button">Sair</button></span>
     </div>
-    <h1>Estoque 2026</h1>
+    <h1>Estoque</h1>
     <p class="lead" id="lead">Carregando o estoque…</p>
   </header>
 
@@ -564,7 +625,7 @@ html, body { margin: 0; }
       <span class="status" id="status" aria-live="polite"></span>
     </div>
   </section>
-  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026 · check list</p>
+  <p class="rodape">Koneg Manutenção · Estoque · versão de 12/10/2026</p>
 <div class="rs-overlay" id="rs-overlay" hidden>
   <div class="rs-dialog" role="dialog" aria-modal="true" aria-label="Resumo do estoque">
     <div class="rs-card" id="rs-card">
@@ -604,7 +665,7 @@ html, body { margin: 0; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, getDocs, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const fbApp = initializeApp(window.FIREBASE_CONFIG);
@@ -1137,6 +1198,7 @@ const firestoreDb = {
       LOJAS = snap.docs.map((d) => { const v = d.data(); return { id: d.id, nome: String(v.nome || d.id), cidade: String(v.cidade || 'Outras'), ordem: Number(v.ordem) || 0 }; });
       LOJAS_POR_ID.clear(); LOJAS.forEach((l) => LOJAS_POR_ID.set(l.id, { nome: l.nome, cidade: l.cidade }));
       lojasCarregadas = true; desenharLojas();
+      if (!$('tela-relatorio').hidden) { desenharRelLojas(); desenharPrevia(); }
       if (rotaPendente) { rotaPendente = false; rota(); }
     }, () => { lojasCarregadas = true; desenharLojas(); });
   }
@@ -1487,8 +1549,8 @@ const firestoreDb = {
     }
     if (pt !== ptMax) td.style.fontSize = pt + 'pt';
   }
-  function montarFolha() {
-    const C = ck, col = 194 / 17;
+  function montarFolha(C, nomeLoja) {
+    const col = 194 / 17;
     const R = C.respostas || {};
     const tb = document.createElement('table');
     const cg = document.createElement('colgroup');
@@ -1505,7 +1567,7 @@ const firestoreDb = {
     td(tr(), 17, 'Roteiro de Manutenção Preventiva', 't');
     let r = tr(); td(r, 8, `Número de série: ${C.serie || ''}`); td(r, 1, ''); td(r, 8, `Data:   ${dataFolha(C.data)}`);
     r = tr(); td(r, 8, `Horímetro: ${C.horimetro || ''}`); td(r, 1, ''); td(r, 8, `Número da OS: ${C.os || ''}`);
-    r = tr(); td(r, 8, comNegrito('Nome do Técnico: ', C.tecnico || '')); td(r, 1, ''); td(r, 8, `Nome da Loja: ${ckLoja.nome}`);
+    r = tr(); td(r, 8, comNegrito('Nome do Técnico: ', C.tecnico || '')); td(r, 1, ''); td(r, 8, `Nome da Loja: ${nomeLoja}`);
 
     const lado = (row, linha) => {
       if (linha[0] === 's') {
@@ -1545,25 +1607,160 @@ const firestoreDb = {
     ass.append('Assinatura do Responsavel');
     if (C.assinatura) { const im = document.createElement('img'); im.src = C.assinatura; im.alt = ''; ass.appendChild(im); }
     else { const ln = document.createElement('div'); ln.className = 'linha'; ass.appendChild(ln); }
-    $('impressao').replaceChildren(tb, ass);
+    const folha = document.createElement('div'); folha.className = 'folha'; folha.append(tb, ass);
+    return folha;
   }
   let tituloAntes = null;
-  $('fm-imprimir').addEventListener('click', async () => {
-    if (!ck) return;
-    if (ckTimer) await salvarCk();
-    montarFolha();
+  async function imprimirConteudo(nos, nome) {
+    $('impressao').replaceChildren(...nos);
     tituloAntes = document.title;
-    const nome = ['Preventiva', ckLoja.nome, ck.serie, dataBR(ck.data).replace(/\//g, '-')].filter(Boolean).join(' - ');
     document.title = nome;
-    const img = $('impressao').querySelector('img');
-    if (img && !img.complete) await new Promise((res) => { img.onload = img.onerror = res; });
+    const imgs = [...$('impressao').querySelectorAll('img')].filter((i) => !i.complete);
+    await Promise.all(imgs.map((i) => new Promise((res) => { i.onload = i.onerror = res; })));
     if (window.KonegApp && window.KonegApp.imprimir) {
       // Dentro do app Android: usa a impressão do celular (imprimir ou salvar em PDF)
       window.KonegApp.imprimir(nome);
       setTimeout(() => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } }, 3000);
     } else window.print();
+  }
+  $('fm-imprimir').addEventListener('click', async () => {
+    if (!ck) return;
+    if (ckTimer) await salvarCk();
+    const nome = ['Preventiva', ckLoja.nome, ck.serie, dataBR(ck.data).replace(/\//g, '-')].filter(Boolean).join(' - ');
+    imprimirConteudo([montarFolha(ck, ckLoja.nome)], nome);
   });
   window.addEventListener('afterprint', () => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } });
+
+  // ===== Relatório mensal dos check lists =====
+  const rlSel = new Set(); let rlTodas = true, rlDados = [], rlMesCarregado = '';
+  const mesAtual = () => hojeISO().slice(0, 7);
+  const nomeMes = (ym) => { const [a, m] = ym.split('-').map(Number); const t = new Date(a, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }); return t.charAt(0).toUpperCase() + t.slice(1); };
+  $('rl-mes').value = mesAtual();
+  function lojasSelecionadas() { return agruparLojas().flatMap(([, ls]) => ls).filter((l) => rlTodas || rlSel.has(l.id)); }
+  function desenharRelLojas() {
+    const box = $('rl-lojas'); box.replaceChildren();
+    if (rlTodas) { rlSel.clear(); LOJAS.forEach((l) => rlSel.add(l.id)); }
+    agruparLojas().forEach(([cid, ls]) => {
+      const g = document.createElement('div'); g.className = 'rl-cid';
+      const lc = document.createElement('label'); lc.className = 'rl-chk';
+      const cc = document.createElement('input'); cc.type = 'checkbox';
+      const marcadas = ls.filter((l) => rlSel.has(l.id)).length;
+      cc.checked = marcadas === ls.length; cc.indeterminate = marcadas > 0 && marcadas < ls.length;
+      cc.addEventListener('change', () => { ls.forEach((l) => (cc.checked ? rlSel.add(l.id) : rlSel.delete(l.id))); atualizarTodas(); });
+      lc.append(cc, ' ' + cid);
+      const itens = document.createElement('div'); itens.className = 'rl-itens';
+      ls.forEach((l) => {
+        const lb = document.createElement('label'); lb.className = 'rl-chk';
+        const c = document.createElement('input'); c.type = 'checkbox'; c.checked = rlSel.has(l.id);
+        c.addEventListener('change', () => { c.checked ? rlSel.add(l.id) : rlSel.delete(l.id); atualizarTodas(); });
+        lb.append(c, ' ' + l.nome); itens.appendChild(lb);
+      });
+      g.append(lc, itens); box.appendChild(g);
+    });
+    $('rl-todas').checked = rlTodas;
+    $('rl-cont').textContent = `${lojasSelecionadas().length} de ${LOJAS.length} lojas`;
+  }
+  function atualizarTodas() { rlTodas = LOJAS.length > 0 && LOJAS.every((l) => rlSel.has(l.id)); desenharRelLojas(); desenharPrevia(); }
+  $('rl-todas').addEventListener('change', () => {
+    rlTodas = $('rl-todas').checked;
+    if (!rlTodas) rlSel.clear();
+    desenharRelLojas(); desenharPrevia();
+  });
+  $('rl-folhas').addEventListener('change', desenharPrevia);
+
+  async function carregarMes() {
+    const ym = $('rl-mes').value || mesAtual();
+    rlMesCarregado = ym; rlDados = null; desenharPrevia();
+    try {
+      const snap = await getDocs(query(fsCol(fs, 'checklists'), where('data', '>=', ym + '-01'), where('data', '<=', ym + '-31')));
+      if (rlMesCarregado !== ym) return;
+      rlDados = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    } catch (_) { if (rlMesCarregado === ym) rlDados = 'erro'; }
+    desenharPrevia();
+  }
+  $('rl-mes').addEventListener('change', () => { if ($('rl-mes').value) carregarMes(); });
+
+  function resumoRel() {
+    const lojas = lojasSelecionadas();
+    const dados = Array.isArray(rlDados) ? rlDados : [];
+    const linhas = lojas.map((l) => {
+      const cks = dados.filter((c) => c.lojaId === l.id).sort((a, b) => String(a.data).localeCompare(String(b.data)));
+      const noks = [];
+      cks.forEach((c) => Object.entries(c.respostas || {}).forEach(([k, v]) => { if (v === 'NOK') noks.push(k.slice(1).replace('_', '.')); }));
+      return { loja: l, cks, series: [...new Set(cks.map((c) => c.serie).filter(Boolean))], noks: [...new Set(noks)], nNok: noks.length };
+    });
+    return { linhas, total: linhas.reduce((t, x) => t + x.cks.length, 0), totalNok: linhas.reduce((t, x) => t + x.nNok, 0), comCk: linhas.filter((x) => x.cks.length).length };
+  }
+  function desenharPrevia() {
+    const box = $('rl-previa'); box.replaceChildren();
+    const ym = $('rl-mes').value || mesAtual();
+    $('rl-tit').textContent = `Prévia · ${nomeMes(ym)}`;
+    const msg = (t) => { const p = document.createElement('p'); p.className = 'rl-msg'; p.textContent = t; box.appendChild(p); };
+    if (rlDados === null) { msg('Carregando os check lists do mês…'); $('rl-imprimir').disabled = true; return; }
+    if (rlDados === 'erro') { msg('Não foi possível carregar os check lists. Verifique a internet e escolha o mês de novo.'); $('rl-imprimir').disabled = true; return; }
+    if (!lojasSelecionadas().length) { msg('Escolha pelo menos uma loja.'); $('rl-imprimir').disabled = true; return; }
+    const R = resumoRel();
+    const tb = document.createElement('table');
+    const th = document.createElement('thead'); const trh = document.createElement('tr');
+    [['Loja', ''], ['Cidade', 'hide-n'], ['Check lists', 'n'], ['Empilhadeiras', 'hide-n'], ['ÑOK', 'n']].forEach(([t, c]) => { const e = document.createElement('th'); e.textContent = t; if (c) e.className = c; trh.appendChild(e); });
+    th.appendChild(trh); tb.appendChild(th);
+    const tbd = document.createElement('tbody');
+    R.linhas.forEach((x) => {
+      const tr = document.createElement('tr'); if (!x.cks.length) tr.className = 'sem';
+      const cel = (t, c) => { const e = document.createElement('td'); e.textContent = t; if (c) e.className = c; tr.appendChild(e); return e; };
+      cel(x.loja.nome); cel(x.loja.cidade, 'hide-n'); cel(x.cks.length ? String(x.cks.length) : '—', 'n');
+      cel(x.series.join(', ') || (x.cks.length ? 'Sem série' : 'Sem check list no mês'), 'hide-n');
+      const e = cel(x.nNok ? String(x.nNok) : '—', 'n'); if (x.nNok) e.classList.add('nok');
+      tbd.appendChild(tr);
+    });
+    tb.appendChild(tbd);
+    const tf = document.createElement('tfoot'); const trf = document.createElement('tr');
+    const f = (t, c) => { const e = document.createElement('td'); e.textContent = t; if (c) e.className = c; trf.appendChild(e); };
+    f(`Total (${R.comCk} de ${R.linhas.length} lojas com check list)`); f('', 'hide-n'); f(String(R.total), 'n'); f('', 'hide-n'); f(String(R.totalNok), 'n');
+    tf.appendChild(trf); tb.appendChild(tf);
+    box.appendChild(tb);
+    $('rl-imprimir').disabled = false;
+    $('rl-imprimir').textContent = R.total && $('rl-folhas').checked ? `Imprimir / salvar PDF (resumo + ${R.total} ${R.total === 1 ? 'folha' : 'folhas'})` : 'Imprimir / salvar PDF';
+  }
+
+  function folhaResumo(R, ym) {
+    const d = document.createElement('div'); d.className = 'folha rel';
+    const h = document.createElement('h1'); h.textContent = `Relatório de Manutenção Preventiva — ${nomeMes(ym)}`;
+    const p = document.createElement('p'); p.className = 'sub';
+    p.textContent = `Koneg Manutenção · ${R.linhas.length} ${R.linhas.length === 1 ? 'loja' : 'lojas'} · ${R.total} check ${R.total === 1 ? 'list' : 'lists'} · emitido em ${dataBR(hojeISO())}`;
+    const tb = document.createElement('table');
+    const cg = document.createElement('colgroup');
+    ['22%', '16%', '9%', '25%', '28%'].forEach((w) => { const c = document.createElement('col'); c.style.width = w; cg.appendChild(c); });
+    tb.appendChild(cg);
+    const th = document.createElement('thead'); const trh = document.createElement('tr');
+    ['Loja', 'Cidade', 'Check lists', 'Empilhadeiras (nº de série)', 'Itens ÑOK'].forEach((t) => { const e = document.createElement('th'); e.textContent = t; trh.appendChild(e); });
+    th.appendChild(trh); tb.appendChild(th);
+    const tbd = document.createElement('tbody');
+    R.linhas.forEach((x) => {
+      const tr = document.createElement('tr'); if (!x.cks.length) tr.className = 'sem';
+      const cel = (t, c) => { const e = document.createElement('td'); e.textContent = t; if (c) e.className = c; tr.appendChild(e); };
+      cel(x.loja.nome); cel(x.loja.cidade); cel(x.cks.length ? String(x.cks.length) : '—', 'n');
+      cel(x.cks.length ? (x.series.join(', ') || 'Sem série') : 'Sem check list no mês');
+      cel(x.nNok ? `${x.nNok} (itens ${x.noks.join(', ')})` : (x.cks.length ? 'Nenhum' : '—'));
+      tbd.appendChild(tr);
+    });
+    tb.appendChild(tbd);
+    const tf = document.createElement('tfoot'); const trf = document.createElement('tr');
+    [`Total: ${R.comCk} de ${R.linhas.length} lojas com check list`, '', String(R.total), '', String(R.totalNok)].forEach((t, k) => { const e = document.createElement('td'); e.textContent = t; if (k === 2) e.className = 'n'; trf.appendChild(e); });
+    tf.appendChild(trf); tb.appendChild(tf);
+    d.append(h, p, tb);
+    return d;
+  }
+  $('rl-imprimir').addEventListener('click', () => {
+    if (!Array.isArray(rlDados)) return;
+    const ym = $('rl-mes').value || mesAtual();
+    const R = resumoRel();
+    const nos = [folhaResumo(R, ym)];
+    if ($('rl-folhas').checked) R.linhas.forEach((x) => x.cks.forEach((c) => nos.push(montarFolha(c, c.loja || x.loja.nome))));
+    imprimirConteudo(nos, `Relatório Preventiva - ${nomeMes(ym)}`);
+  });
+  $('ck-rel').addEventListener('click', () => { sairExcluir(); abrirAddLoja(false); location.hash = 'relatorio'; });
+  $('rl-voltar').addEventListener('click', () => { location.hash = 'checklist'; });
 
   // Modo app do Check List (endereço /checklist/)
   const APP_CK = document.documentElement.classList.contains('app-ck');
@@ -1577,7 +1774,7 @@ const firestoreDb = {
   let logado = false;
   function rota() {
     if (!logado) return;
-    if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist') history.replaceState(null, '', '#checklist');
+    if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
     const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
@@ -1586,12 +1783,14 @@ const firestoreDb = {
     const noForm = !!(loja && m[2]);
     $('app').hidden = h !== '#estoque';
     $('tela-checklist').hidden = h !== '#checklist';
+    $('tela-relatorio').hidden = h !== '#relatorio';
+    if (h === '#relatorio') { desenharRelLojas(); carregarMes(); }
     $('tela-loja').hidden = !loja || noForm;
     $('tela-form').hidden = !noForm;
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = ckLoja && ckLoja.id === loja.id ? ckLoja : loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja;
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio';
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -1608,7 +1807,7 @@ const firestoreDb = {
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir();
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; $('tela-relatorio').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir();
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
