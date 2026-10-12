@@ -188,6 +188,18 @@ html, body { margin: 0; }
 .mi-d { grid-area: d; font-size: 13px; color: var(--muted); }
 .btn.voltar { padding: 8px 14px; font-weight: 600; background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .btn.voltar:hover:not(:disabled) { border-color: var(--fg); opacity: .9; }
+.ck-busca { flex: none; width: 100%; box-sizing: border-box; min-height: 44px; background: var(--panel); }
+.ck-cidades { display: flex; flex-direction: column; gap: 20px; }
+.ck-cidade h2 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 8px; }
+.ck-cidade h2 small { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--muted); background: var(--line); border-radius: 999px; padding: 1px 8px; }
+.ck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: 8px; }
+.loja { font: inherit; font-weight: 500; font-size: 15px; text-align: left; cursor: pointer; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 14px; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.loja::after { content: "›"; font-size: 22px; line-height: 1; color: var(--muted); }
+.loja:hover { border-color: var(--accent); }
+.loja:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ck-nada { color: var(--muted); text-align: center; padding: 24px 0; margin: 0; }
+@media (max-width: 640px) { .ck-grid { grid-template-columns: 1fr 1fr; } .loja { font-size: 14px; padding: 12px; } }
+@media (max-width: 360px) { .ck-grid { grid-template-columns: 1fr; } }
 .ck-vazio { padding: 28px 16px; text-align: center; color: var(--muted); }
 .ck-vazio p { margin: 0; }
 
@@ -210,8 +222,8 @@ html, body { margin: 0; }
 
   .bar { padding: 10px; gap: 8px; }
   .bar > * { flex: 1 1 calc(50% - 4px); justify-content: center; min-height: 42px; box-sizing: border-box; }
-  #btn-add, .search, #btn-resumo { flex-basis: 100%; }
-  #btn-add { order: 1; } .search { order: 2; } #btn-resumo { order: 3; } #btn-zerados { order: 4; } #btn-zerar { order: 5; }
+  #btn-add, .bar .search, #btn-resumo { flex-basis: 100%; }
+  #btn-add { order: 1; } .bar .search { order: 2; } #btn-resumo { order: 3; } #btn-zerados { order: 4; } #btn-zerar { order: 5; }
   .bar .btn { white-space: normal; text-align: center; line-height: 1.2; }
 
   .addform { padding: 12px 10px; }
@@ -289,8 +301,20 @@ html, body { margin: 0; }
     </div>
     <h1>Check List</h1>
   </header>
+  <input class="search ck-busca" id="ck-busca" type="search" placeholder="Buscar loja…" aria-label="Buscar loja">
+  <div class="ck-cidades" id="ck-lojas"></div>
+</main>
+
+<main class="wrap" id="tela-loja" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="lj-voltar" type="button">← Voltar às lojas</button>
+    </div>
+    <span class="eyebrow" id="lj-cidade"></span>
+    <h1 id="lj-nome">Loja</h1>
+  </header>
   <section class="card ck-vazio">
-    <p>Esta área está em construção.</p>
+    <p>O check list desta loja está em construção.</p>
   </section>
 </main>
 
@@ -862,14 +886,59 @@ const firestoreDb = {
   });
   $('btn-sair').addEventListener('click', () => signOut(auth));
 
+  // Lojas do Check List, agrupadas por cidade
+  const CIDADES = [
+    ['Santo André', ['Coop Industrial', 'Coop Dom Pedro I', 'Coop Portugal', 'Coop Pereira Barreto', 'Coop Queirós dos Santos', 'Coop Carijós', 'Coop Queiros Filho', 'Coop Mário Toledo', 'Coop Utinga', 'Coop Vila Luzita']],
+    ['São Bernardo do Campo', ['Coop Cafelândia', 'Coop Senador Vergueiro', 'Coop Demarchi', 'Coop Joaquim Nabuco', 'Coop Ferrazópolis', 'Coop Assunção']],
+    ['São Caetano do Sul', ['Coop Joana Angélica']],
+    ['Mauá', ['Coop Barão de Mauá', 'Coop Itapark']],
+    ['Diadema', ['Coop Sete de Setembro']],
+    ['Ribeirão Pires', ['Coop Humberto de Campos']],
+    ['Sorocaba', ['Coop Padre Madureira', 'Coop Itavuvu']],
+    ['Tatuí', ['Coop Lúcio Seabra']],
+    ['Piracicaba', ['Coop Vollet Sachs']],
+    ['São José dos Campos', ['Coop João Batista', 'Coop Tancredo Neves', 'Coop Morumbi']],
+  ];
+  const semAcento = (t) => String(t).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const slugLoja = (t) => semAcento(t).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const LOJAS_POR_ID = new Map();
+  CIDADES.forEach(([cidade, lojas]) => lojas.forEach((nome) => LOJAS_POR_ID.set(slugLoja(nome), { nome, cidade })));
+  function desenharLojas() {
+    const q = semAcento($('ck-busca').value.trim());
+    const box = $('ck-lojas'); box.replaceChildren();
+    let total = 0;
+    CIDADES.forEach(([cidade, lojas]) => {
+      const vis = lojas.filter((n) => !q || semAcento(n).includes(q) || semAcento(cidade).includes(q));
+      if (!vis.length) return;
+      total += vis.length;
+      const sec = document.createElement('section'); sec.className = 'ck-cidade';
+      const h2 = document.createElement('h2'); h2.textContent = cidade;
+      const sm = document.createElement('small'); sm.textContent = String(vis.length); h2.appendChild(sm);
+      const grid = document.createElement('div'); grid.className = 'ck-grid';
+      vis.forEach((nome) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'loja'; b.textContent = nome;
+        b.addEventListener('click', () => { location.hash = 'loja-' + slugLoja(nome); });
+        grid.appendChild(b);
+      });
+      sec.append(h2, grid); box.appendChild(sec);
+    });
+    if (!total) { const p = document.createElement('p'); p.className = 'ck-nada'; p.textContent = 'Nenhuma loja encontrada.'; box.appendChild(p); }
+  }
+  $('ck-busca').addEventListener('input', desenharLojas);
+  desenharLojas();
+  $('lj-voltar').addEventListener('click', () => { location.hash = 'checklist'; });
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
     if (!logado) return;
     const h = location.hash;
+    const loja = h.startsWith('#loja-') ? LOJAS_POR_ID.get(h.slice(6)) : null;
     $('app').hidden = h !== '#estoque';
     $('tela-checklist').hidden = h !== '#checklist';
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist';
+    $('tela-loja').hidden = !loja;
+    if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; }
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja;
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -886,7 +955,7 @@ const firestoreDb = {
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true;
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true;
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
