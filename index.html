@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Estoque 2026 · Koneg</title>
+<!--MANIFEST-->
 <link rel="icon" href="/icones/favicon-64.png">
 <script>
   // Quando aberto em /checklist/, a página vira o app do Check List (instalável)
   (function () {
-    if (!/^\/checklist\/?$/.test(location.pathname)) return;
+    if (!/^\/checklist(\/(index\.html)?)?$/.test(location.pathname)) return;
     var h = document.head;
     function add(t, a) { var e = document.createElement(t); for (var k in a) e.setAttribute(k, a[k]); h.appendChild(e); }
-    add('link', { rel: 'manifest', href: '/checklist.webmanifest' });
+    if (!document.querySelector('link[rel=manifest]')) add('link', { rel: 'manifest', href: '/checklist.webmanifest' });
     add('link', { rel: 'apple-touch-icon', href: '/icones/ck-180.png' });
     add('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
     add('meta', { name: 'mobile-web-app-capable', content: 'yes' });

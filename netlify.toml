@@ -1,22 +1,13 @@
 [build]
   publish = "."
+  # Gera a página do app do Check List (/checklist/) a partir do index.html
+  command = "sed 's|<!--MANIFEST-->|<link rel=\"manifest\" href=\"/checklist.webmanifest\">|' index.html > checklist/index.html"
 
 # Sempre buscar a versão mais nova da página
 [[headers]]
   for = "/*"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
-
-# App do Check List: o mesmo index.html, aberto direto no Check List
-[[redirects]]
-  from = "/checklist"
-  to = "/checklist/"
-  status = 301
-
-[[redirects]]
-  from = "/checklist/"
-  to = "/index.html"
-  status = 200
 
 [[headers]]
   for = "/checklist.webmanifest"
