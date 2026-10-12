@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Koneg Manutenção · Empilhadeiras e segurança de galpões</title>
+<meta name="description" content="Koneg Manutenção: manutenção preventiva e corretiva de empilhadeiras e paleteiras elétricas, peças de reposição e itens de segurança para galpões. Santo André, Grande ABC e interior de SP.">
+<meta property="og:title" content="Koneg Manutenção">
+<meta property="og:description" content="Manutenção de empilhadeiras e paleteiras elétricas, peças e segurança de galpões.">
+<meta name="theme-color" content="#16191d">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: folha técnica de oficina — faixa zebrada de sinalização, blocos numerados por sistema, contato direto pelo WhatsApp */
+:root {
+  --bg: #f3f4f5;
+  --panel: #ffffff;
+  --fg: #16191d;
+  --muted: #5d6670;
+  --line: #d9dde1;
+  --accent: #f2b705;
+  --accent-ink: #1a1500;
+  --accent-soft: #fbedb8;
+  --dark: #16191d;
+  --dark-2: #22262b;
+  --on-dark: #eceef0;
+  --on-dark-muted: #a3acb6;
+  --ok: #1f7a4d;
+  --wpp: #25d366;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r: 6px;
+  --max: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+a { color: inherit; }
+img { max-width: 100%; }
+.wrap { max-width: var(--max); margin-inline: auto; padding-inline: 20px; }
+@media (min-width: 760px) { .wrap { padding-inline: 32px; } }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.zebra { height: 10px; background: repeating-linear-gradient(135deg, var(--accent) 0 14px, var(--dark) 14px 28px); }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 22px; height: 9px; background: repeating-linear-gradient(135deg, var(--accent) 0 4px, currentColor 4px 8px); border-radius: 1px; }
+
+/* Botões */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 600; font-size: 15px; text-decoration: none; padding: 12px 18px; border-radius: var(--r); border: 1px solid transparent; cursor: pointer; transition: transform .15s, filter .15s, background .15s; white-space: nowrap; }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-acc { background: var(--accent); color: var(--accent-ink); }
+.btn-acc:hover { filter: brightness(1.06); }
+.btn-wpp { background: var(--wpp); color: #06311a; }
+.btn-wpp:hover { filter: brightness(1.05); }
+.btn-ghost { border-color: rgba(236,238,240,.35); color: var(--on-dark); background: transparent; }
+.btn-ghost:hover { border-color: var(--on-dark); }
+.btn-dark { background: var(--dark); color: var(--on-dark); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+
+/* Cabeçalho */
+.topo { position: sticky; top: 0; z-index: 20; background: rgba(22,25,29,.97); color: var(--on-dark); backdrop-filter: blur(6px); }
+.topo .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+.marca { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+.marca b { font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: .04em; }
+.marca span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--on-dark-muted); }
+.menu { display: flex; align-items: center; gap: 22px; }
+.menu a.lk { text-decoration: none; color: var(--on-dark-muted); font-size: 15px; }
+.menu a.lk:hover { color: var(--on-dark); }
+.menu .btn { padding: 9px 14px; font-size: 14px; }
+@media (max-width: 760px) { .menu a.lk { display: none; } .marca span { display: none; } }
+
+/* Hero */
+.hero { background: var(--dark); color: var(--on-dark); position: relative; overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; padding-block: 64px 72px; }
+.hero .eyebrow { color: var(--on-dark-muted); }
+.hero h1 { font-size: clamp(38px, 6.4vw, 68px); font-weight: 700; margin: 14px 0 18px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lead { margin: 0 0 28px; color: var(--on-dark-muted); font-size: 18px; max-width: 34rem; }
+.hero .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
+.ficha { background: var(--dark-2); border: 1px solid rgba(236,238,240,.12); border-radius: 10px; padding: 18px 18px 14px; font-family: var(--font-mono); font-size: 13px; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+.ficha .fh { display: flex; justify-content: space-between; color: var(--on-dark-muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px dashed rgba(236,238,240,.18); margin-bottom: 6px; }
+.ficha ul { list-style: none; margin: 0; padding: 0; }
+.ficha li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(236,238,240,.07); }
+.ficha li:last-child { border-bottom: 0; }
+.tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 3px; letter-spacing: .04em; }
+.tag.ok { background: rgba(31,122,77,.25); color: #6fd3a0; }
+.tag.nok { background: rgba(179,38,30,.3); color: #ff9a8f; }
+.tag.nap { background: rgba(163,172,182,.18); color: var(--on-dark-muted); }
+.ficha .ff { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(236,238,240,.18); color: var(--on-dark-muted); font-size: 11px; }
+@media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; padding-block: 44px 52px; } .ficha { max-width: 30rem; } }
+@media (prefers-reduced-motion: no-preference) {
+  .ficha li { animation: entra .5s ease-out both; }
+  .ficha li:nth-child(2) { animation-delay: .08s; } .ficha li:nth-child(3) { animation-delay: .16s; } .ficha li:nth-child(4) { animation-delay: .24s; } .ficha li:nth-child(5) { animation-delay: .32s; } .ficha li:nth-child(6) { animation-delay: .4s; }
+  @keyframes entra { from { opacity: .0001; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+}
+
+/* Seções */
+section.sec { padding-block: 72px; }
+.sec-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; max-width: 46rem; }
+.sec-head h2 { font-size: clamp(30px, 4.4vw, 44px); font-weight: 700; }
+.sec-head p { margin: 0; color: var(--muted); font-size: 17px; }
+
+.servicos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 14px; }
+.serv { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 20px; display: flex; flex-direction: column; gap: 10px; }
+.serv .num { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.serv h3 { font-size: 22px; font-weight: 600; }
+.serv p { margin: 0; color: var(--muted); font-size: 15px; }
+.serv ul { margin: 4px 0 0; padding-left: 18px; color: var(--fg); font-size: 14px; }
+.serv ul li { margin: 2px 0; }
+.serv.dest { border-color: var(--accent); box-shadow: inset 0 4px 0 var(--accent); }
+
+/* Preventiva */
+.prev { background: var(--panel); border-block: 1px solid var(--line); }
+.prev-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: start; }
+.numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+.numeros div { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
+.numeros b { display: block; font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1; }
+.numeros span { font-size: 13px; color: var(--muted); }
+.sistemas { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.sistemas div { display: flex; gap: 12px; align-items: baseline; padding: 11px 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.sistemas div:nth-child(odd) { border-right: 1px solid var(--line); }
+.sistemas div:nth-last-child(-n+2) { border-bottom: 0; }
+.sistemas i { font-style: normal; font-family: var(--font-mono); font-size: 12px; color: var(--muted); min-width: 1.6em; }
+.legenda { margin-top: 12px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 14px; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.legenda i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+@media (max-width: 860px) { .prev-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .sistemas { grid-template-columns: 1fr; } .sistemas div:nth-child(odd) { border-right: 0; } .sistemas div:nth-last-child(2) { border-bottom: 1px solid var(--line); } }
+
+/* Como trabalhamos */
+.passos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 0; counter-reset: p; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); overflow: hidden; }
+.passo { padding: 22px 20px; border-right: 1px solid var(--line); position: relative; }
+.passo:last-child { border-right: 0; }
+.passo::before { counter-increment: p; content: "0" counter(p); font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); background: var(--accent); padding: 2px 8px; border-radius: 3px; }
+.passo h3 { font-size: 20px; font-weight: 600; margin: 14px 0 6px; }
+.passo p { margin: 0; color: var(--muted); font-size: 15px; }
+@media (max-width: 900px) { .passo { border-right: 0; border-bottom: 1px solid var(--line); } .passo:last-child { border-bottom: 0; } }
+
+/* Região */
+.regiao { display: flex; flex-wrap: wrap; gap: 8px; }
+.regiao span { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 15px; }
+
+/* Painel */
+.painel { background: var(--dark); color: var(--on-dark); border-radius: 10px; padding: 32px 28px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.painel h2 { font-size: clamp(26px, 3.6vw, 36px); font-weight: 700; }
+.painel p { margin: 8px 0 0; color: var(--on-dark-muted); max-width: 40rem; }
+.painel .eyebrow { color: var(--on-dark-muted); }
+.painel .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 760px) { .painel { grid-template-columns: 1fr; padding: 26px 20px; } }
+
+/* Contato */
+.contato { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; }
+.cbox { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; }
+.cbox h3 { font-size: 24px; font-weight: 600; }
+.cbox p { margin: 0; color: var(--muted); }
+.fone { font-family: var(--font-display); font-size: clamp(30px, 5vw, 40px); font-weight: 700; letter-spacing: .01em; user-select: all; }
+.dados { display: flex; flex-direction: column; gap: 12px; font-size: 15px; }
+.dados div span { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+@media (max-width: 760px) { .contato { grid-template-columns: 1fr; } }
+
+/* Rodapé */
+.rodape { background: var(--dark); color: var(--on-dark-muted); font-size: 13px; padding-block: 28px; }
+.rodape .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+.rodape a { color: var(--on-dark); }
+
+/* Botão flutuante do WhatsApp no celular */
+.flutua { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30; width: 56px; height: 56px; border-radius: 50%; padding: 0; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.flutua svg { width: 28px; height: 28px; }
+@media (min-width: 761px) { .flutua { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="wrap">
+    <a class="marca" href="#inicio" aria-label="Koneg Manutenção, início"><b>KONEG</b><span>Manutenção</span></a>
+    <nav class="menu" aria-label="Principal">
+      <a class="lk" href="#servicos">Serviços</a>
+      <a class="lk" href="#preventiva">Preventiva</a>
+      <a class="lk" href="#como">Como trabalhamos</a>
+      <a class="lk" href="#contato">Contato</a>
+      <a class="btn btn-acc" href="https://koneg-estoque.netlify.app/" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Painel
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Koneg Manutenção · Santo André/SP</span>
+        <h1>Empilhadeira parada é <em>operação parada.</em></h1>
+        <p class="lead">Manutenção preventiva e corretiva de empilhadeiras e paleteiras elétricas, peças de reposição e itens de segurança para galpões. Atendimento no local, com check list e relatório a cada visita.</p>
+        <div class="acoes">
+          <a class="btn btn-wpp" href="https://wa.me/5511962964884?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Koneg%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.1 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.4.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+            Pedir orçamento no WhatsApp
+          </a>
+          <a class="btn btn-ghost" href="#servicos">Ver serviços</a>
+        </div>
+      </div>
+      <div class="ficha" aria-label="Exemplo de check list de manutenção preventiva">
+        <div class="fh"><span>Roteiro de manutenção preventiva</span><span>OS 0001</span></div>
+        <ul>
+          <li><span>2.1 Tensão da bateria</span><span class="tag ok">OK</span></li>
+          <li><span>5.4 Desgaste das correntes</span><span class="tag ok">OK</span></li>
+          <li><span>6.1 Chassi e pintura</span><span class="tag nok">ÑOK</span></li>
+          <li><span>10.2 Disco de freio</span><span class="tag ok">OK</span></li>
+          <li><span>11.4 Buzina</span><span class="tag ok">OK</span></li>
+          <li><span>12.5 Troca de óleo hidráulico</span><span class="tag nap">ÑAP</span></li>
+        </ul>
+        <div class="ff">Exemplo ilustrativo · 49 itens verificados por visita</div>
+      </div>
+    </div>
+  </section>
+  <div class="zebra" aria-hidden="true"></div>
+
+  <section class="sec" id="servicos">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Serviços</span>
+        <h2>O que a Koneg faz</h2>
+        <p>Cuidamos do equipamento de movimentação e da segurança do galpão, para a sua equipe trabalhar sem interrupção.</p>
+      </div>
+      <div class="servicos">
+        <article class="serv dest">
+          <span class="num">01</span>
+          <h3>Manutenção preventiva</h3>
+          <p>Visitas programadas com roteiro técnico completo, antes que o defeito apareça.</p>
+          <ul><li>Check list de 49 itens</li><li>Relatório assinado por visita</li><li>Acompanhamento mensal por loja ou unidade</li></ul>
+        </article>
+        <article class="serv">
+          <span class="num">02</span>
+          <h3>Manutenção corretiva</h3>
+          <p>Diagnóstico e reparo de empilhadeiras e paleteiras elétricas no seu local.</p>
+          <ul><li>Sistema elétrico e controladoras</li><li>Freios, tração e direção</li><li>Sistema hidráulico e elevação</li></ul>
+        </article>
+        <article class="serv">
+          <span class="num">03</span>
+          <h3>Peças de reposição</h3>
+          <p>Fornecimento e troca das peças que mais param a operação.</p>
+          <ul><li>Rodas de tração, apoio e carga</li><li>Freio magnético, bomba e motor hidráulico</li><li>Controladoras, carregadores e cabos de bateria</li></ul>
+        </article>
+        <article class="serv">
+          <span class="num">04</span>
+          <h3>Segurança de galpões</h3>
+          <p>Proteção física para áreas de circulação de máquinas e pessoas.</p>
+          <ul><li>Cercamentos de proteção</li><li>Postes sinalizadores</li><li>Projeto e orçamento sob medida</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec prev" id="preventiva">
+    <div class="wrap prev-grid">
+      <div>
+        <div class="sec-head" style="margin-bottom:0">
+          <span class="eyebrow">Manutenção preventiva</span>
+          <h2>Cada visita segue o mesmo roteiro técnico</h2>
+          <p>O técnico confere cada sistema da máquina e marca o resultado item a item. Você recebe a folha preenchida e assinada, e o resumo do mês com o que precisa de reparo.</p>
+        </div>
+        <div class="numeros">
+          <div><b>49</b><span>itens verificados</span></div>
+          <div><b>15</b><span>sistemas da máquina</span></div>
+          <div><b>1</b><span>relatório por visita</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="sistemas" role="list" aria-label="Sistemas verificados">
+          <div role="listitem"><i>01</i>Operacional</div>
+          <div role="listitem"><i>02</i>Bateria</div>
+          <div role="listitem"><i>03</i>Limpeza geral</div>
+          <div role="listitem"><i>04</i>Motores elétricos</div>
+          <div role="listitem"><i>05</i>Sistema de elevação</div>
+          <div role="listitem"><i>06</i>Chassi</div>
+          <div role="listitem"><i>07</i>Transmissão</div>
+          <div role="listitem"><i>08</i>Rodas</div>
+          <div role="listitem"><i>09</i>Direção</div>
+          <div role="listitem"><i>10</i>Freio</div>
+          <div role="listitem"><i>11</i>Sistema elétrico</div>
+          <div role="listitem"><i>12</i>Sistema hidráulico</div>
+          <div role="listitem"><i>13</i>Programação</div>
+          <div role="listitem"><i>14</i>Carregador</div>
+          <div role="listitem"><i>15</i>Demonstração com carga</div>
+          <div role="listitem" aria-hidden="true"></div>
+        </div>
+        <div class="legenda">
+          <span><i style="background:#1f7a4d"></i>OK: em condições de trabalho</span>
+          <span><i style="background:#b3261e"></i>ÑOK: necessita de reparo</span>
+          <span><i style="background:#a3acb6"></i>ÑAP: não se aplica</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="como">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Como trabalhamos</span>
+        <h2>Do chamado ao relatório</h2>
+      </div>
+      <div class="passos">
+        <div class="passo"><h3>Contato</h3><p>Você chama no WhatsApp e conta o que precisa: preventiva, conserto, peça ou proteção do galpão.</p></div>
+        <div class="passo"><h3>Visita técnica</h3><p>O técnico vai até a sua unidade, avalia o equipamento e passa o orçamento.</p></div>
+        <div class="passo"><h3>Execução</h3><p>Serviço feito no local, com o check list preenchido item por item.</p></div>
+        <div class="passo"><h3>Relatório</h3><p>Folha assinada da visita e resumo mensal por unidade, com o que precisa de atenção.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0" id="regiao">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Região de atendimento</span>
+        <h2>Grande ABC e interior de São Paulo</h2>
+      </div>
+      <div class="regiao">
+        <span>Santo André</span><span>São Bernardo do Campo</span><span>São Caetano do Sul</span><span>Mauá</span><span>Diadema</span><span>Ribeirão Pires</span><span>Sorocaba</span><span>Tatuí</span><span>Piracicaba</span><span>São José dos Campos</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0" id="painel">
+    <div class="wrap">
+      <div class="painel">
+        <div>
+          <span class="eyebrow">Área restrita</span>
+          <h2>Painel de controle</h2>
+          <p>Acesso da equipe Koneg ao controle de estoque de peças e aos check lists de manutenção preventiva. Entrada com e-mail e senha cadastrados.</p>
+        </div>
+        <div class="acoes">
+          <a class="btn btn-acc" href="https://koneg-estoque.netlify.app/" rel="noopener">Entrar no painel</a>
+          <a class="btn btn-ghost" href="https://koneg-estoque.netlify.app/checklist/" rel="noopener">Abrir só o Check List</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0" id="contato">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Contato</span>
+        <h2>Fale com a Koneg</h2>
+      </div>
+      <div class="contato">
+        <div class="cbox">
+          <h3>WhatsApp e telefone</h3>
+          <div class="fone">(11) 96296-4884</div>
+          <p>Mande fotos do equipamento ou do local que respondemos com a avaliação e o orçamento.</p>
+          <div><a class="btn btn-wpp" href="https://wa.me/5511962964884?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Koneg%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Chamar no WhatsApp</a></div>
+        </div>
+        <div class="cbox dados">
+          <div><span>Endereço</span>Rua Himalaia, 333 · Parque Novo Oratório<br>Santo André/SP · CEP 09270-430</div>
+          <div><span>Razão social</span>63.691.549 Kayowan Macedo Anchieta</div>
+          <div><span>CNPJ</span>63.691.549/0001-90</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="zebra" aria-hidden="true"></div>
+<footer class="rodape">
+  <div class="wrap">
+    <span>© <span id="ano">2026</span> Koneg Manutenção · CNPJ 63.691.549/0001-90</span>
+    <span><a href="https://koneg-estoque.netlify.app/">Painel de controle</a></span>
+  </div>
+</footer>
+
+<a class="btn btn-wpp flutua" href="https://wa.me/5511962964884" target="_blank" rel="noopener" aria-label="Chamar a Koneg no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.1 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.4.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+</a>
+
+<script>document.getElementById('ano').textContent = new Date().getFullYear();</script>
+</body>
+</html>

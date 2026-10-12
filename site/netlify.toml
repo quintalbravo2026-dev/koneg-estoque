@@ -1,0 +1,11 @@
+# Site institucional da Koneg (projeto Netlify separado, pasta "site")
+[build]
+  publish = "."
+  command = "echo site"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
