@@ -336,10 +336,7 @@ const firestoreDb = {
     $('t-total').textContent = carregado ? brl.format(total) : '—';
     $('t-venda').textContent = carregado ? brl.format(total * percentual / 100) : '—';
     if (!carregado) return;
-    const n = itens.size;
-    $('lead').textContent = n === 0 ? 'Nenhum item cadastrado.'
-      : comEstoque === 0 ? `Estoque zerado: nenhum dos ${int.format(n)} itens tem quantidade.`
-      : `${int.format(comEstoque)} de ${int.format(n)} itens com estoque. Altere quantidades e preços direto na lista; tudo é salvo na hora.`;
+    if (!$('lead').dataset.erro) $('lead').hidden = true;
     $('btn-zerar').disabled = !podeEditar || comEstoque === 0;
     $('btn-add').disabled = !podeEditar;
   }
@@ -769,6 +766,7 @@ const firestoreDb = {
       snap.docs.forEach((d) => { const v = d.data(); if (v) novo.set(d.id, v); });
       itens = novo; carregado = true; render();
     }, (e) => {
+      $('lead').hidden = false; $('lead').dataset.erro = '1';
       $('lead').textContent = e && e.code === 'permission-denied'
         ? 'Este e-mail não tem permissão para ver o estoque. Peça ao responsável para liberar seu acesso.'
         : 'A lista parou de atualizar. Recarregue a página.';
