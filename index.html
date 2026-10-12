@@ -571,6 +571,36 @@ html, body { margin: 0; }
 .ord-ctl button:disabled { opacity: .3; cursor: default; }
 .ord-ctl button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 @media (min-width: 641px) { #tela-admin .menu-grid.ordenando .mitem { padding-right: 64px; } }
+
+/* Contas a receber */
+.mitem.rec svg { background: rgba(31, 122, 77, .12); }
+.mitem { position: relative; }
+.mi-badge { position: absolute; top: 10px; right: 10px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #b3261e; color: #fff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.aviso-receber { all: unset; box-sizing: border-box; cursor: pointer; max-width: 30rem; width: 100%; margin-inline: auto; display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: var(--r); background: #fdecea; color: #7a1a14; border: 1px solid #f3b8b2; font-size: 14px; line-height: 1.35; }
+.aviso-receber.hoje { background: var(--accent-soft); color: var(--fg); border-color: var(--accent); }
+.aviso-receber b { font-weight: 700; }
+.aviso-receber::before { content: "⚠"; flex: none; font-size: 20px; line-height: 1; }
+.aviso-receber:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rc-tiles .tile .big { font-size: clamp(22px, 4vw, 30px); }
+.rc-venc .big { color: var(--danger); }
+.rc-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+.rc-filtros .btn { flex: 1 1 auto; justify-content: center; }
+.rc-filtros .btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.rc-lista { display: flex; flex-direction: column; }
+.rc-item { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+.rc-item:last-child { border-bottom: 0; }
+.rc-item .emp { font-weight: 600; font-size: 15px; }
+.rc-item .val { font-family: var(--font-display); font-size: 20px; font-weight: 600; text-align: right; white-space: nowrap; }
+.rc-item .desc { font-size: 13px; color: var(--muted); }
+.rc-chip { justify-self: end; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--line); color: var(--fg); white-space: nowrap; }
+.rc-chip.venc { background: #fdecea; color: #b3261e; }
+.rc-chip.hoje { background: var(--accent); color: var(--accent-ink); }
+.rc-chip.ok { background: rgba(31,122,77,.14); color: var(--ok); }
+.rc-bts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.rc-bts .btn { font-size: 13px; padding: 6px 10px; text-decoration: none; }
+.rc-bts .btn.ok { border-color: var(--ok); color: var(--ok); }
+.rc-item.pago .emp, .rc-item.pago .val { color: var(--muted); }
+.rc-dica { margin: 0; }
 </style>
 </head>
 <body>
@@ -631,6 +661,7 @@ html, body { margin: 0; }
       <span class="eyebrow">Koneg Manutenção</span>
       <span class="userbar"><span id="m-email"></span><button class="btn" id="m-sair" type="button">Sair</button></span>
     </div>
+    <button class="aviso-receber" id="aviso-receber" type="button" hidden></button>
     <nav class="menu-grid" aria-label="Menu" id="nav-menu" data-ordem="menu">
       <button class="mitem" type="button" data-go="estoque">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
@@ -645,7 +676,8 @@ html, body { margin: 0; }
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
         <span class="mi-t">Administração</span>
-        <span class="mi-d">Orçamentos, relatórios, clientes, funcionários, nota fiscal e e-mail</span>
+        <span class="mi-badge" id="badge-admin" hidden></span>
+        <span class="mi-d">Contas a receber, orçamentos, relatórios, clientes, funcionários, nota fiscal e e-mail</span>
       </button>
     </nav>
     <div class="ord-barra" hidden><button class="btn ord-btn" type="button" aria-pressed="false">⇅ Reorganizar botões</button><span class="ed-dica ord-dica" hidden>Use as setas ↑ ↓ para mudar a ordem. Toque em "Concluir" para salvar.</span></div>
@@ -718,6 +750,12 @@ html, body { margin: 0; }
         <span class="mi-t">Relatório de serviço executado</span>
         <span class="mi-d">Registrar o que foi feito e imprimir para o cliente assinar</span>
       </button>
+      <button class="mitem rec" type="button" data-go="receber">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></svg>
+        <span class="mi-t">Contas a receber</span>
+        <span class="mi-d">Valores, empresas e datas de recebimento</span>
+        <span class="mi-badge" id="badge-receber" hidden></span>
+      </button>
       <button class="mitem cli" type="button" data-go="clientes">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V9l6-4 6 4v12"/><path d="M15 21V12h6v9"/><path d="M7 12h4M7 16h4"/></svg>
         <span class="mi-t">Clientes</span>
@@ -785,6 +823,47 @@ html, body { margin: 0; }
     <button class="btn solid-danger" id="ed-excluir-ok" type="button">Excluir</button>
     <button class="btn" id="ed-excluir-no" type="button">Cancelar</button>
   </div>
+</main>
+
+<main class="wrap" id="tela-receber" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="rc-voltar" type="button">← Voltar à Administração</button>
+    </div>
+    <span class="eyebrow">Administração</span>
+    <h1>Contas a receber</h1>
+  </header>
+  <section class="tiles rc-tiles" aria-label="Resumo">
+    <div class="tile"><span class="lbl">A receber</span><span class="big" id="rc-t-aberto">—</span><span class="sub" id="rc-s-aberto"></span></div>
+    <div class="tile rc-venc"><span class="lbl">Vencido</span><span class="big" id="rc-t-venc">—</span><span class="sub" id="rc-s-venc"></span></div>
+    <div class="tile"><span class="lbl">Recebido neste mês</span><span class="big" id="rc-t-mes">—</span><span class="sub" id="rc-s-mes"></span></div>
+  </section>
+  <button class="btn primary dc-novo" id="rc-novo" type="button" aria-expanded="false" aria-controls="rc-form">+ Nova conta a receber</button>
+  <section class="card cl-form" id="rc-form" hidden>
+    <div class="ed-campos">
+      <label class="fld full" for="rc-cliente"><span>Empresa</span><input id="rc-cliente" type="text" list="rc-clientes-lista" autocomplete="off" placeholder="Digite ou escolha um cliente cadastrado"></label>
+      <datalist id="rc-clientes-lista"></datalist>
+      <label class="fld full" for="rc-desc"><span>Descrição</span><input id="rc-desc" type="text" autocomplete="off" placeholder="Ex.: Orçamento 022/2026 – manutenção preventiva"></label>
+      <label class="fld" for="rc-valor"><span>Valor (R$)</span><input id="rc-valor" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
+      <label class="fld" for="rc-venc"><span>Data de recebimento</span><input id="rc-venc" type="date"></label>
+      <label class="fld full" for="rc-obs"><span>Observação</span><input id="rc-obs" type="text" autocomplete="off" placeholder="Ex.: PIX, boleto, 2ª parcela…"></label>
+    </div>
+    <div class="cl-acts">
+      <button class="btn primary" id="rc-salvar" type="button">Salvar</button>
+      <button class="btn" id="rc-cancelar" type="button">Cancelar</button>
+      <button class="btn danger" id="rc-excluir" type="button">Excluir</button>
+    </div>
+    <p class="adderr" id="rc-err" hidden></p>
+  </section>
+  <div class="rc-filtros" role="group" aria-label="Mostrar">
+    <button class="btn" type="button" data-f="pend" aria-pressed="true">A receber</button>
+    <button class="btn" type="button" data-f="rec" aria-pressed="false">Recebidos</button>
+    <button class="btn" type="button" data-f="todos" aria-pressed="false">Todos</button>
+  </div>
+  <section class="card">
+    <div id="rc-lista" class="rc-lista"></div>
+  </section>
+  <p class="ed-dica rc-dica">Lembretes: o painel avisa no menu quando há valores para hoje ou vencidos. Para ser avisado mesmo com o painel fechado, use "Lembrete na agenda" em cada conta: o celular notifica no dia.</p>
 </main>
 
 <main class="wrap" id="tela-clientes" hidden>
@@ -2279,7 +2358,7 @@ const firestoreDb = {
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
-    if (['#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa', '#clientes'].includes(h) || h.startsWith('#doc-')) return P.admin;
+    if (['#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa', '#clientes', '#receber'].includes(h) || h.startsWith('#doc-')) return P.admin;
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
@@ -2971,6 +3050,144 @@ const firestoreDb = {
     try { const s2 = await getDocs(colFotos(id)); return s2.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0)); } catch (_) { return []; }
   }
 
+
+  // ===== Contas a receber =====
+  let contas = [], pararContas = null, rcFiltro = 'pend', rcEdit = null;
+  const diasAte = (iso) => { const h = hojeISO(); return Math.round((new Date(iso + 'T12:00:00') - new Date(h + 'T12:00:00')) / 86400000); };
+  function ouvirContas() {
+    if (pararContas) return;
+    pararContas = fsSnap(fsCol(fs, 'receber'), (snap) => {
+      contas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      desenharContas(); avisoRecebimentos();
+    }, () => { $('rc-lista').replaceChildren(Object.assign(document.createElement('p'), { className: 'rl-msg', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+  }
+  function pararContasReceber() { if (pararContas) { pararContas(); pararContas = null; } contas = []; avisoRecebimentos(); }
+  function avisoRecebimentos() {
+    const pend = contas.filter((c) => !c.recebido && c.vencimento);
+    const hoje = pend.filter((c) => diasAte(c.vencimento) === 0), venc = pend.filter((c) => diasAte(c.vencimento) < 0);
+    const soma = (l) => brl.format(l.reduce((t, c) => t + (Number(c.valor) || 0), 0));
+    const n = hoje.length + venc.length;
+    ['badge-admin', 'badge-receber'].forEach((k) => { const b = $(k); if (b) { b.hidden = !n || !P.admin; b.textContent = String(n); b.setAttribute('aria-label', `${n} recebimentos para hoje ou vencidos`); } });
+    const av = $('aviso-receber'); if (!av) return;
+    if (!n || !P.admin) { av.hidden = true; return; }
+    av.replaceChildren();
+    const t = document.createElement('span');
+    const partes = [];
+    if (hoje.length) partes.push(`<b>Hoje:</b> ${hoje.length} ${hoje.length === 1 ? 'recebimento' : 'recebimentos'} (${soma(hoje)}) – ${[...new Set(hoje.map((c) => c.cliente))].slice(0, 3).join(', ')}`);
+    if (venc.length) partes.push(`<b>Vencidos:</b> ${venc.length} (${soma(venc)})`);
+    // nomes de clientes vêm do banco: escapa tudo que não for o <b> que montamos
+    t.innerHTML = partes.map((p) => p.split(/(<\/?b>)/).map((x) => /^<\/?b>$/.test(x) ? x : x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('')).join('<br>');
+    av.appendChild(t);
+    av.className = 'aviso-receber' + (venc.length ? '' : ' hoje');
+    av.hidden = false;
+  }
+  $('aviso-receber').addEventListener('click', () => { location.hash = 'receber'; });
+  function desenharContas() {
+    const box = $('rc-lista'); if (!box) return;
+    const mes = hojeISO().slice(0, 7);
+    const pend = contas.filter((c) => !c.recebido), venc = pend.filter((c) => c.vencimento && diasAte(c.vencimento) < 0);
+    const recMes = contas.filter((c) => c.recebido && String(c.recebidoEm || '').slice(0, 7) === mes);
+    const soma = (l) => l.reduce((t, c) => t + (Number(c.valor) || 0), 0);
+    $('rc-t-aberto').textContent = brl.format(soma(pend)); $('rc-s-aberto').textContent = `${pend.length} ${pend.length === 1 ? 'conta' : 'contas'}`;
+    $('rc-t-venc').textContent = brl.format(soma(venc)); $('rc-s-venc').textContent = venc.length ? `${venc.length} ${venc.length === 1 ? 'conta atrasada' : 'contas atrasadas'}` : 'Nada atrasado';
+    $('rc-t-mes').textContent = brl.format(soma(recMes)); $('rc-s-mes').textContent = `${recMes.length} ${recMes.length === 1 ? 'recebimento' : 'recebimentos'}`;
+    let lista = rcFiltro === 'pend' ? pend : rcFiltro === 'rec' ? contas.filter((c) => c.recebido) : contas.slice();
+    lista.sort((a, b) => rcFiltro === 'rec' ? String(b.recebidoEm || '').localeCompare(String(a.recebidoEm || '')) : String(a.vencimento || '9').localeCompare(String(b.vencimento || '9')));
+    box.replaceChildren();
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('p'), { className: 'rl-msg', textContent: rcFiltro === 'pend' ? 'Nada a receber. Use "+ Nova conta a receber".' : 'Nenhuma conta aqui.' })); return; }
+    lista.forEach((c) => {
+      const it = document.createElement('div'); it.className = 'rc-item' + (c.recebido ? ' pago' : '');
+      const emp = document.createElement('span'); emp.className = 'emp'; emp.textContent = c.cliente || 'Sem empresa';
+      const val = document.createElement('span'); val.className = 'val'; val.textContent = brl.format(Number(c.valor) || 0);
+      const desc = document.createElement('span'); desc.className = 'desc'; desc.textContent = [c.descricao, c.obs].filter(Boolean).join(' · ') || ' ';
+      const chip = document.createElement('span'); chip.className = 'rc-chip';
+      if (c.recebido) { chip.classList.add('ok'); chip.textContent = `Recebido em ${dataBR(String(c.recebidoEm || '').slice(0, 10))}`; }
+      else if (c.vencimento) {
+        const d = diasAte(c.vencimento);
+        if (d < 0) { chip.classList.add('venc'); chip.textContent = `Vencido há ${-d} ${d === -1 ? 'dia' : 'dias'} · ${dataBR(c.vencimento)}`; }
+        else if (d === 0) { chip.classList.add('hoje'); chip.textContent = 'Recebe hoje'; }
+        else chip.textContent = `${dataBR(c.vencimento)} · em ${d} ${d === 1 ? 'dia' : 'dias'}`;
+      } else chip.textContent = 'Sem data';
+      const bts = document.createElement('div'); bts.className = 'rc-bts';
+      const bOk = document.createElement('button'); bOk.type = 'button'; bOk.className = 'btn' + (c.recebido ? '' : ' ok'); bOk.textContent = c.recebido ? 'Desfazer recebimento' : '✓ Marcar como recebido';
+      bOk.addEventListener('click', async () => { try { await updateDoc(fsDoc(fs, 'receber', c.id), c.recebido ? { recebido: false, recebidoEm: '' } : { recebido: true, recebidoEm: hojeISO() }); } catch (_) {} });
+      const bEd = document.createElement('button'); bEd.type = 'button'; bEd.className = 'btn'; bEd.textContent = 'Editar';
+      bEd.addEventListener('click', () => abrirConta(c));
+      bts.append(bOk, bEd);
+      if (!c.recebido && c.vencimento) {
+        const g = document.createElement('a'); g.className = 'btn'; g.target = '_blank'; g.rel = 'noopener'; g.textContent = '🔔 Lembrete na agenda';
+        g.href = linkAgenda(c);
+        const ics = document.createElement('button'); ics.type = 'button'; ics.className = 'btn'; ics.textContent = 'Outro calendário (.ics)';
+        ics.addEventListener('click', () => baixarIcs(c));
+        bts.append(g, ics);
+      }
+      it.append(emp, val, desc, chip, bts); box.appendChild(it);
+    });
+  }
+  const tituloLembrete = (c) => `Receber ${brl.format(Number(c.valor) || 0)} – ${c.cliente || ''}`;
+  function linkAgenda(c) {
+    const d = c.vencimento.replace(/-/g, '');
+    const det = [c.descricao, c.obs, 'Lembrete criado no painel Koneg.'].filter(Boolean).join('\n');
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent(tituloLembrete(c))
+      + '&dates=' + d + 'T090000/' + d + 'T091500'
+      + '&ctz=America/Sao_Paulo'
+      + '&details=' + encodeURIComponent(det);
+  }
+  function baixarIcs(c) {
+    const d = c.vencimento.replace(/-/g, '');
+    const esc = (t) => String(t || '').replace(/\\/g, '\\\\').replace(/[,;]/g, (m) => '\\' + m).replace(/\n/g, '\\n');
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Koneg//Painel//PT', 'BEGIN:VEVENT',
+      `UID:${c.id}@koneg.com.br`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`,
+      `DTSTART;TZID=America/Sao_Paulo:${d}T090000`, `DTEND;TZID=America/Sao_Paulo:${d}T091500`,
+      `SUMMARY:${esc(tituloLembrete(c))}`, `DESCRIPTION:${esc([c.descricao, c.obs].filter(Boolean).join(' - '))}`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${esc(tituloLembrete(c))}`, 'TRIGGER:PT0M', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    a.download = `receber-${(c.cliente || 'conta').replace(/[^\w]+/g, '-').toLowerCase()}-${c.vencimento}.ics`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  function abrirConta(c) {
+    rcEdit = c ? { ...c } : null;
+    ouvirClientes();
+    const dl = $('rc-clientes-lista'); dl.replaceChildren(); clientes.forEach((x) => dl.appendChild(new Option(x.nome)));
+    $('rc-cliente').value = c ? c.cliente || '' : ''; $('rc-desc').value = c ? c.descricao || '' : '';
+    $('rc-valor').value = c && c.valor ? fmtPreco(c.valor) : ''; $('rc-venc').value = c ? c.vencimento || '' : hojeISO();
+    $('rc-obs').value = c ? c.obs || '' : '';
+    $('rc-excluir').hidden = !c; $('rc-excluir').classList.remove('conf'); $('rc-excluir').textContent = 'Excluir';
+    $('rc-err').hidden = true; $('rc-form').hidden = false; $('rc-novo').setAttribute('aria-expanded', 'true');
+    $('rc-form').scrollIntoView({ block: 'start', behavior: 'smooth' }); $('rc-cliente').focus({ preventScroll: true });
+  }
+  function fecharConta() { rcEdit = null; $('rc-form').hidden = true; $('rc-novo').setAttribute('aria-expanded', 'false'); }
+  $('rc-novo').addEventListener('click', () => { if (!$('rc-form').hidden && !rcEdit) fecharConta(); else abrirConta(null); });
+  $('rc-cancelar').addEventListener('click', fecharConta);
+  $('rc-voltar').addEventListener('click', () => { fecharConta(); location.hash = 'admin'; });
+  document.querySelectorAll('.rc-filtros .btn').forEach((b) => b.addEventListener('click', () => {
+    rcFiltro = b.dataset.f; document.querySelectorAll('.rc-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); desenharContas();
+  }));
+  $('rc-salvar').addEventListener('click', async () => {
+    const erro = (t) => { $('rc-err').textContent = t; $('rc-err').hidden = false; };
+    const cliente = $('rc-cliente').value.trim().replace(/\s+/g, ' ');
+    const valor = lerPreco($('rc-valor').value);
+    const venc = $('rc-venc').value;
+    if (!cliente) { erro('Escreva o nome da empresa.'); $('rc-cliente').focus(); return; }
+    if (valor == null || valor <= 0) { erro('Informe o valor, por exemplo 1.250,00.'); $('rc-valor').focus(); return; }
+    if (!venc) { erro('Escolha a data de recebimento.'); $('rc-venc').focus(); return; }
+    const dados = { cliente, descricao: $('rc-desc').value.trim(), valor, vencimento: venc, obs: $('rc-obs').value.trim(), atualizadoEm: new Date().toISOString() };
+    $('rc-salvar').disabled = true;
+    try {
+      if (rcEdit) await updateDoc(fsDoc(fs, 'receber', rcEdit.id), dados);
+      else await setDoc(fsDoc(fsCol(fs, 'receber')), { ...dados, recebido: false, recebidoEm: '', criadoEm: new Date().toISOString() });
+      fecharConta();
+    } catch (e) { erro(e && e.code === 'permission-denied' ? 'Sem permissão (confira as regras do Firestore).' : 'Não foi possível salvar. Verifique a internet.'); }
+    finally { $('rc-salvar').disabled = false; }
+  });
+  $('rc-excluir').addEventListener('click', async () => {
+    const b = $('rc-excluir'); if (!rcEdit) return;
+    if (!b.classList.contains('conf')) { b.classList.add('conf'); b.textContent = 'Confirmar exclusão?'; setTimeout(() => { b.classList.remove('conf'); b.textContent = 'Excluir'; }, 4000); return; }
+    try { await deleteDoc(fsDoc(fs, 'receber', rcEdit.id)); fecharConta(); } catch (_) { $('rc-err').textContent = 'Não foi possível excluir.'; $('rc-err').hidden = false; }
+  });
+
   // ----- Documento impresso (modelo da proposta da Koneg) -----
   function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
   function linhasP(texto, bullet) {
@@ -3141,6 +3358,8 @@ const firestoreDb = {
       $('tela-doc').hidden = !md;
       $('tela-empresa').hidden = hh !== '#empresa';
       $('tela-clientes').hidden = hh !== '#clientes';
+      $('tela-receber').hidden = hh !== '#receber';
+      if (hh === '#receber') { ouvirContas(); desenharContas(); }
       if (hh === '#clientes') ouvirClientes();
       if (hh === '#orcamentos') abrirListaDocs('orc');
       if (hh === '#relatorios') abrirListaDocs('rel');
@@ -3164,7 +3383,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h.startsWith('#doc-');
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h.startsWith('#doc-');
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', () => { sairReordenar(); rota(); });
@@ -3181,8 +3400,8 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
-    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
     const email = String(u.email || '').toLowerCase();
@@ -3218,6 +3437,7 @@ const firestoreDb = {
     $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || ''; $('a-email').textContent = u.email || '';
     logado = true; rota();
     carregarOrdem();
+    if (P.admin) ouvirContas();
     if (podeCk()) iniciarLojas();
     if (podeEstoque()) {
       parar.push(db.collection('itens').onSnapshot((snap) => {
