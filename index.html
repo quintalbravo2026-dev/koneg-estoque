@@ -467,6 +467,10 @@ html, body { margin: 0; }
 
 .mitem.nf { text-decoration: none; }
 .mitem.nf svg { background: rgba(27, 42, 107, .1); }
+
+.ad-tit { font-size: clamp(30px, 5vw, 40px); margin-top: 6px; }
+#tela-admin .menu-grid { flex: none; align-content: start; }
+#tela-admin .menu-wrap { gap: 16px; }
 </style>
 </head>
 <body>
@@ -538,16 +542,11 @@ html, body { margin: 0; }
         <span class="mi-t">Check List</span>
         <span class="mi-d">Conferências e verificações</span>
       </button>
-      <button class="mitem adm" type="button" data-go="funcionarios" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.4c2.5-.3 4.3 1.2 5 3.8"/></svg>
-        <span class="mi-t">Funcionários</span>
-        <span class="mi-d">Criar acessos e escolher o que cada um pode fazer</span>
+      <button class="mitem adm" type="button" data-go="admin" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
+        <span class="mi-t">Administração</span>
+        <span class="mi-d">Funcionários e nota fiscal</span>
       </button>
-      <a class="mitem nf adm-link" href="https://www.nfse.gov.br/EmissorNacional" target="_blank" rel="noopener" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14.5h7M9 18h4"/></svg>
-        <span class="mi-t">Nota Fiscal</span>
-        <span class="mi-d">Emissor Nacional de NFS-e (MEI) · abre em outra aba</span>
-      </a>
     </nav>
   </div>
 </main>
@@ -598,10 +597,34 @@ html, body { margin: 0; }
   <div class="ck-cidades" id="ck-lojas"></div>
 </main>
 
+<main class="menu" id="tela-admin" hidden>
+  <div class="menu-wrap">
+    <div class="topline">
+      <button class="btn voltar" id="ad-menu" type="button">← Voltar ao menu</button>
+    </div>
+    <div>
+      <span class="eyebrow">Somente administrador</span>
+      <h1 class="ad-tit">Administração</h1>
+    </div>
+    <nav class="menu-grid" aria-label="Administração">
+      <button class="mitem adm" type="button" data-go="funcionarios">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.4c2.5-.3 4.3 1.2 5 3.8"/></svg>
+        <span class="mi-t">Funcionários</span>
+        <span class="mi-d">Criar acessos e escolher o que cada um pode fazer</span>
+      </button>
+      <a class="mitem nf adm-link" href="https://www.nfse.gov.br/EmissorNacional" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14.5h7M9 18h4"/></svg>
+        <span class="mi-t">Nota Fiscal</span>
+        <span class="mi-d">Emissor Nacional de NFS-e (MEI) · abre em outra aba</span>
+      </a>
+    </nav>
+  </div>
+</main>
+
 <main class="wrap" id="tela-func" hidden>
   <header>
     <div class="topline">
-      <button class="btn voltar" id="fu-menu" type="button">← Voltar ao menu</button>
+      <button class="btn voltar" id="fu-menu" type="button">← Voltar à Administração</button>
     </div>
     <span class="eyebrow">Administração</span>
     <h1>Funcionários</h1>
@@ -2052,7 +2075,7 @@ const firestoreDb = {
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
-    if (h === '#funcionarios') return P.admin;
+    if (h === '#funcionarios' || h === '#admin') return P.admin;
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
@@ -2060,8 +2083,7 @@ const firestoreDb = {
     const a = P.admin;
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
-    document.querySelector('.mitem[data-go="funcionarios"]').hidden = !a;
-    document.querySelector('.mitem.nf').hidden = !a;
+    document.querySelector('#tela-menu .mitem[data-go="admin"]').hidden = !a;
     document.querySelector('.mitem[data-go="estoque"] .mi-d').textContent = a ? 'Ver e editar itens, quantidades e preços' : podeQtd() ? 'Ver o estoque e alterar quantidades' : 'Consultar o estoque';
     ['btn-add', 'btn-editar', 'btn-zerar'].forEach((k) => { $(k).hidden = !a; });
     $('pct').disabled = !a;
@@ -2091,7 +2113,8 @@ const firestoreDb = {
   }
   $('fu-novo').addEventListener('click', () => abrirFormFunc($('fu-form').hidden));
   $('fu-cancelar').addEventListener('click', () => abrirFormFunc(false));
-  $('fu-menu').addEventListener('click', () => { abrirFormFunc(false); location.hash = 'menu'; });
+  $('fu-menu').addEventListener('click', () => { abrirFormFunc(false); location.hash = 'admin'; });
+  $('ad-menu').addEventListener('click', () => { location.hash = 'menu'; });
   const erroFunc = (t) => { $('fu-err').textContent = t; $('fu-err').hidden = false; };
   let authCadastro = null;
   $('fu-criar').addEventListener('click', async () => {
@@ -2177,6 +2200,7 @@ const firestoreDb = {
     if (!logado) return;
     if (!permitido(location.hash)) history.replaceState(null, '', APP_CK ? '#checklist' : '#menu');
     $('tela-func').hidden = location.hash !== '#funcionarios';
+    $('tela-admin').hidden = location.hash !== '#admin';
     if (location.hash === '#funcionarios') ouvirFuncionarios();
     if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
@@ -2194,7 +2218,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios';
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin';
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -2211,7 +2235,7 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
     fecharHistorico(); pararLojasBanco(); pararFuncionarios(); sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
