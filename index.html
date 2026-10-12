@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Estoque 2026 · Koneg</title>
+<link rel="icon" href="/icones/favicon-64.png">
+<script>
+  // Quando aberto em /checklist/, a página vira o app do Check List (instalável)
+  (function () {
+    if (!/^\/checklist\/?$/.test(location.pathname)) return;
+    var h = document.head;
+    function add(t, a) { var e = document.createElement(t); for (var k in a) e.setAttribute(k, a[k]); h.appendChild(e); }
+    add('link', { rel: 'manifest', href: '/checklist.webmanifest' });
+    add('link', { rel: 'apple-touch-icon', href: '/icones/ck-180.png' });
+    add('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
+    add('meta', { name: 'mobile-web-app-capable', content: 'yes' });
+    add('meta', { name: 'apple-mobile-web-app-title', content: 'Check List' });
+    add('meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'default' });
+    add('meta', { name: 'theme-color', content: '#16191d' });
+    document.title = 'Check List · Koneg';
+    document.documentElement.classList.add('app-ck');
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -337,6 +355,11 @@ html, body { margin: 0; }
 .ck-aviso { margin: 0; padding: 10px 12px; border-radius: var(--r); background: var(--danger-soft); color: var(--danger); font-size: 14px; }
 .loja.excluir { border-color: var(--danger); color: var(--danger); }
 .loja.excluir::after { content: "✕" !important; transform: none !important; border: 0 !important; width: auto !important; height: auto !important; font-size: 14px; color: var(--danger); }
+
+/* App do Check List */
+.app-ck #ck-menu { display: none; }
+.app-ck .ck-topo-app { display: flex; }
+.ck-topo-app { display: none; justify-content: space-between; align-items: center; gap: 8px; width: 100%; }
 </style>
 </head>
 <body>
@@ -379,6 +402,7 @@ html, body { margin: 0; }
   <header>
     <div class="topline">
       <button class="btn voltar" id="ck-menu" type="button">← Voltar ao menu</button>
+      <span class="ck-topo-app"><span class="eyebrow">Koneg Manutenção</span><span class="userbar"><span id="a-email"></span><button class="btn" id="a-sair" type="button">Sair</button></span></span>
     </div>
     <h1>Check List</h1>
   </header>
@@ -1536,10 +1560,19 @@ const firestoreDb = {
   });
   window.addEventListener('afterprint', () => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } });
 
+  // Modo app do Check List (endereço /checklist/)
+  const APP_CK = document.documentElement.classList.contains('app-ck');
+  if (APP_CK) {
+    const t = document.querySelector('#tela-login h1'); if (t) t.textContent = 'Check List';
+    $('a-sair').addEventListener('click', () => signOut(auth));
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/checklist/sw.js', { scope: '/checklist/' }).catch(() => {});
+  }
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
     if (!logado) return;
+    if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist') history.replaceState(null, '', '#checklist');
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
     const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
@@ -1575,7 +1608,7 @@ const firestoreDb = {
       return;
     }
     $('tela-login').hidden = true; logado = true; rota();
-    $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || '';
+    $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || ''; $('a-email').textContent = u.email || '';
     db = firestoreDb; podeEditar = true; $('pct').disabled = false;
     iniciarLojas();
     parar.push(db.collection('itens').onSnapshot((snap) => {

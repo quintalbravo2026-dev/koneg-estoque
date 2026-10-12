@@ -6,3 +6,19 @@
   for = "/*"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+
+# App do Check List: o mesmo index.html, aberto direto no Check List
+[[redirects]]
+  from = "/checklist"
+  to = "/checklist/"
+  status = 301
+
+[[redirects]]
+  from = "/checklist/"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/checklist.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
