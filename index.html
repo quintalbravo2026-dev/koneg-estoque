@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Estoque 2026 · Koneg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ficha de almoxarifado — cabeçalho, dois totais, barra de ações e a lista de peças editável */
+:root {
+  --bg: #f3f4f5;
+  --panel: #ffffff;
+  --fg: #16191d;
+  --muted: #5d6670;
+  --line: #d9dde1;
+  --accent: #f2b705;      /* amarelo de sinalização industrial */
+  --accent-ink: #1a1500;
+  --accent-soft: #fbedb8;
+  --danger: #b3261e;
+  --danger-soft: #f9e1df;
+  --ok: #1f7a4d;
+  --zero: #9aa2ab;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121417; --panel: #1b1e22; --fg: #eceef0; --muted: #9aa3ad; --line: #2c3137;
+    --accent: #f2b705; --accent-ink: #1a1500; --accent-soft: #3a3110;
+    --danger: #ff8a80; --danger-soft: #3b1f1d; --ok: #6fd3a0; --zero: #6b737c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121417; --panel: #1b1e22; --fg: #eceef0; --muted: #9aa3ad; --line: #2c3137;
+  --accent: #f2b705; --accent-ink: #1a1500; --accent-soft: #3a3110;
+  --danger: #ff8a80; --danger-soft: #3b1f1d; --ok: #6fd3a0; --zero: #6b737c;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 68rem; margin-inline: auto; padding: 28px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+@media (min-width: 720px) { .wrap { padding-inline: 32px; } }
+
+header { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.eyebrow::before { content: ""; width: 18px; height: 8px; background: repeating-linear-gradient(135deg, var(--accent) 0 4px, var(--fg) 4px 8px); border-radius: 1px; }
+h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 5vw, 40px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 12px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tile .lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+.tile .big { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 4.4vw, 36px); line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tile.venda { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+.tile .sub { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pct-input { font-family: var(--font-mono); font-size: 15px; width: 4.6rem; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); text-align: right; }
+.pct-input:focus-visible, .qty input:focus-visible, .search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); display: flex; flex-direction: column; min-width: 0; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.search { flex: 1 1 14rem; min-width: 0; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); }
+.btn { font: inherit; font-size: 14px; font-weight: 500; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn.danger:hover:not(:disabled) { background: var(--danger-soft); }
+.btn.solid-danger { background: var(--danger); color: var(--panel); border-color: var(--danger); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.05); border-color: var(--accent); }
+.addform { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; padding: 14px 16px; background: var(--accent-soft); border-bottom: 1px solid var(--line); }
+.fld { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; min-width: 0; }
+.fld.grow { flex: 1 1 14rem; }
+.fld input { font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; font-weight: 400; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); width: 100%; box-sizing: border-box; }
+.fld:not(.grow) input { width: 8rem; font-family: var(--font-mono); text-align: right; }
+.fld input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.addacts { display: flex; gap: 8px; }
+.adderr { flex-basis: 100%; margin: 0; color: var(--danger); font-size: 13px; }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; background: var(--danger-soft); border-bottom: 1px solid var(--line); font-size: 14px; }
+.confirm p { margin: 0; flex: 1 1 16rem; }
+
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th { text-align: right; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 0; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; }
+th button { all: unset; display: block; box-sizing: border-box; width: 100%; padding: 10px 12px; cursor: pointer; text-align: inherit; }
+th button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+th[aria-sort="ascending"] button::after { content: " ↑"; }
+th[aria-sort="descending"] button::after { content: " ↓"; }
+th:first-child, td:first-child { text-align: left; }
+td { text-align: right; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td:first-child { white-space: normal; font-weight: 500; min-width: 10rem; }
+td.money { font-family: var(--font-mono); font-size: 14px; }
+tr.zero td:first-child, tr.zero td.money { color: var(--zero); }
+tr:last-child td { border-bottom: 0; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--bg); }
+.qty button { font: inherit; width: 30px; height: 30px; border: 0; background: transparent; color: var(--fg); cursor: pointer; font-size: 16px; line-height: 1; }
+.qty button:hover:not(:disabled) { background: var(--accent-soft); }
+.qty button:disabled { opacity: .35; cursor: not-allowed; }
+.qty button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.qty input { width: 3.2rem; height: 30px; border: 0; border-inline: 1px solid var(--line); background: var(--panel); color: var(--fg); font-family: var(--font-mono); font-size: 14px; text-align: center; -moz-appearance: textfield; }
+.qty input::-webkit-outer-spin-button, .qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+tr.zero .qty input { color: var(--zero); }
+.preco { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); overflow: hidden; }
+.preco span { padding: 0 6px 0 8px; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+.preco input { width: 6.5rem; height: 30px; border: 0; background: transparent; color: var(--fg); font-family: var(--font-mono); font-size: 14px; text-align: right; padding-right: 8px; }
+.preco:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.preco input:focus { outline: none; }
+.preco input:disabled { color: var(--muted); }
+.preco.salvo { border-color: var(--ok); }
+.vbar { position: relative; display: inline-block; min-width: 7.5rem; }
+.vbar i { position: absolute; right: 0; top: 50%; height: 6px; margin-top: 9px; border-radius: 3px; background: var(--accent); }
+.empty { padding: 32px 16px; text-align: center; color: var(--muted); }
+.foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.status[data-kind="erro"] { color: var(--danger); }
+.status[data-kind="ok"] { color: var(--ok); }
+@media (max-width: 560px) { .hide-n { display: none; } td:first-child { min-width: 7rem; } }
+@media (prefers-reduced-motion: no-preference) { tr.flash td { animation: flash 900ms ease-out; } @keyframes flash { from { background: var(--accent-soft); } to { background: transparent; } } }
+
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+@media (max-width: 560px) { td { padding: 6px 8px; } .preco input { width: 5.4rem; } .qty input { width: 2.6rem; } .vbar { min-width: 6.5rem; } td:first-child { min-width: 6.5rem; font-size: 14px; } }
+.login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; box-sizing: border-box; }
+.login-card { width: 100%; max-width: 24rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: inset 0 4px 0 var(--accent); }
+.login-card h1 { font-size: 30px; }
+.login-card p { margin: 0; color: var(--muted); font-size: 14px; }
+.login-card .fld input { width: 100%; }
+.login-card .btn { justify-content: center; }
+.linkbtn { all: unset; cursor: pointer; color: var(--muted); font-size: 13px; text-decoration: underline; align-self: flex-start; }
+.linkbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.login-msg { font-size: 13px; color: var(--danger); min-height: 1em; }
+.login-msg[data-kind="ok"] { color: var(--ok); }
+.userbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.topline { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.empty .btn { margin-top: 12px; }
+.rodape { margin: 0; text-align: center; font-size: 12px; color: var(--muted); font-family: var(--font-mono); letter-spacing: .03em; }
+</style>
+</head>
+<body>
+<main class="login" id="tela-login" hidden>
+  <div class="login-card">
+    <span class="eyebrow">Koneg Manutenção</span>
+    <h1>Estoque 2026</h1>
+    <p>Entre com o e-mail e a senha cadastrados para ver e editar o estoque.</p>
+    <label class="fld grow" for="l-email"><span>E-mail</span><input id="l-email" type="email" autocomplete="username" inputmode="email"></label>
+    <label class="fld grow" for="l-senha"><span>Senha</span><input id="l-senha" type="password" autocomplete="current-password"></label>
+    <button class="btn primary" id="l-entrar" type="button">Entrar</button>
+    <button class="linkbtn" id="l-esqueci" type="button">Esqueci a senha</button>
+    <span class="login-msg" id="l-msg" aria-live="polite"></span>
+  </div>
+</main>
+
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <div class="topline">
+      <span class="eyebrow">Koneg Manutenção · peças de empilhadeira</span>
+      <span class="userbar"><span id="u-email"></span><button class="btn" id="btn-sair" type="button">Sair</button></span>
+    </div>
+    <h1>Estoque 2026</h1>
+    <p class="lead" id="lead">Carregando o estoque…</p>
+  </header>
+
+  <section class="tiles" aria-label="Totais">
+    <div class="tile">
+      <span class="lbl">Valor total em estoque</span>
+      <span class="big" id="t-total">—</span>
+      <span class="sub">Quantidade × preço de cada item</span>
+    </div>
+    <div class="tile venda">
+      <span class="lbl">Valor de venda</span>
+      <span class="big" id="t-venda">—</span>
+      <label class="sub" for="pct"><input class="pct-input" id="pct" type="number" min="0" max="300" step="1" inputmode="numeric" value="40"> % do valor em estoque</label>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Itens">
+    <div class="bar">
+      <button class="btn primary" id="btn-add" type="button" aria-expanded="false" aria-controls="addform">+ Adicionar item</button>
+      <input class="search" id="busca" type="search" placeholder="Buscar item…" aria-label="Buscar item">
+      <button class="btn" id="btn-zerados" type="button" aria-pressed="false">Remover itens zerados</button>
+      <button class="btn danger" id="btn-zerar" type="button">Zerar quantidades</button>
+    </div>
+    <div class="addform" id="addform" hidden>
+      <label class="fld grow" for="add-nome"><span>Nome do item</span><input id="add-nome" type="text" autocomplete="off" placeholder="Ex.: Pastilha de freio"></label>
+      <label class="fld" for="add-qtd"><span>Quantidade</span><input id="add-qtd" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+      <label class="fld" for="add-preco"><span>Preço (R$)</span><input id="add-preco" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
+      <div class="addacts">
+        <button class="btn primary" id="add-ok" type="button">Adicionar</button>
+        <button class="btn" id="add-no" type="button">Cancelar</button>
+      </div>
+      <p class="adderr" id="add-err" hidden></p>
+    </div>
+    <div class="confirm" id="confirm" hidden>
+      <p id="confirm-txt">Zerar as quantidades de todos os itens?</p>
+      <button class="btn solid-danger" id="confirm-ok" type="button">Zerar tudo</button>
+      <button class="btn" id="confirm-no" type="button">Cancelar</button>
+    </div>
+    <div class="tbl">
+      <table id="tabela">
+        <thead><tr>
+          <th aria-sort="ascending"><button type="button" data-k="nome">Item</button></th>
+          <th aria-sort="none"><button type="button" data-k="quantidade">Qtd.</button></th>
+          <th aria-sort="none"><button type="button" data-k="preco">Preço</button></th>
+          <th aria-sort="none"><button type="button" data-k="valor">Valor de venda</button></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="vazio" hidden>Nenhum item cadastrado ainda. Use "+ Adicionar item" para começar.</div>
+    </div>
+    <div class="foot">
+      <span id="contagem">—</span>
+      <span class="status" id="status" aria-live="polite"></span>
+    </div>
+  </section>
+  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026</p>
+</div>
+
+<script>
+  // Configuração do projeto Firebase "Koneg"
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAppfUxPBfC3kc9voUwEy76E8oGepJ90I8",
+    authDomain: "koneg-fd968.firebaseapp.com",
+    projectId: "koneg-fd968",
+    storageBucket: "koneg-fd968.firebasestorage.app",
+    messagingSenderId: "147624057540",
+    appId: "1:147624057540:web:b32c122964db797c6ec791"
+  };
+</script>
+</body>
+</html>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const fbApp = initializeApp(window.FIREBASE_CONFIG);
+const auth = getAuth(fbApp);
+const fs = getFirestore(fbApp);
+setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+// Mesma interface usada pela página: doc(path).update/set/onSnapshot e collection(path).onSnapshot
+const firestoreDb = {
+  doc(path) {
+    const ref = fsDoc(fs, ...path.split('/'));
+    return {
+      update: (d) => updateDoc(ref, d),
+      set: (d) => setDoc(ref, d),
+      onSnapshot: (next, err) => fsSnap(ref, (s) => next({ exists: s.exists(), data: () => s.data() }), err)
+    };
+  },
+  collection(path) {
+    const ref = fsCol(fs, path);
+    return {
+      onSnapshot: (next, err) => fsSnap(ref, (s) => next({ docs: s.docs.map((d) => ({ id: d.id, data: () => d.data() })) }), err)
+    };
+  }
+};
+
+(function () {
+  const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const int = new Intl.NumberFormat('pt-BR');
+  const $ = (id) => document.getElementById(id);
+
+  let db = null;
+  let podeEditar = true;
+  let itens = new Map();       // id -> {nome, quantidade, preco}
+  let carregado = false;
+  let percentual = 40;
+  const estado = { busca: '', esconderZerados: false, k: 'nome', dir: 1 };
+  const rows = new Map();      // id -> tr
+  const filas = new Map();     // id -> promise chain (uma gravação por vez)
+  const timers = new Map();
+
+  function status(txt, kind) { const s = $('status'); s.textContent = txt || ''; s.dataset.kind = kind || ''; }
+
+  function valor(it) { return (Number(it.quantidade) || 0) * (Number(it.preco) || 0); }
+
+  function totais() {
+    let total = 0, comEstoque = 0;
+    itens.forEach((it) => { total += valor(it); if ((Number(it.quantidade) || 0) > 0) comEstoque++; });
+    $('t-total').textContent = carregado ? brl.format(total) : '—';
+    $('t-venda').textContent = carregado ? brl.format(total * percentual / 100) : '—';
+    if (!carregado) return;
+    const n = itens.size;
+    $('lead').textContent = n === 0 ? 'Nenhum item cadastrado.'
+      : comEstoque === 0 ? `Estoque zerado: nenhum dos ${int.format(n)} itens tem quantidade.`
+      : `${int.format(comEstoque)} de ${int.format(n)} itens com estoque. Altere quantidades e preços direto na lista; tudo é salvo na hora.`;
+    $('btn-zerar').disabled = !podeEditar || comEstoque === 0;
+    $('btn-add').disabled = !podeEditar;
+  }
+
+  function linha(id) {
+    let tr = rows.get(id);
+    if (tr) return tr;
+    tr = document.createElement('tr');
+    tr.dataset.id = id;
+    const tdNome = document.createElement('td');
+    const tdQ = document.createElement('td');
+    const box = document.createElement('div'); box.className = 'qty';
+    const menos = document.createElement('button'); menos.type = 'button'; menos.textContent = '−'; menos.className = 'menos';
+    const inp = document.createElement('input'); inp.type = 'number'; inp.min = '0'; inp.step = '1'; inp.inputMode = 'numeric'; inp.id = 'q-' + id;
+    const mais = document.createElement('button'); mais.type = 'button'; mais.textContent = '+'; mais.className = 'mais';
+    box.append(menos, inp, mais); tdQ.appendChild(box);
+    const tdP = document.createElement('td'); tdP.className = 'money';
+    const pw = document.createElement('label'); pw.className = 'preco';
+    const ps = document.createElement('span'); ps.textContent = 'R$';
+    const pin = document.createElement('input'); pin.type = 'text'; pin.inputMode = 'decimal'; pin.id = 'p-' + id; pin.autocomplete = 'off';
+    pw.append(ps, pin); tdP.appendChild(pw);
+    pin.addEventListener('focus', () => pin.select());
+    pin.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') pin.blur();
+      if (ev.key === 'Escape') { pin.value = fmtPreco(itens.get(id)?.preco); pin.blur(); }
+    });
+    pin.addEventListener('change', () => {
+      const v = lerPreco(pin.value);
+      if (v == null) { pin.value = fmtPreco(itens.get(id)?.preco); status('Preço inválido. Use números, por exemplo 1.250,00.', 'erro'); return; }
+      mudarPreco(id, v, pw);
+    });
+    const tdV = document.createElement('td'); tdV.className = 'money';
+    const vb = document.createElement('span'); vb.className = 'vbar';
+    const vt = document.createElement('span'); const vi = document.createElement('i');
+    vb.append(vt, vi); tdV.appendChild(vb);
+    tr.append(tdNome, tdQ, tdP, tdV);
+
+    menos.addEventListener('click', () => mudar(id, Math.max(0, (Number(itens.get(id)?.quantidade) || 0) - 1)));
+    mais.addEventListener('click', () => mudar(id, (Number(itens.get(id)?.quantidade) || 0) + 1));
+    inp.addEventListener('input', () => {
+      clearTimeout(timers.get(id));
+      timers.set(id, setTimeout(() => {
+        const v = Number(inp.value);
+        if (inp.value !== '' && Number.isInteger(v) && v >= 0) mudar(id, v);
+      }, 600));
+    });
+    inp.addEventListener('blur', () => { inp.value = Number(itens.get(id)?.quantidade) || 0; });
+    rows.set(id, tr);
+    return tr;
+  }
+
+  function render() {
+    const tb = $('tbody');
+    if (!carregado) return;
+    const maxV = Math.max(1, ...[...itens.values()].map(valor));
+    let lista = [...itens.entries()].map(([id, it]) => ({ id, ...it, quantidade: Number(it.quantidade) || 0, preco: Number(it.preco) || 0, valor: valor(it) }));
+    const q = estado.busca.trim().toLowerCase();
+    if (q) lista = lista.filter((r) => String(r.nome).toLowerCase().includes(q));
+    if (estado.esconderZerados) lista = lista.filter((r) => r.quantidade > 0);
+    lista.sort((a, b) => estado.k === 'nome'
+      ? estado.dir * String(a.nome).localeCompare(String(b.nome), 'pt-BR', { sensitivity: 'base' })
+      : estado.dir * (a[estado.k] - b[estado.k]) || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+
+    const visiveis = new Set(lista.map((r) => r.id));
+    rows.forEach((tr, id) => { if (!visiveis.has(id) || !itens.has(id)) tr.remove(); });
+    lista.forEach((r) => {
+      const tr = linha(r.id);
+      tr.classList.toggle('zero', r.quantidade === 0);
+      const [tdNome, tdQ, tdP, tdV] = tr.children;
+      tdNome.textContent = r.nome;
+      const inp = tdQ.querySelector('input');
+      if (document.activeElement !== inp) inp.value = r.quantidade;
+      inp.disabled = !podeEditar;
+      tdQ.querySelector('.menos').disabled = !podeEditar || r.quantidade === 0;
+      tdQ.querySelector('.mais').disabled = !podeEditar;
+      inp.setAttribute('aria-label', 'Quantidade de ' + r.nome);
+      const pin = tdP.querySelector('input');
+      if (document.activeElement !== pin) pin.value = fmtPreco(r.preco);
+      pin.disabled = !podeEditar;
+      pin.setAttribute('aria-label', 'Preço de ' + r.nome);
+      const vb = tdV.querySelector('.vbar');
+      vb.firstChild.textContent = brl.format(r.valor);
+      vb.lastChild.style.width = r.valor > 0 ? Math.max(4, r.valor / maxV * 100) + '%' : '0';
+      tb.appendChild(tr);
+    });
+    $('vazio').hidden = itens.size > 0;
+    $('contagem').textContent = `${int.format(lista.length)} de ${int.format(itens.size)} itens na lista`;
+    document.querySelectorAll('#tabela th').forEach((th) => {
+      const k = th.querySelector('button').dataset.k;
+      th.setAttribute('aria-sort', k === estado.k ? (estado.dir > 0 ? 'ascending' : 'descending') : 'none');
+    });
+    totais();
+  }
+
+  function gravar(id, fn) {
+    const anterior = filas.get(id) || Promise.resolve();
+    const p = anterior.catch(() => {}).then(fn);
+    filas.set(id, p);
+    return p;
+  }
+
+  const num2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function fmtPreco(v) { return num2.format(Number(v) || 0); }
+  function lerPreco(txt) {
+    let t = String(txt).replace(/R\$|\s/g, '');
+    if (!t) return null;
+    if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.');
+    else if (/^\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, '');
+    if (!/^\d+(\.\d+)?$/.test(t)) return null;
+    const v = Math.round(Number(t) * 100) / 100;
+    return Number.isFinite(v) && v >= 0 ? v : null;
+  }
+
+  async function mudarPreco(id, v, el) {
+    const it = itens.get(id);
+    if (!db || !it || !podeEditar) return;
+    if (Number(it.preco) === v) { render(); return; }
+    itens.set(id, { ...it, preco: v });
+    render();
+    status('Salvando…');
+    try {
+      await gravar(id, () => db.doc('itens/' + id).update({ preco: v }));
+      status(`Preço de ${it.nome} atualizado para ${brl.format(v)}`, 'ok');
+      if (el) { el.classList.add('salvo'); setTimeout(() => el.classList.remove('salvo'), 1200); }
+    } catch (e) { erro(e); }
+  }
+
+  async function mudar(id, q) {
+    const it = itens.get(id);
+    if (!db || !it || !podeEditar || Number(it.quantidade) === q) return;
+    itens.set(id, { ...it, quantidade: q });
+    render();
+    status('Salvando…');
+    try {
+      await gravar(id, () => db.doc('itens/' + id).update({ quantidade: q }));
+      status('Salvo', 'ok');
+    } catch (e) { erro(e); }
+  }
+
+  function erro(e) {
+    if (e && (e.code === 'invalid_argument' || e.code === 'permission-denied')) {
+      podeEditar = false; render();
+      status('Seu e-mail não tem permissão para alterar o estoque.', 'erro');
+    } else status('Não foi possível salvar. Verifique a conexão e tente de novo.', 'erro');
+  }
+
+  // Busca, filtros e ordenação
+  $('busca').addEventListener('input', (ev) => { estado.busca = ev.target.value; render(); });
+  $('btn-zerados').addEventListener('click', () => {
+    estado.esconderZerados = !estado.esconderZerados;
+    $('btn-zerados').setAttribute('aria-pressed', String(estado.esconderZerados));
+    $('btn-zerados').textContent = estado.esconderZerados ? 'Mostrar itens zerados' : 'Remover itens zerados';
+    render();
+  });
+  document.querySelectorAll('#tabela th button').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.k;
+    if (estado.k === k) estado.dir = -estado.dir; else { estado.k = k; estado.dir = k === 'nome' ? 1 : -1; }
+    render();
+  }));
+
+  // Adicionar item
+  function slug(t) {
+    return String(t).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'item';
+  }
+  function abrirAdd(abrir) {
+    $('addform').hidden = !abrir;
+    $('btn-add').setAttribute('aria-expanded', String(abrir));
+    $('add-err').hidden = true;
+    if (abrir) { $('add-nome').value = ''; $('add-qtd').value = '0'; $('add-preco').value = ''; $('add-nome').focus(); }
+  }
+  function errAdd(t) { $('add-err').textContent = t; $('add-err').hidden = false; }
+  $('btn-add').addEventListener('click', () => abrirAdd($('addform').hidden));
+  $('add-no').addEventListener('click', () => { abrirAdd(false); $('btn-add').focus(); });
+  ['add-nome', 'add-qtd', 'add-preco'].forEach((k) => $(k).addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') $('add-ok').click();
+    if (ev.key === 'Escape') $('add-no').click();
+  }));
+  $('add-ok').addEventListener('click', async () => {
+    if (!db || !podeEditar) { errAdd('Você não tem permissão para adicionar itens.'); return; }
+    const nome = $('add-nome').value.trim().replace(/\s+/g, ' ');
+    const q = Number($('add-qtd').value || 0);
+    const preco = $('add-preco').value.trim() === '' ? null : lerPreco($('add-preco').value);
+    if (!nome) { errAdd('Escreva o nome do item.'); $('add-nome').focus(); return; }
+    const igual = [...itens.values()].find((it) => String(it.nome).toLocaleLowerCase('pt-BR') === nome.toLocaleLowerCase('pt-BR'));
+    if (igual) { errAdd(`Já existe um item chamado "${igual.nome}". Altere a quantidade ou o preço dele na lista.`); return; }
+    if (!Number.isInteger(q) || q < 0) { errAdd('A quantidade precisa ser um número inteiro, 0 ou maior.'); $('add-qtd').focus(); return; }
+    if (preco == null) { errAdd('Informe o preço, por exemplo 1.250,00.'); $('add-preco').focus(); return; }
+    let id = slug(nome), n = 2;
+    while (itens.has(id)) id = slug(nome) + '-' + n++;
+    const novo = { nome: nome.charAt(0).toLocaleUpperCase('pt-BR') + nome.slice(1), quantidade: q, preco };
+    $('add-ok').disabled = true;
+    status('Salvando…');
+    try {
+      await db.doc('itens/' + id).set(novo);
+      itens.set(id, novo);
+      // volta para a ordem alfabética e garante que o item novo apareça
+      estado.k = 'nome'; estado.dir = 1; estado.busca = ''; $('busca').value = '';
+      if (estado.esconderZerados && q === 0) $('btn-zerados').click(); else render();
+      const tr = rows.get(id);
+      if (tr) { tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      status(`${novo.nome} adicionado`, 'ok');
+      abrirAdd(true);
+    } catch (e) {
+      if (e && e.code === 'quota_exceeded') errAdd('Não foi possível adicionar agora. Tente de novo em instantes.');
+      else erro(e);
+    } finally { $('add-ok').disabled = false; }
+  });
+
+  // Zerar todas as quantidades, com confirmação na própria página
+  $('btn-zerar').addEventListener('click', () => {
+    const n = [...itens.values()].filter((it) => (Number(it.quantidade) || 0) > 0).length;
+    $('confirm-txt').textContent = `Zerar as quantidades de ${int.format(n)} ${n === 1 ? 'item' : 'itens'}? Os preços continuam iguais.`;
+    $('confirm').hidden = false;
+    $('confirm-ok').focus();
+  });
+  $('confirm-no').addEventListener('click', () => { $('confirm').hidden = true; $('btn-zerar').focus(); });
+  $('confirm-ok').addEventListener('click', async () => {
+    $('confirm').hidden = true;
+    if (!db) return;
+    const alvo = [...itens.entries()].filter(([, it]) => (Number(it.quantidade) || 0) > 0).map(([id]) => id);
+    alvo.forEach((id) => itens.set(id, { ...itens.get(id), quantidade: 0 }));
+    render();
+    status('Zerando…');
+    try {
+      for (const id of alvo) await gravar(id, () => db.doc('itens/' + id).update({ quantidade: 0 }));
+      status(`${int.format(alvo.length)} ${alvo.length === 1 ? 'item zerado' : 'itens zerados'}`, 'ok');
+    } catch (e) { erro(e); }
+  });
+
+  // Percentual do valor de venda
+  let pctTimer = null, pctFila = Promise.resolve();
+  $('pct').addEventListener('input', () => {
+    const v = Number($('pct').value);
+    if ($('pct').value === '' || !Number.isFinite(v) || v < 0 || v > 300) return;
+    percentual = v; totais();
+    clearTimeout(pctTimer);
+    pctTimer = setTimeout(() => {
+      if (!db || !podeEditar) return;
+      status('Salvando…');
+      pctFila = pctFila.catch(() => {}).then(() => db.doc('config/geral').set({ percentual: v }))
+        .then(() => status('Salvo', 'ok'), erro);
+    }, 600);
+  });
+  $('pct').addEventListener('blur', () => { $('pct').value = percentual; });
+
+  // Login
+  let parar = [];
+  const msg = (t, k) => { $('l-msg').textContent = t || ''; $('l-msg').dataset.kind = k || ''; };
+  async function entrar() {
+    const email = $('l-email').value.trim(), senha = $('l-senha').value;
+    if (!email || !senha) { msg('Preencha e-mail e senha.'); return; }
+    $('l-entrar').disabled = true; msg('');
+    try { await signInWithEmailAndPassword(auth, email, senha); }
+    catch (e) {
+      const c = e && e.code;
+      msg(c === 'auth/too-many-requests' ? 'Muitas tentativas. Espere alguns minutos e tente de novo.'
+        : c === 'auth/network-request-failed' ? 'Sem conexão com a internet.'
+        : 'E-mail ou senha incorretos.');
+    } finally { $('l-entrar').disabled = false; }
+  }
+  $('l-entrar').addEventListener('click', entrar);
+  ['l-email', 'l-senha'].forEach((k) => $(k).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') entrar(); }));
+  $('l-esqueci').addEventListener('click', async () => {
+    const email = $('l-email').value.trim();
+    if (!email) { msg('Escreva seu e-mail acima e clique de novo em "Esqueci a senha".'); $('l-email').focus(); return; }
+    try { await sendPasswordResetEmail(auth, email); msg('Enviamos um link para criar uma nova senha. Confira seu e-mail.', 'ok'); }
+    catch (_) { msg('Não foi possível enviar o e-mail. Confira o endereço.'); }
+  });
+  $('btn-sair').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, (u) => {
+    parar.forEach((f) => f()); parar = [];
+    if (!u) {
+      db = null; itens = new Map(); carregado = false;
+      rows.forEach((tr) => tr.remove()); rows.clear();
+      $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
+      return;
+    }
+    $('tela-login').hidden = true; $('app').hidden = false;
+    $('u-email').textContent = u.email || '';
+    db = firestoreDb; podeEditar = true; $('pct').disabled = false;
+    parar.push(db.collection('itens').onSnapshot((snap) => {
+      const novo = new Map();
+      snap.docs.forEach((d) => { const v = d.data(); if (v) novo.set(d.id, v); });
+      itens = novo; carregado = true; render();
+    }, (e) => {
+      $('lead').textContent = e && e.code === 'permission-denied'
+        ? 'Este e-mail não tem permissão para ver o estoque. Peça ao responsável para liberar seu acesso.'
+        : 'A lista parou de atualizar. Recarregue a página.';
+    }));
+    parar.push(db.doc('config/geral').onSnapshot((d) => {
+      const v = d.exists ? Number(d.data().percentual) : 40;
+      if (Number.isFinite(v)) { percentual = v; if (document.activeElement !== $('pct')) $('pct').value = v; totais(); }
+    }, () => {}));
+  });
+})();
+</script>
+</body>
+</html>
