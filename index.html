@@ -404,30 +404,22 @@ html, body { margin: 0; }
 .loja.editar::after { content: "✎" !important; font-size: 16px; color: var(--fg); }
 .ck-edit-tit { flex-basis: 100%; margin: 0; font-weight: 600; font-size: 15px; }
 
-/* Editar / excluir item do estoque */
-.it-ed { margin-left: 8px; font: inherit; font-size: 14px; line-height: 1; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); cursor: pointer; vertical-align: middle; flex: none; }
-.it-ed:hover:not(:disabled) { border-color: var(--accent); color: var(--fg); }
-.it-ed[aria-expanded="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.it-ed:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.it-ed:disabled { display: none; }
-#tabela tr.it-painel td { background: var(--accent-soft); padding: 12px; text-align: left; white-space: normal; }
-.it-form { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: flex-end; }
-.it-tit { flex-basis: 100%; margin: 0; font-weight: 600; font-size: 15px; }
-.it-form .fld.grow { flex: 1 1 14rem; }
-.it-form .fld:not(.grow) input { width: 8rem; }
-.it-acts, .it-conf { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.it-acts #it-excluir { margin-left: auto; }
-.it-conf { background: var(--danger-soft); padding: 10px; border-radius: 6px; font-size: 14px; }
-.it-conf span { flex: 1 1 12rem; }
+/* Editar / excluir itens do estoque (modo edição) */
+#btn-editar[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+#tabela .nm-in, #tabela .it-del { display: none; }
+#tabela.editando .nm { display: none; }
+#tabela.editando .nm-in { display: inline-block; vertical-align: middle; width: calc(100% - 92px); min-width: 8rem; box-sizing: border-box; font: inherit; font-weight: 500; padding: 7px 9px; border: 1px solid var(--accent); border-radius: 4px; background: var(--panel); color: var(--fg); }
+#tabela.editando .nm-in:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+#tabela.editando .it-del { display: inline-flex; vertical-align: middle; align-items: center; justify-content: center; margin-left: 8px; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 10px; border: 1px solid var(--danger); border-radius: 4px; background: var(--panel); color: var(--danger); cursor: pointer; }
+#tabela.editando .it-del.conf { background: var(--danger); color: #fff; }
+#tabela.editando .it-del:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#tabela.editando tbody tr { background: var(--accent-soft); }
 @media (max-width: 640px) {
-  #tabela td:nth-child(1) { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
-  .it-ed { width: 34px; height: 34px; }
-  #tabela tr.it-painel { display: block; padding: 0; }
-  #tabela tr.it-painel td { display: block; }
-  .it-form .fld:not(.grow) { flex: 1 1 calc(50% - 6px); }
-  .it-form .fld:not(.grow) input { width: 100%; }
-  .it-acts .btn, .it-conf .btn { flex: 1 1 auto; justify-content: center; min-height: 42px; }
-  .it-acts #it-excluir { margin-left: 0; flex-basis: 100%; }
+  #btn-add { flex: 1 1 auto !important; }
+  #btn-editar { order: 1; flex: 0 0 auto !important; padding-inline: 14px; }
+  #tabela.editando td:nth-child(1) { display: flex; align-items: center; gap: 8px; }
+  #tabela.editando .nm-in { width: auto; flex: 1 1 auto; min-width: 0; }
+  #tabela.editando .it-del { margin-left: 0; flex: none; min-height: 38px; }
 }
 </style>
 </head>
@@ -632,6 +624,7 @@ html, body { margin: 0; }
   <section class="card" aria-label="Itens">
     <div class="bar">
       <button class="btn primary" id="btn-add" type="button" aria-expanded="false" aria-controls="addform">+ Adicionar item</button>
+      <button class="btn" id="btn-editar" type="button" aria-pressed="false" aria-controls="tabela">✎ Editar</button>
       <input class="search" id="busca" type="search" placeholder="Buscar item…" aria-label="Buscar item">
       <button class="btn" id="btn-zerados" type="button" aria-pressed="false">Remover itens zerados</button>
       <button class="btn wpp" id="btn-resumo" type="button" aria-haspopup="dialog">Resumo para WhatsApp</button>
@@ -772,9 +765,12 @@ const firestoreDb = {
     tr.dataset.id = id;
     const tdNome = document.createElement('td');
     const nm = document.createElement('span'); nm.className = 'nm';
-    const ed = document.createElement('button'); ed.type = 'button'; ed.className = 'it-ed'; ed.textContent = '✎';
-    ed.addEventListener('click', () => abrirEdicaoItem(id));
-    tdNome.append(nm, ed);
+    const nmIn = document.createElement('input'); nmIn.type = 'text'; nmIn.className = 'nm-in'; nmIn.id = 'n-' + id; nmIn.autocomplete = 'off';
+    const del = document.createElement('button'); del.type = 'button'; del.className = 'it-del'; del.textContent = 'Excluir';
+    nmIn.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') nmIn.blur(); if (ev.key === 'Escape') { nmIn.value = itens.get(id)?.nome || ''; nmIn.blur(); } });
+    nmIn.addEventListener('change', () => renomearItem(id, nmIn));
+    del.addEventListener('click', () => excluirItem(id, del));
+    tdNome.append(nm, nmIn, del);
     const tdQ = document.createElement('td');
     const box = document.createElement('div'); box.className = 'qty';
     const menos = document.createElement('button'); menos.type = 'button'; menos.textContent = '−'; menos.className = 'menos';
@@ -835,7 +831,10 @@ const firestoreDb = {
       tr.classList.toggle('zero', r.quantidade === 0);
       const [tdNome, tdQ, tdP, tdV] = tr.children;
       tdNome.querySelector('.nm').textContent = r.nome;
-      const edb = tdNome.querySelector('.it-ed'); edb.setAttribute('aria-label', 'Editar ou excluir ' + r.nome); edb.disabled = !podeEditar; edb.setAttribute('aria-expanded', String(itemEdit === r.id));
+      const nmIn = tdNome.querySelector('.nm-in');
+      if (document.activeElement !== nmIn) nmIn.value = r.nome;
+      nmIn.setAttribute('aria-label', 'Nome do item ' + r.nome);
+      tdNome.querySelector('.it-del').setAttribute('aria-label', 'Excluir ' + r.nome);
       const inp = tdQ.querySelector('input');
       if (document.activeElement !== inp) inp.value = r.quantidade;
       inp.disabled = !podeEditar;
@@ -850,9 +849,7 @@ const firestoreDb = {
       vb.firstChild.textContent = brl.format(r.valor);
       vb.lastChild.style.width = r.valor > 0 ? Math.max(4, r.valor / maxV * 100) + '%' : '0';
       tb.appendChild(tr);
-      if (itemEdit === r.id) tb.appendChild(painelItem);
     });
-    if (itemEdit && (!visiveis.has(itemEdit) || !itens.has(itemEdit))) fecharEdicaoItem(false);
     $('vazio').hidden = itens.size > 0;
     $('contagem').textContent = `${int.format(lista.length)} de ${int.format(itens.size)} itens na lista`;
     document.querySelectorAll('#tabela th').forEach((th) => {
@@ -907,81 +904,45 @@ const firestoreDb = {
     } catch (e) { erro(e); }
   }
 
-  // Editar ou excluir um item do estoque
-  let itemEdit = null;
-  const painelItem = document.createElement('tr'); painelItem.className = 'it-painel';
-  painelItem.innerHTML = `<td colspan="4"><div class="it-form">
-      <p class="it-tit" id="it-tit">Editar item</p>
-      <label class="fld grow" for="it-nome"><span>Nome do item</span><input id="it-nome" type="text" autocomplete="off"></label>
-      <label class="fld" for="it-qtd"><span>Quantidade</span><input id="it-qtd" type="number" min="0" step="1" inputmode="numeric"></label>
-      <label class="fld" for="it-preco"><span>Preço (R$)</span><input id="it-preco" type="text" inputmode="decimal" autocomplete="off"></label>
-      <div class="it-acts">
-        <button class="btn primary" id="it-salvar" type="button">Salvar</button>
-        <button class="btn" id="it-cancelar" type="button">Cancelar</button>
-        <button class="btn danger" id="it-excluir" type="button">Excluir item</button>
-      </div>
-      <div class="it-conf" id="it-conf" hidden>
-        <span id="it-conf-txt">Excluir este item do estoque?</span>
-        <button class="btn solid-danger" id="it-conf-ok" type="button">Sim, excluir</button>
-        <button class="btn" id="it-conf-no" type="button">Não</button>
-      </div>
-      <p class="adderr" id="it-err" hidden></p>
-    </div></td>`;
-  const $p = (id) => painelItem.querySelector('#' + id);
-  function abrirEdicaoItem(id) {
-    const it = itens.get(id); if (!it || !podeEditar) return;
-    if (itemEdit === id) { fecharEdicaoItem(true); return; }
-    itemEdit = id;
-    $p('it-tit').textContent = 'Editar ' + it.nome;
-    $p('it-nome').value = it.nome; $p('it-qtd').value = Number(it.quantidade) || 0; $p('it-preco').value = fmtPreco(it.preco);
-    $p('it-err').hidden = true; $p('it-conf').hidden = true;
-    render();
-    painelItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    $p('it-nome').focus({ preventScroll: true });
+  // Modo de edição: nome editável e botão de excluir em todos os itens
+  let modoEdicao = false;
+  function alternarEdicao(ligar) {
+    modoEdicao = ligar && podeEditar;
+    $('tabela').classList.toggle('editando', modoEdicao);
+    $('btn-editar').setAttribute('aria-pressed', String(modoEdicao));
+    $('btn-editar').textContent = modoEdicao ? '✓ Concluir' : '✎ Editar';
+    if (modoEdicao) abrirAdd(false);
+    document.querySelectorAll('.it-del.conf').forEach((b) => { b.classList.remove('conf'); b.textContent = 'Excluir'; });
   }
-  function fecharEdicaoItem(focar) {
-    const id = itemEdit; itemEdit = null; painelItem.remove();
-    if (focar && id && rows.get(id)) { const b = rows.get(id).querySelector('.it-ed'); if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); } }
-  }
-  const erroItem = (t) => { $p('it-err').textContent = t; $p('it-err').hidden = false; };
-  $p('it-cancelar').addEventListener('click', () => fecharEdicaoItem(true));
-  ['it-nome', 'it-qtd', 'it-preco'].forEach((k) => $p(k).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') $p('it-salvar').click(); if (ev.key === 'Escape') fecharEdicaoItem(true); }));
-  $p('it-salvar').addEventListener('click', async () => {
-    const id = itemEdit; const it = itens.get(id); if (!id || !it || !db) return;
-    const nome = $p('it-nome').value.trim().replace(/\s+/g, ' ');
-    const q = Number($p('it-qtd').value || 0);
-    const preco = lerPreco($p('it-preco').value);
-    if (!nome) { erroItem('Escreva o nome do item.'); $p('it-nome').focus(); return; }
+  $('btn-editar').addEventListener('click', () => alternarEdicao(!modoEdicao));
+  async function renomearItem(id, inp) {
+    const it = itens.get(id); if (!it || !db) return;
+    const nome = inp.value.trim().replace(/\s+/g, ' ');
+    if (!nome) { inp.value = it.nome; status('O nome não pode ficar vazio.', 'erro'); return; }
+    if (nome === it.nome) return;
     const outro = [...itens.entries()].find(([k, v]) => k !== id && String(v.nome).toLocaleLowerCase('pt-BR') === nome.toLocaleLowerCase('pt-BR'));
-    if (outro) { erroItem(`Já existe outro item chamado "${outro[1].nome}".`); return; }
-    if (!Number.isInteger(q) || q < 0) { erroItem('A quantidade precisa ser um número inteiro, 0 ou maior.'); $p('it-qtd').focus(); return; }
-    if (preco == null) { erroItem('Informe o preço, por exemplo 1.250,00.'); $p('it-preco').focus(); return; }
-    const novo = { nome: nome.charAt(0).toLocaleUpperCase('pt-BR') + nome.slice(1), quantidade: q, preco };
-    $p('it-salvar').disabled = true; status('Salvando…');
-    try {
-      await gravar(id, () => db.doc('itens/' + id).update(novo));
-      itens.set(id, { ...it, ...novo });
-      fecharEdicaoItem(true); render();
-      status(`${novo.nome} atualizado`, 'ok');
-    } catch (e) { erro(e); erroItem('Não foi possível salvar. Verifique a internet.'); }
-    finally { $p('it-salvar').disabled = false; }
-  });
-  $p('it-excluir').addEventListener('click', () => {
-    const it = itens.get(itemEdit); if (!it) return;
-    $p('it-conf-txt').textContent = `Excluir "${it.nome}" do estoque? Não dá para desfazer.`;
-    $p('it-conf').hidden = false; $p('it-conf-ok').focus();
-  });
-  $p('it-conf-no').addEventListener('click', () => { $p('it-conf').hidden = true; });
-  $p('it-conf-ok').addEventListener('click', async () => {
-    const id = itemEdit; const it = itens.get(id); if (!id || !it) return;
-    $p('it-conf-ok').disabled = true; status('Excluindo…');
+    if (outro) { inp.value = it.nome; status(`Já existe outro item chamado "${outro[1].nome}".`, 'erro'); return; }
+    const novo = nome.charAt(0).toLocaleUpperCase('pt-BR') + nome.slice(1);
+    itens.set(id, { ...it, nome: novo }); inp.value = novo; render();
+    status('Salvando…');
+    try { await gravar(id, () => db.doc('itens/' + id).update({ nome: novo })); status(`Nome alterado para ${novo}`, 'ok'); }
+    catch (e) { erro(e); }
+  }
+  async function excluirItem(id, btn) {
+    const it = itens.get(id); if (!it || !db) return;
+    if (!btn.classList.contains('conf')) {
+      document.querySelectorAll('.it-del.conf').forEach((b) => { b.classList.remove('conf'); b.textContent = 'Excluir'; });
+      btn.classList.add('conf'); btn.textContent = 'Confirmar?';
+      setTimeout(() => { if (btn.classList.contains('conf')) { btn.classList.remove('conf'); btn.textContent = 'Excluir'; } }, 4000);
+      return;
+    }
+    btn.disabled = true; status('Excluindo…');
     try {
       await gravar(id, () => deleteDoc(fsDoc(fs, 'itens', id)));
-      fecharEdicaoItem(false); itens.delete(id); render();
-      status(`${it.nome} excluído`, 'ok');
-    } catch (e) { erro(e); erroItem('Não foi possível excluir. Verifique a internet.'); }
-    finally { $p('it-conf-ok').disabled = false; }
-  });
+      itens.delete(id); render(); status(`${it.nome} excluído`, 'ok');
+    } catch (e) { erro(e); }
+    finally { btn.disabled = false; btn.classList.remove('conf'); btn.textContent = 'Excluir'; }
+  }
 
   function erro(e) {
     if (e && (e.code === 'invalid_argument' || e.code === 'permission-denied')) {
@@ -1012,7 +973,7 @@ const firestoreDb = {
     $('addform').hidden = !abrir;
     $('btn-add').setAttribute('aria-expanded', String(abrir));
     $('add-err').hidden = true;
-    if (abrir) { $('add-nome').value = ''; $('add-qtd').value = '0'; $('add-preco').value = ''; $('add-nome').focus(); }
+    if (abrir) { if (modoEdicao) alternarEdicao(false); $('add-nome').value = ''; $('add-qtd').value = '0'; $('add-preco').value = ''; $('add-nome').focus(); }
   }
   function errAdd(t) { $('add-err').textContent = t; $('add-err').hidden = false; }
   $('btn-add').addEventListener('click', () => abrirAdd($('addform').hidden));
@@ -1972,7 +1933,7 @@ const firestoreDb = {
     const go = b.dataset.go;
     if (location.hash !== '#' + go) location.hash = go; else rota();
   }));
-  $('btn-menu').addEventListener('click', () => { abrirAdd(false); location.hash = 'menu'; });
+  $('btn-menu').addEventListener('click', () => { alternarEdicao(false); abrirAdd(false); location.hash = 'menu'; });
   $('ck-menu').addEventListener('click', () => { sairExcluir(); sairEditar(); abrirAddLoja(false); location.hash = 'menu'; });
   $('m-sair').addEventListener('click', () => signOut(auth));
 
