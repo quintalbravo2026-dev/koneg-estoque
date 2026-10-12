@@ -256,6 +256,79 @@ html, body { margin: 0; }
   .preco input { width: 5.6rem; }
   .qty button { width: 34px; }
 }
+/* ===== Check list de empilhadeira ===== */
+.lj-novo { justify-content: center; padding: 14px; font-size: 15px; }
+.lj-tit { padding: 12px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-bottom: 1px solid var(--line); }
+.lj-hist { display: flex; flex-direction: column; }
+.lj-item { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.lj-item:last-child { border-bottom: 0; }
+.lj-item:hover { background: var(--bg); }
+.lj-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.lj-item b { font-weight: 600; }
+.lj-item .sub { grid-column: 1; font-size: 13px; color: var(--muted); }
+.lj-item .tag { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--line); color: var(--fg); white-space: nowrap; }
+.lj-item .tag.nok { background: var(--danger-soft); color: var(--danger); }
+.lj-item .tag.ok { background: rgba(31,122,77,.14); color: var(--ok); }
+.lj-vazio { padding: 22px 16px; text-align: center; color: var(--muted); font-size: 14px; }
+
+.fm-status { font-size: 13px; color: var(--muted); }
+.fm-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
+.fm-info .fld input { width: 100%; text-align: left; font-family: var(--font-body); }
+.fm-full { grid-column: 1 / -1; }
+.fm-acoes-topo { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.fm-prog { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+.fm-itens { display: flex; flex-direction: column; gap: 12px; }
+.fm-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.fm-sec h2 { margin: 0; padding: 10px 14px; font-size: 14px; font-weight: 600; background: var(--bg); border-bottom: 1px solid var(--line); }
+.fm-sec h3 { margin: 0; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--line); background: var(--bg); }
+.fm-row { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--line); }
+.fm-row:last-child { border-bottom: 0; }
+.fm-row .lbl { font-size: 14px; min-width: 0; }
+.fm-bts { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.fm-bts button { font: inherit; font-size: 13px; font-weight: 600; min-width: 46px; height: 38px; padding: 0 8px; border: 0; border-left: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+.fm-bts button:first-child { border-left: 0; }
+.fm-bts button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.fm-bts button[aria-pressed="true"][data-v="OK"] { background: #1f7a4d; color: #fff; }
+.fm-bts button[aria-pressed="true"][data-v="NOK"] { background: #b3261e; color: #fff; }
+.fm-bts button[aria-pressed="true"][data-v="NAP"] { background: #5d6670; color: #fff; }
+.fm-bloco { padding: 14px; }
+.fm-bloco textarea { font: inherit; font-size: 15px; width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); resize: vertical; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.fm-bloco textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fm-ass-topo { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.fm-ass-lbl { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.fm-ass-bts { display: flex; gap: 8px; }
+.fm-ass { width: 100%; max-width: 100%; aspect-ratio: 3 / 1; background: #fff; border: 1px dashed var(--muted); border-radius: 6px; touch-action: none; display: block; }
+.fm-dica { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+.fm-rodape { display: flex; gap: 8px; flex-wrap: wrap; }
+.fm-rodape #fm-imprimir { flex: 1 1 14rem; justify-content: center; min-height: 46px; font-size: 15px; }
+.fm-rodape #fm-excluir { justify-content: center; min-height: 46px; }
+@media (max-width: 640px) {
+  .fm-info { grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+  .fm-row { grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; }
+  .fm-bts { width: 100%; }
+  .fm-bts button { flex: 1; height: 42px; font-size: 14px; }
+  .fm-acoes-topo .btn { flex: 1 1 100%; justify-content: center; min-height: 42px; }
+  .fm-rodape .btn { flex: 1 1 100%; }
+}
+
+/* ===== Folha impressa (igual à planilha) ===== */
+@media screen { #impressao { display: none; } }
+@media print {
+  @page { size: A4 portrait; margin: 8mm; }
+  html, body { background: #fff !important; }
+  body > *:not(#impressao) { display: none !important; }
+  #impressao { display: block !important; color: #000; font-family: Calibri, Carlito, "Liberation Sans", Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+#impressao table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.6pt solid #000; }
+#impressao td, #impressao td:first-child { border: .7pt solid #000; height: 4.85mm; padding: 0 1.2mm; font-size: 8.5pt; font-weight: 400; line-height: 1; white-space: nowrap; overflow: hidden; vertical-align: middle; color: #000; text-align: left; min-width: 0; }
+#impressao td.t { height: 8mm; font-size: 15pt; font-weight: 700; font-style: italic; text-align: center; border-bottom: 1.6pt solid #000; }
+#impressao td.g { background: #d9d9d9; }
+#impressao td.b, #impressao td.b:first-child, #impressao b { font-weight: 700; }
+#impressao td.c, #impressao td.leg { text-align: center; padding: 0; }
+#impressao td.leg { text-align: center; font-size: 7.5pt; }
+#impressao .ass { margin-top: 4mm; font-size: 9pt; break-inside: avoid; }
+#impressao .ass img { display: block; height: 14mm; margin: 1mm 0 0 18mm; }
+#impressao .ass .linha { width: 70mm; border-bottom: .7pt solid #000; height: 12mm; }
 </style>
 </head>
 <body>
@@ -313,10 +386,67 @@ html, body { margin: 0; }
     <span class="eyebrow" id="lj-cidade"></span>
     <h1 id="lj-nome">Loja</h1>
   </header>
-  <section class="card ck-vazio">
-    <p>O check list desta loja está em construção.</p>
+  <button class="btn primary lj-novo" id="lj-novo" type="button">+ Novo check list de empilhadeira</button>
+  <section class="card">
+    <div class="lj-tit">Check lists salvos</div>
+    <div id="lj-hist" class="lj-hist"></div>
   </section>
 </main>
+
+<main class="wrap" id="tela-form" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="fm-voltar" type="button">← Voltar à loja</button>
+      <span class="status fm-status" id="fm-status" aria-live="polite"></span>
+    </div>
+    <span class="eyebrow">Roteiro de Manutenção Preventiva</span>
+    <h1 id="fm-loja">Loja</h1>
+  </header>
+
+  <section class="card fm-info" aria-label="Dados da empilhadeira">
+    <label class="fld" for="fm-data"><span>Data</span><input id="fm-data" type="date"></label>
+    <label class="fld" for="fm-os"><span>Número da OS</span><input id="fm-os" type="text" autocomplete="off"></label>
+    <label class="fld" for="fm-serie"><span>Número de série</span><input id="fm-serie" type="text" autocomplete="off" autocapitalize="characters"></label>
+    <label class="fld" for="fm-horimetro"><span>Horímetro</span><input id="fm-horimetro" type="text" inputmode="numeric" autocomplete="off"></label>
+    <label class="fld fm-full" for="fm-tecnico"><span>Nome do técnico</span><input id="fm-tecnico" type="text" autocomplete="name"></label>
+  </section>
+
+  <div class="fm-acoes-topo">
+    <button class="btn" id="fm-tudook" type="button">Marcar o que falta como OK</button>
+    <span class="fm-prog" id="fm-prog"></span>
+  </div>
+
+  <div id="fm-itens" class="fm-itens"></div>
+
+  <section class="card fm-bloco">
+    <label class="fld fm-full" for="fm-coment"><span>Comentário</span>
+      <textarea id="fm-coment" rows="4" placeholder="Ex.: Necessário planejamento para reforma de pintura"></textarea></label>
+  </section>
+
+  <section class="card fm-bloco">
+    <div class="fm-ass-topo">
+      <span class="fm-ass-lbl">Assinatura do responsável</span>
+      <span class="fm-ass-bts">
+        <button class="btn" id="fm-ass-ultima" type="button">Usar a última</button>
+        <button class="btn" id="fm-ass-limpar" type="button">Limpar</button>
+      </span>
+    </div>
+    <canvas id="fm-ass" class="fm-ass" width="900" height="300" aria-label="Área para assinar com o dedo"></canvas>
+    <p class="fm-dica">Assine com o dedo ou o mouse dentro do quadro.</p>
+  </section>
+
+  <div class="fm-rodape">
+    <button class="btn primary" id="fm-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn danger" id="fm-excluir" type="button">Excluir</button>
+  </div>
+  <div class="confirm" id="fm-confirm" hidden>
+    <p>Excluir este check list? Não dá para desfazer.</p>
+    <button class="btn solid-danger" id="fm-excluir-ok" type="button">Excluir</button>
+    <button class="btn" id="fm-excluir-no" type="button">Cancelar</button>
+  </div>
+</main>
+
+<div id="impressao" aria-hidden="true"></div>
 
 <div class="wrap" id="app" hidden>
   <header>
@@ -381,7 +511,7 @@ html, body { margin: 0; }
       <span class="status" id="status" aria-live="polite"></span>
     </div>
   </section>
-  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026</p>
+  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026 · check list</p>
 <div class="rs-overlay" id="rs-overlay" hidden>
   <div class="rs-dialog" role="dialog" aria-modal="true" aria-label="Resumo do estoque">
     <div class="rs-card" id="rs-card">
@@ -421,7 +551,7 @@ html, body { margin: 0; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const fbApp = initializeApp(window.FIREBASE_CONFIG);
@@ -928,16 +1058,390 @@ const firestoreDb = {
   desenharLojas();
   $('lj-voltar').addEventListener('click', () => { location.hash = 'checklist'; });
 
+  // ===== Check list de manutenção preventiva (modelo da planilha) =====
+  const ESQ = [
+    ['s', '1) Operacional > Verificar:'],
+    ['i', '1.1', '1.1 Funcionamento Operacional da Máquina;'],
+    ['i', '1.2', '1.2 Verificar Placas Serial e de Cap. Residual;'],
+    ['s', '2) Bateria'],
+    ['i', '2.1', '2.1 Tensão;'],
+    ['i', '2.2', '2.2 Teste de Isolamento;'],
+    ['i', '2.3', '2.3 Conectores, Cabos e Válvulas;'],
+    ['i', '2.4', '2.4 Trava de Bateria e Roletes;'],
+    ['s', '3) Geral > Realizar'],
+    ['i', '3.1', '3.1 Limpeza geral;'],
+    ['i', '3.2', '3.2 Limpeza motor da bomba;'],
+    ['i', '3.3', '3.3 Limpeza do mastro;'],
+    ['s', '4) Motores Elétricos > Verificar/Realizar'],
+    ['i', '4.1', '4.1 Escovas de carvão, coletores e rolamentos;'],
+    ['i', '4.2', '4.2 Fixação do motor e a conexão dos cabos;'],
+    ['s', '5) Sistema de Elevação > Verificar/Realizar'],
+    ['i', '5.1', '5.1 Condições de rolamento, perfil e batente;'],
+    ['i', '5.2', '5.2 Estrutura das patolas;'],
+    ['i', '5.3', '5.3 Regulagem das correntes;'],
+    ['i', '5.4', '5.4 Desgastes das correntes;'],
+    ['i', '5.5', '5.5 Aperto dos parafusos e fixações mastro;'],
+    ['i', '5.6', '5.6 Lubrificação perfil e correntes;'],
+    ['s', '6) Chassis > Verificar/Realizar'],
+    ['i', '6.1', '6.1 Trincas, amassados, painel e pintura;'],
+    ['s', '7) Transmissão > Verificar'],
+    ['i', '7.1', '7.1 Transmissão quanto a ruído;'],
+    ['i', '7.2', '7.2 Vazamento e nível de óleo;'],
+    ['i', '7.3', '7.3 Torque de fixação do motor de tração'],
+    ['s', 'Item a ser Trocado a cada 2000h ou 1 ano', true],
+    ['i', '7.4', '7.4 Óleo da transmissão'],
+    ['s', '8) Rodas > Verificar'],
+    ['i', '8.1', '8.1 Torque da roda de tração;'],
+    ['i', '8.2', '8.2 Desgaste da roda de tração;'],
+    ['i', '8.3', '8.3 Ajuste da roda de apoio e desgaste;'],
+  ];
+  const DIR = [
+    ['s', '9) Direção > Verificar'],
+    ['i', '9.1', '9.1 Partes mecânica da árvore de direção;'],
+    ['i', '9.2', '9.2 Engraxar partes móveis;'],
+    ['s', '10) Freio > Verificar/Realizar'],
+    ['i', '10.1', '10.1 Ajuste da abertura de ar da bobina;'],
+    ['i', '10.2', '10.2 Desgaste do disco de freio;'],
+    ['i', '10.3', '10.3 Distância de frenagem;'],
+    ['s', '11) Sistema Elétrico> Verificar'],
+    ['i', '11.1', '11.1 Fuga de corrente elétrica;'],
+    ['i', '11.2', '11.2 Funcionamento da chave de contato;'],
+    ['i', '11.3', '11.3 Interruptor de micro swith;'],
+    ['i', '11.4', '11.4 Dispositivo de advertência (Buzina);'],
+    ['i', '11.5', '11.5 Botão Anti-esmagamento;'],
+    ['i', '11.6', '11.6 Sensor de redução de velocidade;'],
+    ['i', '11.7', '11.7 Aperto dos cabos e conexões elétricas;'],
+    ['i', '11.8', '11.8 Existência de cabos danificados;'],
+    ['i', '11.9', '11.9 Funcionamento do MDI;'],
+    ['i', '11.10', '11.10 Valor dos fusíveis;'],
+    ['i', '11.11', '11.11 Diodos;'],
+    ['s', '12)Sistema hidráulico > Verificar'],
+    ['i', '12.1', '12.1 Cilindro vazamentos e amortecimentos;'],
+    ['i', '12.2', '12.2 Aperto das conexões hidráulicas;'],
+    ['i', '12.3', '12.3 Nível do óleo;'],
+    ['i', '12.4', '12.4 Ajuste das válvulas limitadoras de pressão;'],
+    ['s', 'Item a ser trocado a cada 2000h ou 1 ano', true],
+    ['i', '12.5', '12.5 Troca de óleo hidráulico;'],
+    ['s', '13) Programação > Verificar'],
+    ['i', '13.1', '13.1Parâmetros a apagar históricos de falhas;'],
+    ['s', '14) Carregador > Verificar'],
+    ['i', '14.1', '14.1 Tensão e corrente de saída;'],
+    ['s', '15)Demonstrar para o responsável'],
+    ['i', '15.1', '15.1 Realizar demonstração com carga;'],
+  ];
+  const ITENS = [...ESQ, ...DIR].filter((r) => r[0] === 'i');
+  const RESP_TXT = { OK: 'OK', NOK: 'ÑOK', NAP: 'ÑAP' };
+  const idItem = (n) => 'i' + n.replace('.', '_');
+
+  let ck = null;              // check list aberto
+  let ckLoja = null;          // { id, nome, cidade }
+  let ckTimer = null, ckFila = Promise.resolve();
+  let pararHist = null;
+
+  const hojeISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+  const dataBR = (iso) => { if (!iso) return ''; const [a, m, d] = iso.split('-'); return `${d}/${m}/${a}`; };
+  const dataFolha = (iso) => { if (!iso) return ''; const [a, m, d] = iso.split('-'); return `${d} / ${m} / ${a.slice(2)}`; };
+  const lerLS = (k) => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+  const gravarLS = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
+  const ckStatus = (t, k) => { $('fm-status').textContent = t || ''; $('fm-status').dataset.kind = k || ''; };
+
+  // ----- Lista de check lists da loja -----
+  function abrirHistorico(loja) {
+    if (pararHist) { pararHist(); pararHist = null; }
+    const box = $('lj-hist');
+    box.replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Carregando…' }));
+    pararHist = fsSnap(query(fsCol(fs, 'checklists'), where('lojaId', '==', loja.id)), (snap) => {
+      const lista = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.atualizadoEm || '').localeCompare(String(a.atualizadoEm || '')));
+      box.replaceChildren();
+      if (!lista.length) {
+        box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Nenhum check list salvo nesta loja ainda.' }));
+        return;
+      }
+      lista.forEach((c) => {
+        const r = c.respostas || {};
+        const nok = Object.values(r).filter((v) => v === 'NOK').length;
+        const feitos = ITENS.filter((it) => r[idItem(it[1])]).length;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+        const t = document.createElement('b'); t.textContent = `${dataBR(c.data) || 'Sem data'} · Série ${c.serie || '—'}`;
+        const s = document.createElement('span'); s.className = 'sub';
+        s.textContent = [c.os ? `OS ${c.os}` : null, c.horimetro ? `Horímetro ${c.horimetro}` : null, c.tecnico || null].filter(Boolean).join(' · ') || 'Sem dados da empilhadeira';
+        const tag = document.createElement('span');
+        tag.className = 'tag' + (nok ? ' nok' : feitos === ITENS.length ? ' ok' : '');
+        tag.textContent = nok ? `${nok} ÑOK` : feitos === ITENS.length ? 'Completo' : `${feitos}/${ITENS.length}`;
+        b.append(t, s, tag);
+        b.addEventListener('click', () => { location.hash = `loja-${loja.id}/ck-${c.id}`; });
+        box.appendChild(b);
+      });
+    }, () => { box.replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Não foi possível carregar os check lists.' })); });
+  }
+  function fecharHistorico() { if (pararHist) { pararHist(); pararHist = null; } }
+  $('lj-novo').addEventListener('click', () => { if (ckLoja) location.hash = `loja-${ckLoja.id}/novo`; });
+
+  // ----- Formulário -----
+  function montarItens() {
+    const box = $('fm-itens'); box.replaceChildren();
+    let sec = null;
+    [...ESQ, ...DIR].forEach((r) => {
+      if (r[0] === 's') {
+        if (r[2] && sec) { const h3 = document.createElement('h3'); h3.textContent = r[1]; sec.appendChild(h3); return; }
+        sec = document.createElement('section'); sec.className = 'fm-sec';
+        const h2 = document.createElement('h2'); h2.textContent = r[1]; sec.appendChild(h2); box.appendChild(sec);
+        return;
+      }
+      const id = idItem(r[1]);
+      const row = document.createElement('div'); row.className = 'fm-row';
+      const l = document.createElement('span'); l.className = 'lbl'; l.textContent = r[2]; l.id = 'l-' + id;
+      const bts = document.createElement('span'); bts.className = 'fm-bts'; bts.setAttribute('role', 'group'); bts.setAttribute('aria-labelledby', 'l-' + id);
+      ['OK', 'NOK', 'NAP'].forEach((v) => {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.v = v; b.dataset.item = id; b.textContent = RESP_TXT[v];
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', () => {
+          if (!ck) return;
+          ck.respostas[id] = ck.respostas[id] === v ? null : v;
+          if (!ck.respostas[id]) delete ck.respostas[id];
+          pintarItem(id); progresso(); mudou();
+        });
+        bts.appendChild(b);
+      });
+      row.append(l, bts); sec.appendChild(row);
+    });
+  }
+  function pintarItem(id) {
+    document.querySelectorAll(`.fm-bts button[data-item="${id}"]`).forEach((b) => b.setAttribute('aria-pressed', String(ck.respostas[id] === b.dataset.v)));
+  }
+  function progresso() {
+    const r = ck.respostas; const feitos = ITENS.filter((it) => r[idItem(it[1])]).length;
+    const nok = Object.values(r).filter((v) => v === 'NOK').length;
+    $('fm-prog').textContent = `${feitos} de ${ITENS.length} marcados${nok ? ` · ${nok} ÑOK` : ''}`;
+  }
+  montarItens();
+
+  function preencherForm() {
+    $('fm-loja').textContent = ckLoja.nome;
+    $('fm-data').value = ck.data || '';
+    $('fm-os').value = ck.os || '';
+    $('fm-serie').value = ck.serie || '';
+    $('fm-horimetro').value = ck.horimetro || '';
+    $('fm-tecnico').value = ck.tecnico || '';
+    $('fm-coment').value = ck.comentario || '';
+    ITENS.forEach((it) => pintarItem(idItem(it[1])));
+    progresso();
+    desenharAssinatura(ck.assinatura || null);
+    $('fm-excluir').hidden = !ck.id;
+    $('fm-confirm').hidden = true;
+    ckStatus(ck.id ? 'Salvo' : '');
+  }
+  const CAMPOS = { 'fm-data': 'data', 'fm-os': 'os', 'fm-serie': 'serie', 'fm-horimetro': 'horimetro', 'fm-tecnico': 'tecnico', 'fm-coment': 'comentario' };
+  Object.entries(CAMPOS).forEach(([el, k]) => $(el).addEventListener('input', () => {
+    if (!ck) return;
+    ck[k] = $(el).value;
+    if (k === 'tecnico') gravarLS('koneg-tecnico', ck.tecnico);
+    mudou();
+  }));
+  $('fm-tudook').addEventListener('click', () => {
+    if (!ck) return;
+    let n = 0;
+    ITENS.forEach((it) => { const id = idItem(it[1]); if (!ck.respostas[id]) { ck.respostas[id] = 'OK'; pintarItem(id); n++; } });
+    progresso(); if (n) mudou();
+  });
+
+  function dadosCk() {
+    return {
+      lojaId: ckLoja.id, loja: ckLoja.nome, cidade: ckLoja.cidade,
+      data: ck.data || '', os: ck.os || '', serie: ck.serie || '', horimetro: ck.horimetro || '', tecnico: ck.tecnico || '',
+      respostas: { ...ck.respostas }, comentario: ck.comentario || '', assinatura: ck.assinatura || '',
+      criadoEm: ck.criadoEm || new Date().toISOString(), atualizadoEm: new Date().toISOString(),
+      atualizadoPor: (auth.currentUser && auth.currentUser.email) || '',
+    };
+  }
+  function mudou() {
+    ckStatus('Salvando…');
+    clearTimeout(ckTimer);
+    ckTimer = setTimeout(salvarCk, 700);
+  }
+  function salvarCk() {
+    clearTimeout(ckTimer); ckTimer = null;
+    if (!ck || !ckLoja) return ckFila;
+    const alvo = ck, loja = ckLoja;
+    ckFila = ckFila.catch(() => {}).then(async () => {
+      if (!alvo.id) {
+        alvo.id = fsDoc(fsCol(fs, 'checklists')).id;
+        alvo.criadoEm = new Date().toISOString();
+        if (ck === alvo && location.hash === `#loja-${loja.id}/novo`) history.replaceState(null, '', `#loja-${loja.id}/ck-${alvo.id}`);
+      }
+      await setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null));
+      if (ck === alvo) { ckStatus('Salvo', 'ok'); $('fm-excluir').hidden = false; }
+    }).catch((e) => {
+      ckStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar' : 'Não foi possível salvar. Verifique a internet.', 'erro');
+    });
+    return ckFila;
+  }
+
+  async function abrirForm(loja, docId) {
+    if (ck && ck.id && ck.id === docId) { $('fm-loja').textContent = loja.nome; return; }
+    if (ckTimer) await salvarCk();
+    ckLoja = loja;
+    if (!docId) {
+      ck = { id: null, data: hojeISO(), os: '', serie: '', horimetro: '', tecnico: lerLS('koneg-tecnico') || 'Kayowan Macedo', respostas: {}, comentario: '', assinatura: '' };
+      preencherForm();
+      return;
+    }
+    ck = null; ckStatus('Carregando…');
+    try {
+      const s = await getDoc(fsDoc(fs, 'checklists', docId));
+      if (!s.exists()) { ckStatus('Check list não encontrado', 'erro'); location.hash = `loja-${loja.id}`; return; }
+      const d = s.data();
+      ck = { id: docId, data: d.data || '', os: d.os || '', serie: d.serie || '', horimetro: d.horimetro || '', tecnico: d.tecnico || '', respostas: { ...(d.respostas || {}) }, comentario: d.comentario || '', assinatura: d.assinatura || '', criadoEm: d.criadoEm || '' };
+      preencherForm();
+    } catch (e) { ckStatus('Não foi possível abrir o check list.', 'erro'); }
+  }
+  $('fm-voltar').addEventListener('click', async () => { if (ckTimer) await salvarCk(); if (ckLoja) location.hash = `loja-${ckLoja.id}`; });
+  $('fm-excluir').addEventListener('click', () => { $('fm-confirm').hidden = false; $('fm-excluir-ok').focus(); });
+  $('fm-excluir-no').addEventListener('click', () => { $('fm-confirm').hidden = true; });
+  $('fm-excluir-ok').addEventListener('click', async () => {
+    if (!ck || !ck.id) return;
+    clearTimeout(ckTimer); ckTimer = null;
+    try { await deleteDoc(fsDoc(fs, 'checklists', ck.id)); ck = null; location.hash = `loja-${ckLoja.id}`; }
+    catch (_) { ckStatus('Não foi possível excluir.', 'erro'); }
+  });
+
+  // ----- Assinatura -----
+  const cv = $('fm-ass'); const cx = cv.getContext('2d');
+  let desenhando = false, ultimo = null, assinou = false;
+  function limparCanvas() { cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); }
+  function desenharAssinatura(url) {
+    limparCanvas(); assinou = !!url;
+    if (!url) return;
+    const img = new Image(); img.onload = () => { limparCanvas(); cx.drawImage(img, 0, 0, cv.width, cv.height); }; img.src = url;
+  }
+  const ponto = (ev) => { const r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) * cv.width / r.width, y: (ev.clientY - r.top) * cv.height / r.height }; };
+  cv.addEventListener('pointerdown', (ev) => { if (!ck) return; desenhando = true; ultimo = ponto(ev); cv.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+  cv.addEventListener('pointermove', (ev) => {
+    if (!desenhando) return;
+    const p = ponto(ev);
+    cx.strokeStyle = '#1b2a6b'; cx.lineWidth = 4; cx.lineCap = 'round'; cx.lineJoin = 'round';
+    cx.beginPath(); cx.moveTo(ultimo.x, ultimo.y); cx.lineTo(p.x, p.y); cx.stroke();
+    ultimo = p; assinou = true; ev.preventDefault();
+  });
+  const fimTraco = () => {
+    if (!desenhando) return; desenhando = false;
+    if (!ck || !assinou) return;
+    ck.assinatura = cv.toDataURL('image/png');
+    gravarLS('koneg-assinatura', ck.assinatura);
+    mudou();
+  };
+  cv.addEventListener('pointerup', fimTraco); cv.addEventListener('pointercancel', fimTraco); cv.addEventListener('pointerleave', fimTraco);
+  $('fm-ass-limpar').addEventListener('click', () => { if (!ck) return; desenharAssinatura(null); ck.assinatura = ''; mudou(); });
+  $('fm-ass-ultima').addEventListener('click', () => {
+    if (!ck) return;
+    const u = lerLS('koneg-assinatura');
+    if (!u) { ckStatus('Nenhuma assinatura salva neste aparelho ainda.', 'erro'); return; }
+    ck.assinatura = u; desenharAssinatura(u); mudou();
+  });
+
+  // ----- Impressão / PDF no formato da planilha -----
+  const medidor = document.createElement('canvas').getContext('2d');
+  function caber(td, texto, larguraMm, ptMax = 8.5, ptMin = 5.5) {
+    const px = larguraMm * 96 / 25.4 - 9;
+    let pt = ptMax;
+    while (pt > ptMin) {
+      medidor.font = `${td.classList.contains('b') ? '700 ' : ''}${pt * 96 / 72}px Calibri, Carlito, "Liberation Sans", Arial, sans-serif`;
+      if (medidor.measureText(texto).width <= px) break;
+      pt -= 0.25;
+    }
+    if (pt !== ptMax) td.style.fontSize = pt + 'pt';
+  }
+  function montarFolha() {
+    const C = ck, col = 194 / 17;
+    const R = C.respostas || {};
+    const tb = document.createElement('table');
+    const cg = document.createElement('colgroup');
+    for (let k = 0; k < 17; k++) cg.appendChild(document.createElement('col'));
+    tb.appendChild(cg);
+    const tr = () => tb.appendChild(document.createElement('tr'));
+    const td = (row, span, txt, cls = '') => {
+      const c = document.createElement('td'); if (span > 1) c.colSpan = span; if (cls) c.className = cls;
+      if (txt instanceof Node) c.appendChild(txt); else c.textContent = txt || '';
+      row.appendChild(c); return c;
+    };
+    const comNegrito = (antes, negrito) => { const f = document.createDocumentFragment(); f.append(antes); const b = document.createElement('b'); b.textContent = negrito; f.append(b); return f; };
+
+    td(tr(), 17, 'Roteiro de Manutenção Preventiva', 't');
+    let r = tr(); td(r, 8, `Número de série: ${C.serie || ''}`); td(r, 1, ''); td(r, 8, `Data:   ${dataFolha(C.data)}`);
+    r = tr(); td(r, 8, `Horímetro: ${C.horimetro || ''}`); td(r, 1, ''); td(r, 8, `Número da OS: ${C.os || ''}`);
+    r = tr(); td(r, 8, comNegrito('Nome do Técnico: ', C.tecnico || '')); td(r, 1, ''); td(r, 8, `Nome da Loja: ${ckLoja.nome}`);
+
+    const lado = (row, linha) => {
+      if (linha[0] === 's') {
+        caber(td(row, 4, linha[1], 'g b'), linha[1], col * 4);
+        td(row, 1, ''); td(row, 1, 'OK', 'g c'); td(row, 1, 'ÑOK', 'g c'); td(row, 1, 'ÑAP', 'g c');
+      } else {
+        const v = R[idItem(linha[1])];
+        caber(td(row, 4, linha[2]), linha[2], col * 4);
+        td(row, 1, '');
+        td(row, 1, v === 'OK' ? 'OK' : '', 'c'); td(row, 1, v === 'NOK' ? 'ÑOK' : '', 'c'); td(row, 1, v === 'NAP' ? 'ÑAP' : '', 'c');
+      }
+    };
+    for (let k = 0; k < ESQ.length; k++) {
+      r = tr(); lado(r, ESQ[k]); td(r, 1, '');
+      if (k < DIR.length) lado(r, DIR[k]);
+      else if (k === DIR.length) td(r, 8, 'Legenda', 'g b');
+      else {
+        const f = document.createDocumentFragment();
+        const b1 = document.createElement('b'); b1.textContent = 'OK'; const b2 = document.createElement('b'); b2.textContent = 'ÑAP'; const b3 = document.createElement('b'); b3.textContent = 'ÑOK';
+        f.append(b1, ' - Em Condições de Trabalho / ', b2, ' - Não Aplicavel / ', b3, ' - Necessita de Reparo.');
+        td(r, 8, f, 'leg');
+      }
+    }
+    td(tr(), 17, 'Comentario:', 'b');
+    // quebra o comentário nas linhas da folha
+    medidor.font = `${8.5 * 96 / 72}px Calibri, Carlito, "Liberation Sans", Arial, sans-serif`;
+    const maxPx = 194 * 96 / 25.4 - 10; const linhas = [];
+    String(C.comentario || '').split('\n').forEach((par) => {
+      let cur = '';
+      par.split(' ').forEach((w) => { const t = cur ? cur + ' ' + w : w; if (medidor.measureText(t).width > maxPx && cur) { linhas.push(cur); cur = w; } else cur = t; });
+      linhas.push(cur);
+    });
+    const nLinhas = Math.max(8, linhas.length);
+    for (let k = 0; k < nLinhas; k++) td(tr(), 17, linhas[k] || '');
+
+    const ass = document.createElement('div'); ass.className = 'ass';
+    ass.append('Assinatura do Responsavel');
+    if (C.assinatura) { const im = document.createElement('img'); im.src = C.assinatura; im.alt = ''; ass.appendChild(im); }
+    else { const ln = document.createElement('div'); ln.className = 'linha'; ass.appendChild(ln); }
+    $('impressao').replaceChildren(tb, ass);
+  }
+  let tituloAntes = null;
+  $('fm-imprimir').addEventListener('click', async () => {
+    if (!ck) return;
+    if (ckTimer) await salvarCk();
+    montarFolha();
+    tituloAntes = document.title;
+    const nome = ['Preventiva', ckLoja.nome, ck.serie, dataBR(ck.data).replace(/\//g, '-')].filter(Boolean).join(' - ');
+    document.title = nome;
+    const img = $('impressao').querySelector('img');
+    if (img && !img.complete) await new Promise((res) => { img.onload = img.onerror = res; });
+    window.print();
+  });
+  window.addEventListener('afterprint', () => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } });
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
     if (!logado) return;
     const h = location.hash;
-    const loja = h.startsWith('#loja-') ? LOJAS_POR_ID.get(h.slice(6)) : null;
+    const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
+    const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
+    const loja = lj ? { id: m[1], ...lj } : null;
+    const noForm = !!(loja && m[2]);
     $('app').hidden = h !== '#estoque';
     $('tela-checklist').hidden = h !== '#checklist';
-    $('tela-loja').hidden = !loja;
-    if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; }
+    $('tela-loja').hidden = !loja || noForm;
+    $('tela-form').hidden = !noForm;
+    if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = ckLoja && ckLoja.id === loja.id ? ckLoja : loja; }
+    if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
+    if (noForm) abrirForm(loja, m[3] || null);
     $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja;
     window.scrollTo(0, 0);
   }
@@ -955,7 +1459,7 @@ const firestoreDb = {
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true;
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; fecharHistorico();
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
