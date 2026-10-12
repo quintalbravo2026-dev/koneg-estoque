@@ -464,6 +464,9 @@ html, body { margin: 0; }
 .ck-aviso-perm { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 .loja:disabled { cursor: default; opacity: .75; }
 .loja:disabled::after { content: "" !important; }
+
+.mitem.nf { text-decoration: none; }
+.mitem.nf svg { background: rgba(27, 42, 107, .1); }
 </style>
 </head>
 <body>
@@ -540,6 +543,11 @@ html, body { margin: 0; }
         <span class="mi-t">Funcionários</span>
         <span class="mi-d">Criar acessos e escolher o que cada um pode fazer</span>
       </button>
+      <a class="mitem nf adm-link" href="https://www.nfse.gov.br/EmissorNacional" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14.5h7M9 18h4"/></svg>
+        <span class="mi-t">Nota Fiscal</span>
+        <span class="mi-d">Emissor Nacional de NFS-e (MEI) · abre em outra aba</span>
+      </a>
     </nav>
   </div>
 </main>
@@ -2053,6 +2061,7 @@ const firestoreDb = {
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
     document.querySelector('.mitem[data-go="funcionarios"]').hidden = !a;
+    document.querySelector('.mitem.nf').hidden = !a;
     document.querySelector('.mitem[data-go="estoque"] .mi-d').textContent = a ? 'Ver e editar itens, quantidades e preços' : podeQtd() ? 'Ver o estoque e alterar quantidades' : 'Consultar o estoque';
     ['btn-add', 'btn-editar', 'btn-zerar'].forEach((k) => { $(k).hidden = !a; });
     $('pct').disabled = !a;
@@ -2189,7 +2198,7 @@ const firestoreDb = {
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
-  document.querySelectorAll('.mitem').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.mitem[data-go]').forEach((b) => b.addEventListener('click', () => {
     const go = b.dataset.go;
     if (location.hash !== '#' + go) location.hash = go; else rota();
   }));
