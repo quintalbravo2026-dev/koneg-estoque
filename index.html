@@ -558,6 +558,19 @@ html, body { margin: 0; }
 
 .cnpj-busca { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; text-transform: none; letter-spacing: 0; }
 .cnpj-busca .btn { font-size: 13px; padding: 7px 10px; }
+
+/* Reorganizar botões dos menus */
+.ord-barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; }
+.ord-barra .btn { font-size: 13px; padding: 8px 12px; }
+.ord-btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+#tela-menu .ord-barra { max-width: 30rem; width: 100%; margin-inline: auto; }
+.menu-grid.ordenando .mitem { cursor: default; border-style: dashed; border-color: var(--accent); position: relative; padding-right: 64px; }
+.menu-grid.ordenando .mitem:active { transform: none; }
+.ord-ctl { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; }
+.ord-ctl button { font: inherit; font-size: 16px; line-height: 1; width: 40px; height: 34px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); cursor: pointer; }
+.ord-ctl button:disabled { opacity: .3; cursor: default; }
+.ord-ctl button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (min-width: 641px) { #tela-admin .menu-grid.ordenando .mitem { padding-right: 64px; } }
 </style>
 </head>
 <body>
@@ -618,7 +631,7 @@ html, body { margin: 0; }
       <span class="eyebrow">Koneg Manutenção</span>
       <span class="userbar"><span id="m-email"></span><button class="btn" id="m-sair" type="button">Sair</button></span>
     </div>
-    <nav class="menu-grid" aria-label="Menu">
+    <nav class="menu-grid" aria-label="Menu" id="nav-menu" data-ordem="menu">
       <button class="mitem" type="button" data-go="estoque">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
         <span class="mi-t">Estoque</span>
@@ -635,6 +648,7 @@ html, body { margin: 0; }
         <span class="mi-d">Orçamentos, relatórios, clientes, funcionários, nota fiscal e e-mail</span>
       </button>
     </nav>
+    <div class="ord-barra" hidden><button class="btn ord-btn" type="button" aria-pressed="false">⇅ Reorganizar botões</button><span class="ed-dica ord-dica" hidden>Use as setas ↑ ↓ para mudar a ordem. Toque em "Concluir" para salvar.</span></div>
   </div>
 </main>
 
@@ -693,7 +707,7 @@ html, body { margin: 0; }
       <span class="eyebrow">Somente administrador</span>
       <h1 class="ad-tit">Administração</h1>
     </div>
-    <nav class="menu-grid" aria-label="Administração">
+    <nav class="menu-grid" aria-label="Administração" id="nav-admin" data-ordem="admin">
       <button class="mitem orc" type="button" data-go="orcamentos">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h3M9 15.5h3M14.5 12h1.5M14.5 15.5h1.5"/></svg>
         <span class="mi-t">Orçamentos</span>
@@ -719,17 +733,18 @@ html, body { margin: 0; }
         <span class="mi-t">Funcionários</span>
         <span class="mi-d">Criar acessos e escolher o que cada um pode fazer</span>
       </button>
-      <a class="mitem nf adm-link" href="https://www.nfse.gov.br/EmissorNacional" target="_blank" rel="noopener">
+      <a data-key="notafiscal" class="mitem nf adm-link" href="https://www.nfse.gov.br/EmissorNacional" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14.5h7M9 18h4"/></svg>
         <span class="mi-t">Nota Fiscal</span>
         <span class="mi-d">Emissor Nacional de NFS-e (MEI) · abre em outra aba</span>
       </a>
-      <a class="mitem mail" href="https://webmail-seguro.com.br/" target="_blank" rel="noopener">
+      <a data-key="email" class="mitem mail" href="https://webmail-seguro.com.br/" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6 8.5-6"/></svg>
         <span class="mi-t">E-mail</span>
         <span class="mi-d">Webmail do @koneg.com.br (Locaweb) · abre em outra aba</span>
       </a>
     </nav>
+    <div class="ord-barra" hidden><button class="btn ord-btn" type="button" aria-pressed="false">⇅ Reorganizar botões</button><span class="ed-dica ord-dica" hidden>Use as setas ↑ ↓ para mudar a ordem. Toque em "Concluir" para salvar.</span></div>
   </div>
 </main>
 
@@ -2278,6 +2293,7 @@ const firestoreDb = {
     $('pct').disabled = !a;
     ['ck-add', 'ck-edit', 'ck-del'].forEach((k) => { $(k).hidden = !a; });
     $('ck-rel').hidden = !(a || P.relatorio);
+    document.querySelectorAll('.ord-barra').forEach((x) => { x.hidden = !a; });
     $('ck-aviso-perm').hidden = a || P.checklist || !P.relatorio;
     $('lj-novo').hidden = !(a || P.checklist);
   }
@@ -3053,6 +3069,65 @@ const firestoreDb = {
   }
   $('em-voltar').addEventListener('click', () => { location.hash = 'admin'; });
 
+
+  // ===== Reorganizar os botões do menu e da Administração (ordem salva para todos) =====
+  const chaveItem = (b) => b.dataset.key || b.dataset.go;
+  let ordemSalva = {};
+  function aplicarOrdem() {
+    document.querySelectorAll('nav[data-ordem]').forEach((nav) => {
+      const ordem = ordemSalva[nav.dataset.ordem]; if (!Array.isArray(ordem)) return;
+      const itens = [...nav.querySelectorAll(':scope > .mitem')];
+      itens.sort((a, b) => { const ia = ordem.indexOf(chaveItem(a)), ib = ordem.indexOf(chaveItem(b)); return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib); })
+        .forEach((it) => nav.appendChild(it));
+    });
+  }
+  async function carregarOrdem() {
+    try { const d = await getDoc(fsDoc(fs, 'config', 'ordem')); ordemSalva = d.exists() ? (d.data() || {}) : {}; aplicarOrdem(); } catch (_) {}
+  }
+  function bloquearClique(ev) { if (ev.target.closest('.ord-ctl')) return; if (ev.currentTarget.closest('.ordenando')) { ev.preventDefault(); ev.stopImmediatePropagation(); } }
+  document.querySelectorAll('nav[data-ordem] > .mitem').forEach((b) => b.addEventListener('click', bloquearClique, true));
+  function controlesOrdem(nav) {
+    nav.querySelectorAll('.ord-ctl').forEach((c) => c.remove());
+    const vis = [...nav.querySelectorAll(':scope > .mitem')].filter((b) => !b.hidden);
+    vis.forEach((b, i) => {
+      const c = document.createElement('span'); c.className = 'ord-ctl';
+      const up = document.createElement('button'); up.type = 'button'; up.textContent = '↑'; up.disabled = i === 0; up.setAttribute('aria-label', 'Subir ' + b.querySelector('.mi-t').textContent);
+      const dn = document.createElement('button'); dn.type = 'button'; dn.textContent = '↓'; dn.disabled = i === vis.length - 1; dn.setAttribute('aria-label', 'Descer ' + b.querySelector('.mi-t').textContent);
+      const mover = (dir, ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+        const alvo = vis[i + dir]; if (!alvo) return;
+        if (dir < 0) nav.insertBefore(b, alvo); else nav.insertBefore(alvo, b);
+        controlesOrdem(nav);
+        const novo = [...nav.querySelectorAll(':scope > .mitem')].filter((x) => !x.hidden).indexOf(b);
+        const bt = nav.querySelectorAll('.ord-ctl')[novo]?.querySelectorAll('button')[dir < 0 ? 0 : 1];
+        if (bt && !bt.disabled) bt.focus(); else nav.querySelectorAll('.ord-ctl')[novo]?.querySelector('button:not(:disabled)')?.focus();
+      };
+      up.addEventListener('click', (ev) => mover(-1, ev)); dn.addEventListener('click', (ev) => mover(1, ev));
+      c.append(up, dn); b.appendChild(c);
+    });
+  }
+  document.querySelectorAll('.ord-barra').forEach((barra) => {
+    const nav = barra.parentElement.querySelector('nav[data-ordem]');
+    const btn = barra.querySelector('.ord-btn'), dica = barra.querySelector('.ord-dica');
+    btn.addEventListener('click', async () => {
+      const ligar = !nav.classList.contains('ordenando');
+      nav.classList.toggle('ordenando', ligar);
+      btn.setAttribute('aria-pressed', String(ligar));
+      btn.textContent = ligar ? '✓ Concluir' : '⇅ Reorganizar botões';
+      dica.hidden = !ligar;
+      if (ligar) { controlesOrdem(nav); return; }
+      nav.querySelectorAll('.ord-ctl').forEach((c) => c.remove());
+      ordemSalva[nav.dataset.ordem] = [...nav.querySelectorAll(':scope > .mitem')].map(chaveItem);
+      try { await setDoc(fsDoc(fs, 'config', 'ordem'), ordemSalva); dica.hidden = false; dica.textContent = 'Ordem salva.'; setTimeout(() => { dica.hidden = true; dica.textContent = 'Use as setas ↑ ↓ para mudar a ordem. Toque em "Concluir" para salvar.'; }, 2500); }
+      catch (_) { dica.hidden = false; dica.textContent = 'Não foi possível salvar a ordem.'; }
+    });
+  });
+  function sairReordenar() {
+    document.querySelectorAll('nav.ordenando').forEach((nav) => { nav.classList.remove('ordenando'); nav.querySelectorAll('.ord-ctl').forEach((c) => c.remove()); });
+    document.querySelectorAll('.ord-btn').forEach((b) => { b.setAttribute('aria-pressed', 'false'); b.textContent = '⇅ Reorganizar botões'; });
+    document.querySelectorAll('.ord-dica').forEach((d) => { d.hidden = true; });
+  }
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
@@ -3092,7 +3167,7 @@ const firestoreDb = {
     $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h.startsWith('#doc-');
     window.scrollTo(0, 0);
   }
-  window.addEventListener('hashchange', rota);
+  window.addEventListener('hashchange', () => { sairReordenar(); rota(); });
   document.querySelectorAll('.mitem[data-go]').forEach((b) => b.addEventListener('click', () => {
     const go = b.dataset.go;
     if (location.hash !== '#' + go) location.hash = go; else rota();
@@ -3142,6 +3217,7 @@ const firestoreDb = {
     db = firestoreDb; podeEditar = true;
     $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || ''; $('a-email').textContent = u.email || '';
     logado = true; rota();
+    carregarOrdem();
     if (podeCk()) iniciarLojas();
     if (podeEstoque()) {
       parar.push(db.collection('itens').onSnapshot((snap) => {
