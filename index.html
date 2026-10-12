@@ -350,7 +350,7 @@ html, body { margin: 0; }
 #impressao .ass .linha { width: 70mm; border-bottom: .7pt solid #000; height: 12mm; }
 
 .ck-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
-.ck-acoes .btn { flex: 1 1 10rem; justify-content: center; min-height: 44px; }
+.ck-acoes .btn { flex: 1 1 6.5rem; justify-content: center; min-height: 44px; padding-inline: 8px; white-space: normal; text-align: center; line-height: 1.2; }
 .ck-acoes #ck-del[aria-pressed="true"] { background: var(--danger); color: #fff; border-color: var(--danger); }
 .ck-form { border: 1px solid var(--line); border-radius: var(--r); }
 .ck-aviso { margin: 0; padding: 10px 12px; border-radius: var(--r); background: var(--danger-soft); color: var(--danger); font-size: 14px; }
@@ -397,6 +397,12 @@ html, body { margin: 0; }
 #impressao .rel td.n { text-align: center; }
 #impressao .rel tr.sem td { color: #555; }
 #impressao .rel tfoot td { font-weight: 700; background: #f0f0f0; }
+
+.ck-acoes #ck-edit[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.ck-aviso-edit { background: var(--accent-soft); color: var(--fg); }
+.loja.editar { border-color: var(--accent); background: var(--accent-soft); }
+.loja.editar::after { content: "✎" !important; font-size: 16px; color: var(--fg); }
+.ck-edit-tit { flex-basis: 100%; margin: 0; font-weight: 600; font-size: 15px; }
 </style>
 </head>
 <body>
@@ -445,6 +451,7 @@ html, body { margin: 0; }
   </header>
   <div class="ck-acoes">
     <button class="btn primary" id="ck-add" type="button" aria-expanded="false" aria-controls="ck-addform">+ Adicionar loja</button>
+    <button class="btn" id="ck-edit" type="button" aria-pressed="false">Editar loja</button>
     <button class="btn danger" id="ck-del" type="button" aria-pressed="false">Excluir loja</button>
     <button class="btn rl-abrir" id="ck-rel" type="button">Relatório do mês</button>
   </div>
@@ -458,11 +465,22 @@ html, body { margin: 0; }
     </div>
     <p class="adderr" id="ck-add-err" hidden></p>
   </div>
+  <div class="addform ck-form" id="ck-editform" hidden>
+    <p class="ck-edit-tit" id="ck-edit-tit">Editar loja</p>
+    <label class="fld grow" for="ck-enome"><span>Nome da loja</span><input id="ck-enome" type="text" autocomplete="off"></label>
+    <label class="fld grow" for="ck-ecidade"><span>Cidade</span><input id="ck-ecidade" type="text" autocomplete="off" list="ck-cidades-lista"></label>
+    <div class="addacts">
+      <button class="btn primary" id="ck-edit-ok" type="button">Salvar</button>
+      <button class="btn" id="ck-edit-no" type="button">Cancelar</button>
+    </div>
+    <p class="adderr" id="ck-edit-err" hidden></p>
+  </div>
   <div class="confirm ck-form" id="ck-confirm" hidden>
     <p id="ck-confirm-txt"></p>
     <button class="btn solid-danger" id="ck-confirm-ok" type="button">Excluir loja</button>
     <button class="btn" id="ck-confirm-no" type="button">Cancelar</button>
   </div>
+  <p class="ck-aviso ck-aviso-edit" id="ck-aviso-edit" hidden>Toque na loja que você quer editar. Para sair, toque em "Concluir".</p>
   <p class="ck-aviso" id="ck-aviso" hidden>Toque na loja que você quer excluir. Para sair sem excluir, toque em "Concluir".</p>
   <input class="search ck-busca" id="ck-busca" type="search" placeholder="Buscar loja…" aria-label="Buscar loja">
   <div class="ck-cidades" id="ck-lojas"></div>
@@ -1148,7 +1166,7 @@ const firestoreDb = {
   // Lojas ficam no banco (coleção "lojas"); CIDADES acima é só a lista inicial
   let LOJAS = [];
   const LOJAS_POR_ID = new Map();
-  let lojasCarregadas = false, pararLojas = null, rotaPendente = false, modoExcluir = false, lojaAlvo = null;
+  let lojasCarregadas = false, pararLojas = null, rotaPendente = false, modoExcluir = false, modoEditar = false, lojaEdit = null, lojaAlvo = null;
   function agruparLojas() {
     const ordemCid = new Map();
     LOJAS.forEach((l) => { const o = ordemCid.get(l.cidade); if (o === undefined || l.ordem < o) ordemCid.set(l.cidade, l.ordem); });
@@ -1169,9 +1187,10 @@ const firestoreDb = {
       const sm = document.createElement('small'); sm.textContent = String(vis.length); h2.appendChild(sm);
       const grid = document.createElement('div'); grid.className = 'ck-grid';
       vis.forEach((l) => {
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'loja' + (modoExcluir ? ' excluir' : ''); b.textContent = l.nome;
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'loja' + (modoExcluir ? ' excluir' : modoEditar ? ' editar' : ''); b.textContent = l.nome;
         if (modoExcluir) b.setAttribute('aria-label', 'Excluir ' + l.nome);
-        b.addEventListener('click', () => { if (modoExcluir) pedirExclusao(l); else location.hash = 'loja-' + l.id; });
+        if (modoEditar) b.setAttribute('aria-label', 'Editar ' + l.nome);
+        b.addEventListener('click', () => { if (modoExcluir) pedirExclusao(l); else if (modoEditar) abrirEdicao(l); else location.hash = 'loja-' + l.id; });
         grid.appendChild(b);
       });
       sec.append(h2, grid); box.appendChild(sec);
@@ -1207,7 +1226,7 @@ const firestoreDb = {
   // Incluir loja
   function abrirAddLoja(abrir) {
     $('ck-addform').hidden = !abrir; $('ck-add').setAttribute('aria-expanded', String(abrir)); $('ck-add-err').hidden = true;
-    if (abrir) { sairExcluir(); $('ck-nome').value = ''; $('ck-cidade').value = ''; $('ck-nome').focus(); }
+    if (abrir) { sairExcluir(); sairEditar(); $('ck-nome').value = ''; $('ck-cidade').value = ''; $('ck-nome').focus(); }
   }
   const erroLoja = (t) => { $('ck-add-err').textContent = t; $('ck-add-err').hidden = false; };
   $('ck-add').addEventListener('click', () => abrirAddLoja($('ck-addform').hidden));
@@ -1233,12 +1252,58 @@ const firestoreDb = {
     } finally { $('ck-add-ok').disabled = false; }
   });
 
+
+  // Editar loja (o código interno da loja não muda, então os check lists continuam ligados a ela)
+  function sairEditar() {
+    modoEditar = false; lojaEdit = null;
+    $('ck-edit').setAttribute('aria-pressed', 'false'); $('ck-edit').textContent = 'Editar loja';
+    $('ck-aviso-edit').hidden = true; $('ck-editform').hidden = true; $('ck-edit-err').hidden = true;
+    desenharLojas();
+  }
+  $('ck-edit').addEventListener('click', () => {
+    if (modoEditar) { sairEditar(); return; }
+    abrirAddLoja(false); sairExcluir();
+    modoEditar = true; $('ck-edit').setAttribute('aria-pressed', 'true'); $('ck-edit').textContent = 'Concluir';
+    $('ck-aviso-edit').hidden = false; desenharLojas();
+  });
+  function abrirEdicao(l) {
+    lojaEdit = l;
+    $('ck-edit-tit').textContent = `Editar ${l.nome}`;
+    $('ck-enome').value = l.nome; $('ck-ecidade').value = l.cidade; $('ck-edit-err').hidden = true;
+    $('ck-editform').hidden = false;
+    $('ck-editform').scrollIntoView({ block: 'center', behavior: 'smooth' });
+    $('ck-enome').focus({ preventScroll: true });
+  }
+  const erroEdit = (t) => { $('ck-edit-err').textContent = t; $('ck-edit-err').hidden = false; };
+  $('ck-edit-no').addEventListener('click', () => { $('ck-editform').hidden = true; lojaEdit = null; });
+  ['ck-enome', 'ck-ecidade'].forEach((k) => $(k).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') $('ck-edit-ok').click(); if (ev.key === 'Escape') $('ck-edit-no').click(); }));
+  $('ck-edit-ok').addEventListener('click', async () => {
+    if (!lojaEdit) return;
+    const nome = $('ck-enome').value.trim().replace(/\s+/g, ' ');
+    let cidade = $('ck-ecidade').value.trim().replace(/\s+/g, ' ');
+    if (!nome) { erroEdit('Escreva o nome da loja.'); $('ck-enome').focus(); return; }
+    if (!cidade) { erroEdit('Escreva a cidade da loja.'); $('ck-ecidade').focus(); return; }
+    const igualCid = agruparLojas().map(([c]) => c).find((c) => semAcento(c) === semAcento(cidade));
+    if (igualCid) cidade = igualCid;
+    const outra = LOJAS.find((l) => l.id !== lojaEdit.id && (semAcento(l.nome) === semAcento(nome) || l.id === slugLoja(nome)));
+    if (outra) { erroEdit(`Já existe outra loja chamada "${outra.nome}".`); return; }
+    const dados = { nome, cidade };
+    if (cidade !== lojaEdit.cidade) dados.ordem = LOJAS.reduce((m, l) => Math.max(m, l.ordem), -1) + 1;
+    $('ck-edit-ok').disabled = true;
+    try {
+      await updateDoc(fsDoc(fs, 'lojas', lojaEdit.id), dados);
+      $('ck-editform').hidden = true; lojaEdit = null;
+    } catch (e) {
+      erroEdit(e && e.code === 'permission-denied' ? 'Seu e-mail não tem permissão para editar lojas.' : 'Não foi possível salvar. Verifique a internet.');
+    } finally { $('ck-edit-ok').disabled = false; }
+  });
+
   // Excluir loja
   function sairExcluir() { modoExcluir = false; $('ck-del').setAttribute('aria-pressed', 'false'); $('ck-del').textContent = 'Excluir loja'; $('ck-aviso').hidden = true; $('ck-confirm').hidden = true; lojaAlvo = null; desenharLojas(); }
   $('ck-del').addEventListener('click', () => {
     if (modoExcluir) { sairExcluir(); return; }
     abrirAddLoja(false);
-    modoExcluir = true; $('ck-del').setAttribute('aria-pressed', 'true'); $('ck-del').textContent = 'Concluir'; $('ck-aviso').hidden = false; desenharLojas();
+    sairEditar(); modoExcluir = true; $('ck-del').setAttribute('aria-pressed', 'true'); $('ck-del').textContent = 'Concluir'; $('ck-aviso').hidden = false; desenharLojas();
   });
   function pedirExclusao(l) {
     lojaAlvo = l;
@@ -1756,10 +1821,10 @@ const firestoreDb = {
     const ym = $('rl-mes').value || mesAtual();
     const R = resumoRel();
     const nos = [folhaResumo(R, ym)];
-    if ($('rl-folhas').checked) R.linhas.forEach((x) => x.cks.forEach((c) => nos.push(montarFolha(c, c.loja || x.loja.nome))));
+    if ($('rl-folhas').checked) R.linhas.forEach((x) => x.cks.forEach((c) => nos.push(montarFolha(c, x.loja.nome))));
     imprimirConteudo(nos, `Relatório Preventiva - ${nomeMes(ym)}`);
   });
-  $('ck-rel').addEventListener('click', () => { sairExcluir(); abrirAddLoja(false); location.hash = 'relatorio'; });
+  $('ck-rel').addEventListener('click', () => { sairExcluir(); sairEditar(); abrirAddLoja(false); location.hash = 'relatorio'; });
   $('rl-voltar').addEventListener('click', () => { location.hash = 'checklist'; });
 
   // Modo app do Check List (endereço /checklist/)
@@ -1787,7 +1852,7 @@ const firestoreDb = {
     if (h === '#relatorio') { desenharRelLojas(); carregarMes(); }
     $('tela-loja').hidden = !loja || noForm;
     $('tela-form').hidden = !noForm;
-    if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = ckLoja && ckLoja.id === loja.id ? ckLoja : loja; }
+    if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
     $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio';
@@ -1799,7 +1864,7 @@ const firestoreDb = {
     if (location.hash !== '#' + go) location.hash = go; else rota();
   }));
   $('btn-menu').addEventListener('click', () => { abrirAdd(false); location.hash = 'menu'; });
-  $('ck-menu').addEventListener('click', () => { sairExcluir(); abrirAddLoja(false); location.hash = 'menu'; });
+  $('ck-menu').addEventListener('click', () => { sairExcluir(); sairEditar(); abrirAddLoja(false); location.hash = 'menu'; });
   $('m-sair').addEventListener('click', () => signOut(auth));
 
   onAuthStateChanged(auth, (u) => {
@@ -1807,7 +1872,7 @@ const firestoreDb = {
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
-      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; $('tela-relatorio').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir();
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true; $('tela-loja').hidden = true; $('tela-form').hidden = true; $('tela-relatorio').hidden = true; fecharHistorico(); pararLojasBanco(); sairExcluir(); sairEditar();
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
