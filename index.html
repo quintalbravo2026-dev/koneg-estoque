@@ -468,6 +468,27 @@ html, body { margin: 0; }
 .mitem.nf, .mitem.mail { text-decoration: none; }
 .mitem.mail svg { background: rgba(31, 122, 77, .12); }
 .mitem.nf svg { background: rgba(27, 42, 107, .1); }
+.ed-st { padding: 12px 14px; display: grid; gap: 8px; margin-bottom: 12px; }
+.ed-st-l { font-size: 13px; font-weight: 600; color: var(--muted); }
+.ed-st .btn[data-s="aprovado"][aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #fff; }
+.ed-st .btn[data-s="recusado"][aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: #fff; }
+#dc-filtros { margin: 10px 0 2px; }
+.lj-item .tag.env { background: rgba(27, 42, 107, .12); color: #1b2a6b; }
+.btn.wa { background: #1f7a4d; border-color: #1f7a4d; color: #fff; }
+.btn.wa:hover { background: #18633e; }
+.wa-painel { margin-top: 14px; padding: 14px 16px; display: grid; gap: 10px; }
+.wa-tit { font-size: 16px; margin: 0; }
+.wa-msg { margin: 0; font-size: 14px; }
+#wa-pronto { display: grid; gap: 10px; }
+#wa-pronto[hidden] { display: none; }
+#wa-pronto .fld { flex: none; width: 100%; }
+#wa-pronto input, #wa-pronto textarea { width: 100%; box-sizing: border-box; font: inherit; font-weight: 400; text-align: left; font-size: 15px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--fg); }
+#wa-pronto textarea { resize: vertical; min-height: 5.5em; }
+.wa-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.wa-acoes .btn { flex: 1 1 12rem; justify-content: center; text-align: center; text-decoration: none; }
+#impressao.gerando { display: block !important; position: fixed; left: -12000px; top: 0; width: 194mm; background: #fff; color: #000; font-family: Calibri, Carlito, "Liberation Sans", Arial, sans-serif; }
+.html2pdf__container #impressao.gerando { position: static; left: auto; }
+#impressao.gerando .doc { background: #fff; }
 .mitem.bkp svg { background: rgba(120, 80, 20, .1); }
 .mitem.bkp[aria-busy="true"] { opacity: .7; cursor: progress; }
 
@@ -803,6 +824,12 @@ html, body { margin: 0; }
   </header>
   <button class="btn primary dc-novo" id="dc-novo" type="button">+ Novo orçamento</button>
   <input class="search" id="dc-busca" type="search" placeholder="Buscar por cliente ou número…" aria-label="Buscar">
+  <div class="rc-filtros" id="dc-filtros" role="group" aria-label="Mostrar orçamentos" hidden>
+    <button class="btn" type="button" data-f="todos" aria-pressed="true">Todos</button>
+    <button class="btn" type="button" data-f="pend" aria-pressed="false">Aguardando</button>
+    <button class="btn" type="button" data-f="aprovado" aria-pressed="false">Aprovados</button>
+    <button class="btn" type="button" data-f="recusado" aria-pressed="false">Recusados</button>
+  </div>
   <section class="card">
     <div class="lj-tit" id="dc-sub">Salvos</div>
     <div id="dc-lista" class="lj-hist"></div>
@@ -818,9 +845,21 @@ html, body { margin: 0; }
     <span class="eyebrow" id="ed-tipo">Orçamento</span>
     <h1 id="ed-tit">Novo orçamento</h1>
   </header>
+  <section class="card ed-st" id="ed-st" hidden>
+    <span class="ed-st-l">Status do orçamento</span>
+    <div class="rc-filtros" role="group" aria-label="Status do orçamento" id="ed-st-btns">
+      <button class="btn" type="button" data-s="" aria-pressed="true">Não enviado</button>
+      <button class="btn" type="button" data-s="enviado" aria-pressed="false">Enviado</button>
+      <button class="btn" type="button" data-s="aprovado" aria-pressed="false">Aprovado</button>
+      <button class="btn" type="button" data-s="recusado" aria-pressed="false">Recusado</button>
+    </div>
+    <span class="ed-dica" id="ed-st-info"></span>
+  </section>
   <div id="ed-form" class="ed-form"></div>
   <div class="fm-rodape ed-acoes">
     <button class="btn primary" id="ed-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn wa" id="ed-whats" type="button">Enviar pelo WhatsApp</button>
+    <button class="btn" id="ed-receber" type="button">Lançar em Contas a receber</button>
     <button class="btn" id="ed-dup" type="button">Duplicar</button>
     <button class="btn" id="ed-gerarrel" type="button">Gerar relatório de serviço</button>
     <button class="btn danger" id="ed-excluir" type="button">Excluir</button>
@@ -830,6 +869,21 @@ html, body { margin: 0; }
     <button class="btn solid-danger" id="ed-excluir-ok" type="button">Excluir</button>
     <button class="btn" id="ed-excluir-no" type="button">Cancelar</button>
   </div>
+  <section class="card wa-painel" id="wa-painel" hidden>
+    <h2 class="wa-tit">Enviar pelo WhatsApp</h2>
+    <p class="wa-msg" id="wa-msg" aria-live="polite"></p>
+    <div id="wa-pronto" hidden>
+      <label class="fld full" for="wa-fone"><span>WhatsApp do cliente (com DDD)</span><input id="wa-fone" type="tel" inputmode="tel" autocomplete="off" placeholder="(11) 90000-0000"></label>
+      <label class="fld full" for="wa-texto"><span>Mensagem</span><textarea id="wa-texto" rows="3"></textarea></label>
+      <div class="wa-acoes">
+        <button class="btn wa" id="wa-compartilhar" type="button" hidden>Compartilhar PDF no WhatsApp</button>
+        <button class="btn" id="wa-baixar" type="button">Baixar PDF</button>
+        <a class="btn" id="wa-abrir" href="#" target="_blank" rel="noopener">Abrir conversa no WhatsApp</a>
+        <button class="btn" id="wa-fechar" type="button">Fechar</button>
+      </div>
+      <p class="ed-dica" id="wa-dica"></p>
+    </div>
+  </section>
 </main>
 
 <main class="wrap" id="tela-receber" hidden>
@@ -2604,7 +2658,8 @@ const firestoreDb = {
   }
 
   // ----- Lista -----
-  let dcTipo = 'orc', dcLista = [], pararDocs = null;
+  let dcTipo = 'orc', dcLista = [], pararDocs = null, dcFiltro = 'todos';
+  const ST_ORC = { '': 'Não enviado', enviado: 'Enviado', aprovado: 'Aprovado', recusado: 'Recusado' };
   function abrirListaDocs(tipo) {
     const T = DOCS[tipo];
     if (dcTipo !== tipo || !pararDocs) {
@@ -2617,28 +2672,35 @@ const firestoreDb = {
     $('dc-tit').textContent = T.plural;
     $('dc-novo').textContent = '+ ' + T.novo;
     $('dc-sub').textContent = T.plural + ' salvos';
+    $('dc-filtros').hidden = tipo !== 'orc';
     desenharDocs();
   }
   function pararListaDocs() { if (pararDocs) { pararDocs(); pararDocs = null; } dcLista = []; }
   function desenharDocs() {
     const box = $('dc-lista'); if (!pararDocs) return;
     const q = semAcento($('dc-busca').value.trim());
-    const lista = dcLista.filter((d) => !q || semAcento(`${d.cliente || ''} ${d.numero || ''}`).includes(q))
+    const passa = (d) => dcTipo !== 'orc' || dcFiltro === 'todos' || (dcFiltro === 'pend' ? !d.status || d.status === 'enviado' : d.status === dcFiltro);
+    const lista = dcLista.filter((d) => passa(d) && (!q || semAcento(`${d.cliente || ''} ${d.numero || ''}`).includes(q)))
       .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.numero || '').localeCompare(String(a.numero || '')));
     box.replaceChildren();
-    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: dcLista.length ? 'Nada encontrado.' : 'Nenhum documento salvo ainda.' })); return; }
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: dcLista.length ? 'Nenhum documento neste filtro.' : 'Nenhum documento salvo ainda.' })); return; }
     lista.forEach((d) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
       const t = document.createElement('b'); t.textContent = `${d.numero || 'Sem número'} · ${d.cliente || 'Sem cliente'}`;
       const s = document.createElement('span'); s.className = 'sub';
-      s.textContent = dcTipo === 'orc' ? `${dataBR(d.data)} · ${brl.format(totalItens(d.itens))}` : `${dataBR(d.data)} · ${String(d.equipamento || '').split('\n')[0]}`;
-      const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'Abrir';
+      s.textContent = (dcTipo === 'orc' ? `${dataBR(d.data)} · ${brl.format(totalItens(d.itens))}` : `${dataBR(d.data)} · ${String(d.equipamento || '').split('\n')[0]}`) + (d.receberId ? ' · lançado a receber' : '');
+      const tag = document.createElement('span'); tag.className = 'tag';
+      if (dcTipo === 'orc') { const st = d.status || ''; tag.textContent = ST_ORC[st] || 'Não enviado'; tag.classList.toggle('ok', st === 'aprovado'); tag.classList.toggle('nok', st === 'recusado'); tag.classList.toggle('env', st === 'enviado'); }
+      else tag.textContent = 'Abrir';
       b.append(t, s, tag);
       b.addEventListener('click', () => { location.hash = `doc-${dcTipo}-${d.id}`; });
       box.appendChild(b);
     });
   }
   $('dc-busca').addEventListener('input', desenharDocs);
+  document.querySelectorAll('#dc-filtros .btn').forEach((b) => b.addEventListener('click', () => {
+    dcFiltro = b.dataset.f; document.querySelectorAll('#dc-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); desenharDocs();
+  }));
   $('dc-novo').addEventListener('click', () => { location.hash = `doc-${dcTipo}-novo`; });
   $('dc-voltar').addEventListener('click', () => { location.hash = 'admin'; });
 
@@ -2720,6 +2782,9 @@ const firestoreDb = {
     $('ed-dup').hidden = !ed.id;
     $('ed-excluir').hidden = !ed.id;
     $('ed-confirm').hidden = true;
+    $('wa-painel').hidden = true;
+    $('ed-st').hidden = edTipo !== 'orc';
+    pintarStatus(); pintarReceber();
     montarFormulario($('ed-form'), T.campos, ed, (k) => { if (k === 'numero') $('ed-tit').textContent = `${T.nome} ${ed.numero || ''}`.trim(); edMudou(); });
     edStatus(ed.id ? 'Salvo' : '');
   }
@@ -2744,7 +2809,7 @@ const firestoreDb = {
     try { const s = await getDocs(fsCol(fs, DOCS[tipo].col)); return s.docs.map((d) => ({ id: d.id, ...d.data() })); } catch (_) { return []; }
   }
   async function abrirEditor(tipo, arg) {
-    if (ed && ed.id && edTipo === tipo && arg === ed.id) return;
+    if (ed && ed.id && edTipo === tipo && arg === ed.id) { pintarReceber(); pintarStatus(); return; }
     if (edTimer) await salvarDoc();
     edTipo = tipo; ed = null; pararFotosRel();
     $('ed-form').replaceChildren(); edStatus('Carregando…');
@@ -2782,6 +2847,41 @@ const firestoreDb = {
   $('ed-voltar').addEventListener('click', async () => { if (edTimer) await salvarDoc(); location.hash = DOCS[edTipo].lista; });
   $('ed-dup').addEventListener('click', async () => { if (!ed || !ed.id) return; if (edTimer) await salvarDoc(); location.hash = `doc-${edTipo}-novo-de-${edTipo}-${ed.id}`; });
   $('ed-gerarrel').addEventListener('click', async () => { if (!ed || !ed.id) return; if (edTimer) await salvarDoc(); location.hash = `doc-rel-novo-de-orc-${ed.id}`; });
+  // ----- Status do orçamento -----
+  function pintarStatus() {
+    if (!ed || edTipo !== 'orc') return;
+    const st = ed.status || '';
+    document.querySelectorAll('#ed-st-btns .btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === st)));
+    $('ed-st-info').textContent = st && ed.statusEm ? `${ST_ORC[st]} em ${dataBR(ed.statusEm)}` + (st === 'aprovado' && !ed.receberId ? ' · use "Lançar em Contas a receber" logo abaixo.' : '') : '';
+  }
+  document.querySelectorAll('#ed-st-btns .btn').forEach((b) => b.addEventListener('click', () => {
+    if (!ed) return;
+    ed.status = b.dataset.s; ed.statusEm = b.dataset.s ? hojeISO() : '';
+    pintarStatus(); edMudou();
+  }));
+
+  // ----- Lançar em Contas a receber -----
+  let rcPendente = null;
+  function pintarReceber() { $('ed-receber').textContent = ed && ed.receberId ? '✓ Lançado · ver em Contas a receber' : 'Lançar em Contas a receber'; }
+  const somaDias = (iso, n) => { const [a, m, d] = iso.split('-').map(Number); const x = new Date(a, m - 1, d + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
+  $('ed-receber').addEventListener('click', async () => {
+    if (!ed) return;
+    if (edTimer || !ed.id) await salvarDoc();
+    if (!ed.id) return;
+    if (ed.receberId) { location.hash = 'receber'; return; }
+    let valor = 0, desc = '';
+    if (edTipo === 'orc') { valor = totalItens(ed.itens); desc = `Orçamento ${ed.numero || ''}`.trim(); }
+    else {
+      desc = `Relatório ${ed.numero || ''}`.trim();
+      if (ed.orcamentoRef) {
+        const o = (await listaAtual('orc')).find((x) => String(x.numero || '').trim() === String(ed.orcamentoRef).trim());
+        if (o) { valor = totalItens(o.itens); desc += ` (orçamento ${o.numero})`; }
+      }
+    }
+    rcPendente = { cliente: ed.cliente || '', descricao: desc, valor, vencimento: somaDias(hojeISO(), 30), obs: '', origemTipo: edTipo, origemId: ed.id, origemNumero: ed.numero || '' };
+    location.hash = 'receber';
+  });
+
   $('ed-excluir').addEventListener('click', () => { $('ed-confirm').hidden = false; $('ed-excluir-ok').focus(); });
   $('ed-excluir-no').addEventListener('click', () => { $('ed-confirm').hidden = true; });
   $('ed-excluir-ok').addEventListener('click', async () => {
@@ -3154,18 +3254,20 @@ const firestoreDb = {
     a.download = `receber-${(c.cliente || 'conta').replace(/[^\w]+/g, '-').toLowerCase()}-${c.vencimento}.ics`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }
+  let rcOrigem = null;
   function abrirConta(c) {
-    rcEdit = c ? { ...c } : null;
+    rcEdit = c && c.id ? { ...c } : null;
+    rcOrigem = c && !c.id && c.origemId ? { origemTipo: c.origemTipo, origemId: c.origemId, origemNumero: c.origemNumero } : null;
     ouvirClientes();
     const dl = $('rc-clientes-lista'); dl.replaceChildren(); clientes.forEach((x) => dl.appendChild(new Option(x.nome)));
     $('rc-cliente').value = c ? c.cliente || '' : ''; $('rc-desc').value = c ? c.descricao || '' : '';
     $('rc-valor').value = c && c.valor ? fmtPreco(c.valor) : ''; $('rc-venc').value = c ? c.vencimento || '' : hojeISO();
     $('rc-obs').value = c ? c.obs || '' : '';
-    $('rc-excluir').hidden = !c; $('rc-excluir').classList.remove('conf'); $('rc-excluir').textContent = 'Excluir';
+    $('rc-excluir').hidden = !rcEdit; $('rc-excluir').classList.remove('conf'); $('rc-excluir').textContent = 'Excluir';
     $('rc-err').hidden = true; $('rc-form').hidden = false; $('rc-novo').setAttribute('aria-expanded', 'true');
     $('rc-form').scrollIntoView({ block: 'start', behavior: 'smooth' }); $('rc-cliente').focus({ preventScroll: true });
   }
-  function fecharConta() { rcEdit = null; $('rc-form').hidden = true; $('rc-novo').setAttribute('aria-expanded', 'false'); }
+  function fecharConta() { rcEdit = null; rcOrigem = null; $('rc-form').hidden = true; $('rc-novo').setAttribute('aria-expanded', 'false'); }
   $('rc-novo').addEventListener('click', () => { if (!$('rc-form').hidden && !rcEdit) fecharConta(); else abrirConta(null); });
   $('rc-cancelar').addEventListener('click', fecharConta);
   $('rc-voltar').addEventListener('click', () => { fecharConta(); location.hash = 'admin'; });
@@ -3184,7 +3286,14 @@ const firestoreDb = {
     $('rc-salvar').disabled = true;
     try {
       if (rcEdit) await updateDoc(fsDoc(fs, 'receber', rcEdit.id), dados);
-      else await setDoc(fsDoc(fsCol(fs, 'receber')), { ...dados, recebido: false, recebidoEm: '', criadoEm: new Date().toISOString() });
+      else {
+        const ref = fsDoc(fsCol(fs, 'receber')), org = rcOrigem;
+        await setDoc(ref, { ...dados, ...(org || {}), recebido: false, recebidoEm: '', criadoEm: new Date().toISOString() });
+        if (org) {
+          try { await updateDoc(fsDoc(fs, DOCS[org.origemTipo].col, org.origemId), { receberId: ref.id }); } catch (_) {}
+          if (ed && ed.id === org.origemId) ed.receberId = ref.id;
+        }
+      }
       fecharConta();
     } catch (e) { erro(e && e.code === 'permission-denied' ? 'Sem permissão (confira as regras do Firestore).' : 'Não foi possível salvar. Verifique a internet.'); }
     finally { $('rc-salvar').disabled = false; }
@@ -3192,7 +3301,11 @@ const firestoreDb = {
   $('rc-excluir').addEventListener('click', async () => {
     const b = $('rc-excluir'); if (!rcEdit) return;
     if (!b.classList.contains('conf')) { b.classList.add('conf'); b.textContent = 'Confirmar exclusão?'; setTimeout(() => { b.classList.remove('conf'); b.textContent = 'Excluir'; }, 4000); return; }
-    try { await deleteDoc(fsDoc(fs, 'receber', rcEdit.id)); fecharConta(); } catch (_) { $('rc-err').textContent = 'Não foi possível excluir.'; $('rc-err').hidden = false; }
+    try {
+      const org = rcEdit.origemId ? { t: rcEdit.origemTipo, id: rcEdit.origemId } : null;
+      await deleteDoc(fsDoc(fs, 'receber', rcEdit.id)); fecharConta();
+      if (org && DOCS[org.t]) { try { await updateDoc(fsDoc(fs, DOCS[org.t].col, org.id), { receberId: '' }); } catch (_) {} if (ed && ed.id === org.id) ed.receberId = ''; }
+    } catch (_) { $('rc-err').textContent = 'Não foi possível excluir.'; $('rc-err').hidden = false; }
   });
 
   // ----- Documento impresso (modelo da proposta da Koneg) -----
@@ -3275,6 +3388,95 @@ const firestoreDb = {
     const fotosImp = edTipo === 'rel' ? await fotosDoRelatorio(ed.id) : [];
     imprimirConteudo([montarDocumento(edTipo, ed, fotosImp)], nome);
   });
+
+  // ----- Enviar pelo WhatsApp (gera o PDF no próprio navegador) -----
+  let waPdf = null, waNome = '', waGerando = false;
+  function carregarScript(src) {
+    return new Promise((res, rej) => {
+      if (document.querySelector(`script[src="${src}"]`)) return res();
+      const sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('script')); document.head.appendChild(sc);
+    });
+  }
+  function foneWa(t) {
+    let d = String(t || '').replace(/\D/g, '');
+    if (!d) return '';
+    d = d.replace(/^0+/, '');
+    if (d.length === 10 || d.length === 11) d = '55' + d;
+    return d.length >= 12 ? d : '';
+  }
+  function foneDoCliente(nome) {
+    const n = semAcento(String(nome || '').trim());
+    const c = n && clientes.find((x) => semAcento(String(x.nome || '').trim()) === n);
+    return c ? c.telefone || '' : '';
+  }
+  function linkWa() {
+    const f = foneWa($('wa-fone').value), t = encodeURIComponent($('wa-texto').value.trim());
+    return f ? `https://wa.me/${f}?text=${t}` : `https://wa.me/?text=${t}`;
+  }
+  async function marcarEnviado() {
+    if (ed && edTipo === 'orc' && !ed.status) { ed.status = 'enviado'; ed.statusEm = hojeISO(); pintarStatus(); edMudou(); }
+  }
+  async function gerarPdf(no) {
+    await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+    const box = $('impressao');
+    box.replaceChildren(no); box.classList.add('gerando');
+    try {
+      const imgs = [...box.querySelectorAll('img')].filter((i) => !i.complete);
+      await Promise.all(imgs.map((i) => new Promise((r) => { i.onload = i.onerror = r; })));
+      return await window.html2pdf().set({
+        margin: [8, 8, 8, 8], image: { type: 'jpeg', quality: 0.9 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['figure', '.assin2', 'tr', 'h2'] },
+      }).from(box).outputPdf('blob');
+    } finally { box.classList.remove('gerando'); box.replaceChildren(); }
+  }
+  $('ed-whats').addEventListener('click', async () => {
+    if (!ed || waGerando) return;
+    if (edTimer || !ed.id) await salvarDoc();
+    const painel = $('wa-painel');
+    painel.hidden = false; $('wa-pronto').hidden = true;
+    $('wa-msg').textContent = 'Gerando o PDF… isso leva alguns segundos.';
+    painel.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    waGerando = true; $('ed-whats').disabled = true;
+    try {
+      await carregarEmpresa();
+      const fotosImp = edTipo === 'rel' ? await fotosDoRelatorio(ed.id) : [];
+      const blob = await gerarPdf(montarDocumento(edTipo, ed, fotosImp));
+      waNome = ([edTipo === 'orc' ? 'Orcamento' : 'Relatorio de servico', String(ed.numero || '').replace('/', '-'), ed.cliente].filter(Boolean).join(' - ')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\- ]+/g, '').trim() || 'documento') + '.pdf';
+      waPdf = new File([blob], waNome, { type: 'application/pdf' });
+      const tam = blob.size < 1048576 ? Math.max(1, Math.round(blob.size / 1024)) + ' KB' : (blob.size / 1048576).toFixed(1).replace('.', ',') + ' MB';
+      $('wa-msg').textContent = `✓ PDF pronto: ${waNome} (${tam})`;
+      $('wa-fone').value = $('wa-fone').value || foneDoCliente(ed.cliente);
+      $('wa-texto').value = edTipo === 'orc'
+        ? `Olá! Segue o orçamento nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}, no valor total de ${brl.format(totalItens(ed.itens))}. Qualquer dúvida, estou à disposição.`
+        : `Olá! Segue o relatório de serviço executado nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}${ed.data ? ', referente ao serviço de ' + dataBR(ed.data) : ''}. Qualquer dúvida, estou à disposição.`;
+      const podeComp = !!(navigator.canShare && navigator.canShare({ files: [waPdf] }));
+      $('wa-compartilhar').hidden = !podeComp;
+      $('wa-abrir').href = linkWa();
+      $('wa-dica').textContent = podeComp
+        ? 'No celular: toque em "Compartilhar PDF no WhatsApp" e escolha o contato. O PDF vai junto com a mensagem.'
+        : 'No computador: toque em "Baixar PDF", depois em "Abrir conversa no WhatsApp" e anexe o arquivo baixado (clipe 📎).';
+      $('wa-pronto').hidden = false;
+    } catch (e) {
+      $('wa-msg').textContent = 'Não foi possível gerar o PDF. Verifique a internet e tente de novo, ou use "Imprimir / salvar PDF".';
+    } finally { waGerando = false; $('ed-whats').disabled = false; }
+  });
+  $('wa-fone').addEventListener('input', () => { $('wa-abrir').href = linkWa(); });
+  $('wa-texto').addEventListener('input', () => { $('wa-abrir').href = linkWa(); });
+  $('wa-abrir').addEventListener('click', () => { marcarEnviado(); });
+  $('wa-baixar').addEventListener('click', () => {
+    if (!waPdf) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(waPdf); a.download = waNome;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  });
+  $('wa-compartilhar').addEventListener('click', async () => {
+    if (!waPdf) return;
+    try { await navigator.share({ files: [waPdf], text: $('wa-texto').value.trim(), title: waNome }); marcarEnviado(); }
+    catch (e) { if (!e || e.name !== 'AbortError') $('wa-dica').textContent = 'O celular não deixou compartilhar. Use "Baixar PDF" e anexe pelo WhatsApp.'; }
+  });
+  $('wa-fechar').addEventListener('click', () => { $('wa-painel').hidden = true; });
 
   // ----- Dados da empresa -----
   let empTimer = null;
@@ -3366,7 +3568,7 @@ const firestoreDb = {
       $('tela-empresa').hidden = hh !== '#empresa';
       $('tela-clientes').hidden = hh !== '#clientes';
       $('tela-receber').hidden = hh !== '#receber';
-      if (hh === '#receber') { ouvirContas(); desenharContas(); }
+      if (hh === '#receber') { ouvirContas(); desenharContas(); if (rcPendente) { const pre = rcPendente; rcPendente = null; setTimeout(() => abrirConta(pre), 0); } }
       if (hh === '#clientes') ouvirClientes();
       if (hh === '#orcamentos') abrirListaDocs('orc');
       if (hh === '#relatorios') abrirListaDocs('rel');
