@@ -528,6 +528,17 @@ html, body { margin: 0; }
 .mitem.orc svg { background: rgba(46, 116, 181, .12); }
 .mitem.rel svg { background: rgba(31, 122, 77, .12); }
 .mitem.emp svg { background: var(--bg); }
+
+.mitem.cli svg { background: rgba(242, 183, 5, .18); }
+.cl-form { padding: 4px 0 14px; }
+.cl-acts { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 14px; }
+.cl-acts #cl-excluir { margin-left: auto; }
+.cl-acts .btn.conf { background: var(--danger); color: #fff; border-color: var(--danger); }
+#cl-err { padding: 8px 14px 0; }
+.ed-cli { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.ed-cli select { font: inherit; font-size: 15px; padding: 9px 10px; border: 1px solid var(--accent); border-radius: 4px; background: var(--accent-soft); color: var(--fg); min-width: 0; width: 100%; flex: none; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.ed-cli .btn { min-height: 40px; }
+@media (max-width: 640px) { .cl-acts .btn { flex: 1 1 auto; justify-content: center; min-height: 42px; } .cl-acts #cl-excluir { margin-left: 0; flex-basis: 100%; } }
 </style>
 </head>
 <body>
@@ -602,7 +613,7 @@ html, body { margin: 0; }
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
         <span class="mi-t">Administração</span>
-        <span class="mi-d">Orçamentos, relatórios, funcionários, nota fiscal e e-mail</span>
+        <span class="mi-d">Orçamentos, relatórios, clientes, funcionários, nota fiscal e e-mail</span>
       </button>
     </nav>
   </div>
@@ -674,6 +685,11 @@ html, body { margin: 0; }
         <span class="mi-t">Relatório de serviço executado</span>
         <span class="mi-d">Registrar o que foi feito e imprimir para o cliente assinar</span>
       </button>
+      <button class="mitem cli" type="button" data-go="clientes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V9l6-4 6 4v12"/><path d="M15 21V12h6v9"/><path d="M7 12h4M7 16h4"/></svg>
+        <span class="mi-t">Clientes</span>
+        <span class="mi-d">Cadastro de empresas para usar nos orçamentos e relatórios</span>
+      </button>
       <button class="mitem emp" type="button" data-go="empresa">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12"/><path d="M9 20v-5h6v5"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/></svg>
         <span class="mi-t">Dados da empresa</span>
@@ -735,6 +751,31 @@ html, body { margin: 0; }
     <button class="btn solid-danger" id="ed-excluir-ok" type="button">Excluir</button>
     <button class="btn" id="ed-excluir-no" type="button">Cancelar</button>
   </div>
+</main>
+
+<main class="wrap" id="tela-clientes" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="cl-voltar" type="button">← Voltar à Administração</button>
+    </div>
+    <span class="eyebrow">Administração</span>
+    <h1>Clientes</h1>
+  </header>
+  <button class="btn primary dc-novo" id="cl-novo" type="button" aria-expanded="false" aria-controls="cl-form">+ Novo cliente</button>
+  <section class="card cl-form" id="cl-form" hidden>
+    <div class="ed-campos" id="cl-campos"></div>
+    <div class="cl-acts">
+      <button class="btn primary" id="cl-salvar" type="button">Salvar cliente</button>
+      <button class="btn" id="cl-cancelar" type="button">Cancelar</button>
+      <button class="btn danger" id="cl-excluir" type="button">Excluir cliente</button>
+    </div>
+    <p class="adderr" id="cl-err" hidden></p>
+  </section>
+  <input class="search" id="cl-busca" type="search" placeholder="Buscar por nome, CNPJ ou cidade…" aria-label="Buscar cliente">
+  <section class="card">
+    <div class="lj-tit" id="cl-sub">Clientes cadastrados</div>
+    <div id="cl-lista" class="lj-hist"></div>
+  </section>
 </main>
 
 <main class="wrap" id="tela-empresa" hidden>
@@ -2204,7 +2245,7 @@ const firestoreDb = {
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
-    if (['#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa'].includes(h) || h.startsWith('#doc-')) return P.admin;
+    if (['#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa', '#clientes'].includes(h) || h.startsWith('#doc-')) return P.admin;
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
@@ -2543,6 +2584,7 @@ const firestoreDb = {
         grid = document.createElement('div'); grid.className = 'ed-campos';
         sec.append(h, grid); box.appendChild(sec); return;
       }
+      if (def[0] === 'cliente' && obj === ed) { grid.appendChild(seletorCliente()); ouvirClientes(); setTimeout(atualizarSelectCliente, 0); }
       if (def[1] === 'itens' || def[1] === 'pecas') { const d = document.createElement('div'); d.className = 'ed-itens full'; grid.appendChild(d); editorItens(d, def[1] === 'itens'); return; }
       grid.appendChild(campoEl(def, obj[def[0]], (v) => { obj[def[0]] = v; aoMudar(def[0]); }));
     });
@@ -2625,6 +2667,111 @@ const firestoreDb = {
     try { await deleteDoc(fsDoc(fs, DOCS[edTipo].col, ed.id)); const l = DOCS[edTipo].lista; ed = null; location.hash = l; }
     catch (_) { edStatus('Não foi possível excluir.', 'erro'); }
   });
+
+
+  // ----- Clientes -----
+  const CLIENTE_CAMPOS = [
+    ['nome', 'text', 'Empresa / nome do cliente', 'full'], ['cnpj', 'text', 'CNPJ / CPF'],
+    ['contato', 'text', 'Pessoa de contato'], ['telefone', 'text', 'Telefone / WhatsApp'], ['email', 'text', 'E-mail'],
+    ['endereco', 'text', 'Endereço (local do serviço)', 'full'], ['cidade', 'text', 'Cidade/UF'],
+    ['obs', 'area', 'Observações', 'full'],
+  ];
+  let clientes = [], pararCli = null, cliEdit = null;
+  function ouvirClientes() {
+    if (pararCli) return;
+    pararCli = fsSnap(fsCol(fs, 'clientes'), (snap) => {
+      clientes = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+      desenharClientes(); atualizarSelectCliente();
+    }, () => { $('cl-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+  }
+  function pararClientes() { if (pararCli) { pararCli(); pararCli = null; } clientes = []; }
+  function desenharClientes() {
+    const box = $('cl-lista'); box.replaceChildren();
+    const q = semAcento($('cl-busca').value.trim());
+    const lista = clientes.filter((c) => !q || semAcento(`${c.nome} ${c.cnpj} ${c.cidade} ${c.contato}`).includes(q));
+    $('cl-sub').textContent = `Clientes cadastrados (${clientes.length})`;
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: clientes.length ? 'Nenhum cliente encontrado.' : 'Nenhum cliente cadastrado ainda. Use "+ Novo cliente".' })); return; }
+    lista.forEach((c) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+      const t = document.createElement('b'); t.textContent = c.nome || 'Sem nome';
+      const s2 = document.createElement('span'); s2.className = 'sub'; s2.textContent = [c.cnpj, c.cidade, c.contato, c.telefone].filter(Boolean).join(' · ') || 'Sem dados';
+      const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'Editar';
+      b.append(t, s2, tag);
+      b.addEventListener('click', () => abrirCliente(c));
+      box.appendChild(b);
+    });
+  }
+  function abrirCliente(c) {
+    cliEdit = c ? { ...c } : { nome: '', cnpj: '', contato: '', telefone: '', email: '', endereco: '', cidade: '', obs: '' };
+    const box = $('cl-campos'); box.replaceChildren();
+    CLIENTE_CAMPOS.forEach((def) => box.appendChild(campoEl(['cl-' + def[0], def[1], def[2], def[3]], cliEdit[def[0]], (v) => { cliEdit[def[0]] = v; })));
+    $('cl-excluir').hidden = !c; $('cl-excluir').classList.remove('conf'); $('cl-excluir').textContent = 'Excluir cliente';
+    $('cl-err').hidden = true;
+    $('cl-form').hidden = false; $('cl-novo').setAttribute('aria-expanded', 'true');
+    $('cl-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    const f = $('ed-cl-nome'); if (f) f.focus({ preventScroll: true });
+  }
+  function fecharCliente() { cliEdit = null; $('cl-form').hidden = true; $('cl-novo').setAttribute('aria-expanded', 'false'); }
+  $('cl-novo').addEventListener('click', () => { if (!$('cl-form').hidden && cliEdit && !cliEdit.id) fecharCliente(); else abrirCliente(null); });
+  $('cl-cancelar').addEventListener('click', fecharCliente);
+  $('cl-busca').addEventListener('input', desenharClientes);
+  $('cl-voltar').addEventListener('click', () => { fecharCliente(); location.hash = 'admin'; });
+  $('cl-salvar').addEventListener('click', async () => {
+    if (!cliEdit) return;
+    const nome = String(cliEdit.nome || '').trim().replace(/\s+/g, ' ');
+    if (!nome) { $('cl-err').textContent = 'Escreva o nome do cliente.'; $('cl-err').hidden = false; return; }
+    const igual = clientes.find((c) => c.id !== cliEdit.id && semAcento(c.nome) === semAcento(nome));
+    if (igual) { $('cl-err').textContent = `Já existe um cliente chamado "${igual.nome}".`; $('cl-err').hidden = false; return; }
+    const { id, ...dados } = cliEdit; dados.nome = nome;
+    $('cl-salvar').disabled = true;
+    try {
+      const ref = id ? fsDoc(fs, 'clientes', id) : fsDoc(fsCol(fs, 'clientes'));
+      await setDoc(ref, { ...dados, atualizadoEm: new Date().toISOString() });
+      fecharCliente();
+    } catch (e) { $('cl-err').textContent = e && e.code === 'permission-denied' ? 'Sem permissão (confira as regras do Firestore).' : 'Não foi possível salvar. Verifique a internet.'; $('cl-err').hidden = false; }
+    finally { $('cl-salvar').disabled = false; }
+  });
+  $('cl-excluir').addEventListener('click', async () => {
+    const b = $('cl-excluir');
+    if (!cliEdit || !cliEdit.id) return;
+    if (!b.classList.contains('conf')) { b.classList.add('conf'); b.textContent = 'Confirmar exclusão?'; setTimeout(() => { b.classList.remove('conf'); b.textContent = 'Excluir cliente'; }, 4000); return; }
+    try { await deleteDoc(fsDoc(fs, 'clientes', cliEdit.id)); fecharCliente(); }
+    catch (_) { $('cl-err').textContent = 'Não foi possível excluir.'; $('cl-err').hidden = false; }
+  });
+
+  // Seletor de cliente cadastrado dentro do orçamento / relatório
+  function seletorCliente() {
+    const w = document.createElement('div'); w.className = 'ed-cli full';
+    const lb = document.createElement('label'); lb.className = 'fld'; lb.htmlFor = 'ed-cli-sel'; lb.style.flex = '1 1 16rem';
+    const sp = document.createElement('span'); sp.textContent = 'Preencher com cliente cadastrado';
+    const sel = document.createElement('select'); sel.id = 'ed-cli-sel';
+    lb.append(sp, sel);
+    const novo = document.createElement('button'); novo.type = 'button'; novo.className = 'btn'; novo.textContent = 'Salvar como cliente';
+    novo.title = 'Guarda o nome e o CNPJ deste documento no cadastro de clientes';
+    novo.addEventListener('click', async () => {
+      if (!ed) return;
+      const nome = String(ed.cliente || '').trim();
+      if (!nome) { edStatus('Preencha o nome do cliente primeiro.', 'erro'); return; }
+      const ja = clientes.find((c) => semAcento(c.nome) === semAcento(nome));
+      if (ja) { edStatus(`${ja.nome} já está cadastrado.`, 'ok'); return; }
+      try { await setDoc(fsDoc(fsCol(fs, 'clientes')), { nome, cnpj: ed.cnpj || '', endereco: ed.local || '', contato: ed.responsavel || '', telefone: '', email: '', cidade: '', obs: '', atualizadoEm: new Date().toISOString() }); edStatus(`${nome} cadastrado como cliente`, 'ok'); }
+      catch (_) { edStatus('Não foi possível cadastrar o cliente.', 'erro'); }
+    });
+    sel.addEventListener('change', () => {
+      const c = clientes.find((x) => x.id === sel.value); if (!c || !ed) return;
+      const mapa = { cliente: c.nome || '', cnpj: c.cnpj || '' };
+      if (edTipo === 'rel') { mapa.local = [c.endereco, c.cidade].filter(Boolean).join(' - '); if (c.contato) mapa.responsavel = c.contato; }
+      Object.entries(mapa).forEach(([k, v]) => { ed[k] = v; const inp = $('ed-' + k); if (inp) inp.value = v; });
+      edMudou(); sel.value = '';
+    });
+    w.append(lb, novo);
+    return w;
+  }
+  function atualizarSelectCliente() {
+    const sel = $('ed-cli-sel'); if (!sel) return;
+    sel.replaceChildren(new Option(clientes.length ? 'Escolha um cliente…' : 'Nenhum cliente cadastrado', ''));
+    clientes.forEach((c) => sel.appendChild(new Option(c.nome + (c.cnpj ? ' · ' + c.cnpj : ''), c.id)));
+  }
 
   // ----- Documento impresso (modelo da proposta da Koneg) -----
   function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
@@ -2729,6 +2876,8 @@ const firestoreDb = {
       $('tela-docs').hidden = hh !== '#orcamentos' && hh !== '#relatorios';
       $('tela-doc').hidden = !md;
       $('tela-empresa').hidden = hh !== '#empresa';
+      $('tela-clientes').hidden = hh !== '#clientes';
+      if (hh === '#clientes') ouvirClientes();
       if (hh === '#orcamentos') abrirListaDocs('orc');
       if (hh === '#relatorios') abrirListaDocs('rel');
       if (md) abrirEditor(md[1], md[2]);
@@ -2751,7 +2900,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h.startsWith('#doc-');
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h.startsWith('#doc-');
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -2768,8 +2917,8 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
-    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
     const email = String(u.email || '').toLowerCase();

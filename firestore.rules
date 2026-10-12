@@ -47,6 +47,9 @@ service cloud.firestore {
     match /relatorios/{id} {
       allow read, write: if admin();
     }
+    match /clientes/{id} {
+      allow read, write: if admin();
+    }
     match /admin/{doc} {
       allow read, write: if admin();
     }
