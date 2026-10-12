@@ -571,7 +571,7 @@ const firestoreDb = {
     });
     linhas.push('──────────────');
     linhas.push(`Valor total: *${brl.format(r.total)}*`);
-    linhas.push(`Valor de venda final (${pctTxt(r.pct)}): *${brl.format(r.final)}*`);
+    linhas.push(`Valor de venda final: *${brl.format(r.final)}*`);
     return linhas.join('\n');
   }
   function abrirResumo() {
@@ -589,7 +589,7 @@ const firestoreDb = {
       row.append(n, v, d); box.appendChild(row);
     });
     $('rs-total').textContent = brl.format(r.total);
-    $('rs-final-lbl').textContent = `Valor de venda final (${pctTxt(r.pct)})`;
+    $('rs-final-lbl').textContent = 'Valor de venda final';
     $('rs-final').textContent = brl.format(r.final);
     ['rs-wpp', 'rs-img', 'rs-copiar'].forEach((k) => { $(k).disabled = !r.lista.length; });
     $('rs-msg').textContent = '';
@@ -672,7 +672,7 @@ const firestoreDb = {
     const bx = P - 16, bw = W - 2 * P + 32, bh = 100;
     if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(bx, y, bw, bh, 12); ctx.fill(); } else ctx.fillRect(bx, y, bw, bh);
     ctx.fillStyle = '#16191d'; ctx.textAlign = 'left'; ctx.font = `600 34px ${body}`;
-    ctx.fillText(`Valor de venda final (${pctTxt(r.pct)})`, P, y + 62);
+    ctx.fillText('Valor de venda final', P, y + 62);
     ctx.textAlign = 'right'; ctx.font = `600 52px ${disp}`; ctx.fillText(brl.format(r.final), W - P, y + 66);
     ctx.textAlign = 'center'; ctx.fillStyle = '#5d6670'; ctx.font = `400 26px ${body}`;
     ctx.fillText('Koneg Manutenção · (11) 96296-4884 · www.koneg.com.br', W / 2, H - P - 4);
