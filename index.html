@@ -472,6 +472,62 @@ html, body { margin: 0; }
 .ad-tit { font-size: clamp(30px, 5vw, 40px); margin-top: 6px; }
 #tela-admin .menu-grid { flex: none; align-content: start; }
 #tela-admin .menu-wrap { gap: 16px; }
+/* ===== Orçamentos, relatórios e dados da empresa ===== */
+.dc-novo { justify-content: center; min-height: 46px; font-size: 15px; }
+.ed-form { display: flex; flex-direction: column; gap: 12px; }
+.ed-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.ed-sec h2 { margin: 0; padding: 10px 14px; font-size: 15px; font-weight: 600; background: var(--bg); border-bottom: 1px solid var(--line); }
+.ed-campos { padding: 12px 14px 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 12px; }
+.ed-campos .full { grid-column: 1 / -1; }
+.ed-campos .fld input, .ed-campos .fld textarea { width: 100%; box-sizing: border-box; text-align: left; font-family: var(--font-body); }
+.ed-campos .fld textarea { font: inherit; font-size: 15px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); resize: vertical; text-transform: none; letter-spacing: 0; font-weight: 400; line-height: 1.45; }
+.ed-campos .fld textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.ed-dica { font-size: 12px; color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+.ed-itens { display: flex; flex-direction: column; gap: 8px; }
+.ed-item { display: grid; grid-template-columns: 2.2rem 1fr 4.5rem 8rem 2.4rem; gap: 8px; align-items: start; }
+.ed-item.sem-valor { grid-template-columns: 2.2rem 1fr 4.5rem 2.4rem; }
+.ed-item .n { font-family: var(--font-mono); font-size: 13px; color: var(--muted); padding-top: 10px; }
+.ed-item textarea, .ed-item input { font: inherit; font-size: 15px; width: 100%; box-sizing: border-box; padding: 8px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
+.ed-item textarea { resize: vertical; min-height: 40px; line-height: 1.35; }
+.ed-item input { text-align: right; font-family: var(--font-mono); }
+.ed-item textarea:focus-visible, .ed-item input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.ed-item .rm { font: inherit; height: 38px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--danger); cursor: pointer; }
+.ed-item-cab { display: grid; grid-template-columns: 2.2rem 1fr 4.5rem 8rem 2.4rem; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.ed-item-cab.sem-valor { grid-template-columns: 2.2rem 1fr 4.5rem 2.4rem; }
+.ed-itens-rod { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.ed-total { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.ed-acoes .btn { min-height: 46px; justify-content: center; }
+.ed-acoes #ed-imprimir { flex: 1 1 14rem; font-size: 15px; }
+@media (max-width: 640px) {
+  .ed-item, .ed-item.sem-valor { grid-template-columns: 1fr 1fr 2.6rem; grid-template-areas: "d d d" "q v r"; }
+  .ed-item.sem-valor { grid-template-areas: "d d d" "q q r"; }
+  .ed-item .n { display: none; }
+  .ed-item textarea { grid-area: d; }
+  .ed-item .q { grid-area: q; } .ed-item .v { grid-area: v; } .ed-item .rm { grid-area: r; }
+  .ed-item-cab { display: none; }
+  .ed-acoes .btn { flex: 1 1 100%; }
+}
+
+/* Documento impresso (modelo do orçamento da Koneg) */
+#impressao .doc { font-family: Cambria, "Times New Roman", Georgia, serif; font-size: 11pt; line-height: 1.4; color: #000; padding: 4mm 14mm 6mm; }
+#impressao .doc .dh { position: relative; text-align: center; min-height: 34mm; padding-left: 0; }
+#impressao .doc .dh img { position: absolute; left: -8mm; top: -3mm; width: 40mm; height: auto; }
+#impressao .doc .dh .tt { color: #2e74b5; font-weight: 700; font-size: 13.5pt; padding-top: 9mm; padding-left: 26mm; }
+#impressao .doc .dh .nm { font-weight: 700; margin-top: 1mm; padding-left: 26mm; }
+#impressao .doc .dh .ln { font-size: 10.5pt; }
+#impressao .doc .meta { margin: 9mm 0 0; }
+#impressao .doc h2 { color: #4f81bd; font-size: 12.5pt; font-weight: 700; margin: 5mm 0 1.5mm; font-family: inherit; break-after: avoid; }
+#impressao .doc p { margin: 0; }
+#impressao .doc .bul { margin: 0; }
+#impressao .doc table.it { width: 100%; border-collapse: collapse; margin-top: 1mm; table-layout: fixed; border: 0; }
+#impressao .doc table.it td, #impressao .doc table.it th { border: .7pt solid #000; padding: .6mm 1.6mm; font-size: 10.5pt; font-weight: 400; text-align: left; vertical-align: top; white-space: normal; height: auto; color: #000; background: none; position: static; text-transform: none; letter-spacing: 0; line-height: 1.3; }
+#impressao .doc .assin { margin-top: 12mm; }
+#impressao .doc .assin2 { margin-top: 18mm; display: grid; grid-template-columns: 1fr 1fr; gap: 14mm; break-inside: avoid; }
+#impressao .doc .assin2 .ln2 { border-top: .7pt solid #000; padding-top: 1.5mm; text-align: center; font-size: 10.5pt; }
+
+.mitem.orc svg { background: rgba(46, 116, 181, .12); }
+.mitem.rel svg { background: rgba(31, 122, 77, .12); }
+.mitem.emp svg { background: var(--bg); }
 </style>
 </head>
 <body>
@@ -546,7 +602,7 @@ html, body { margin: 0; }
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
         <span class="mi-t">Administração</span>
-        <span class="mi-d">Funcionários, nota fiscal e e-mail</span>
+        <span class="mi-d">Orçamentos, relatórios, funcionários, nota fiscal e e-mail</span>
       </button>
     </nav>
   </div>
@@ -608,6 +664,21 @@ html, body { margin: 0; }
       <h1 class="ad-tit">Administração</h1>
     </div>
     <nav class="menu-grid" aria-label="Administração">
+      <button class="mitem orc" type="button" data-go="orcamentos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h3M9 15.5h3M14.5 12h1.5M14.5 15.5h1.5"/></svg>
+        <span class="mi-t">Orçamentos</span>
+        <span class="mi-d">Criar, duplicar e imprimir orçamentos no modelo da Koneg</span>
+      </button>
+      <button class="mitem rel" type="button" data-go="relatorios">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 12l2 2 4-4"/><path d="M8.5 17h7"/></svg>
+        <span class="mi-t">Relatório de serviço executado</span>
+        <span class="mi-d">Registrar o que foi feito e imprimir para o cliente assinar</span>
+      </button>
+      <button class="mitem emp" type="button" data-go="empresa">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12"/><path d="M9 20v-5h6v5"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/></svg>
+        <span class="mi-t">Dados da empresa</span>
+        <span class="mi-d">Cabeçalho, dados bancários e assinatura dos documentos</span>
+      </button>
       <button class="mitem adm" type="button" data-go="funcionarios">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.4c2.5-.3 4.3 1.2 5 3.8"/></svg>
         <span class="mi-t">Funcionários</span>
@@ -625,6 +696,58 @@ html, body { margin: 0; }
       </a>
     </nav>
   </div>
+</main>
+
+<main class="wrap" id="tela-docs" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="dc-voltar" type="button">← Voltar à Administração</button>
+    </div>
+    <span class="eyebrow">Administração</span>
+    <h1 id="dc-tit">Orçamentos</h1>
+  </header>
+  <button class="btn primary dc-novo" id="dc-novo" type="button">+ Novo orçamento</button>
+  <input class="search" id="dc-busca" type="search" placeholder="Buscar por cliente ou número…" aria-label="Buscar">
+  <section class="card">
+    <div class="lj-tit" id="dc-sub">Salvos</div>
+    <div id="dc-lista" class="lj-hist"></div>
+  </section>
+</main>
+
+<main class="wrap" id="tela-doc" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="ed-voltar" type="button">← Voltar à lista</button>
+      <span class="status fm-status" id="ed-status" aria-live="polite"></span>
+    </div>
+    <span class="eyebrow" id="ed-tipo">Orçamento</span>
+    <h1 id="ed-tit">Novo orçamento</h1>
+  </header>
+  <div id="ed-form" class="ed-form"></div>
+  <div class="fm-rodape ed-acoes">
+    <button class="btn primary" id="ed-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn" id="ed-dup" type="button">Duplicar</button>
+    <button class="btn" id="ed-gerarrel" type="button">Gerar relatório de serviço</button>
+    <button class="btn danger" id="ed-excluir" type="button">Excluir</button>
+  </div>
+  <div class="confirm" id="ed-confirm" hidden>
+    <p>Excluir este documento? Não dá para desfazer.</p>
+    <button class="btn solid-danger" id="ed-excluir-ok" type="button">Excluir</button>
+    <button class="btn" id="ed-excluir-no" type="button">Cancelar</button>
+  </div>
+</main>
+
+<main class="wrap" id="tela-empresa" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="em-voltar" type="button">← Voltar à Administração</button>
+      <span class="status fm-status" id="em-status" aria-live="polite"></span>
+    </div>
+    <span class="eyebrow">Administração</span>
+    <h1>Dados da empresa</h1>
+    <p class="fu-desc">Estes dados aparecem no cabeçalho e no pagamento de todos os orçamentos e relatórios. Ficam guardados no banco do painel, não no código do site.</p>
+  </header>
+  <div id="em-form" class="ed-form"></div>
 </main>
 
 <main class="wrap" id="tela-func" hidden>
@@ -2081,7 +2204,7 @@ const firestoreDb = {
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
-    if (h === '#funcionarios' || h === '#admin') return P.admin;
+    if (['#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa'].includes(h) || h.startsWith('#doc-')) return P.admin;
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
@@ -2200,6 +2323,400 @@ const firestoreDb = {
   function pararFuncionarios() { if (pararFunc) { pararFunc(); pararFunc = null; } funcLista = []; }
   $('sa-sair').addEventListener('click', () => signOut(auth));
 
+  // ===== Orçamentos, relatórios de serviço e dados da empresa (somente administrador) =====
+  const EMPRESA_PADRAO = {
+    nome: 'KONEG MANUTENÇÕES',
+    razao: '63.691.549 KAYOWAN MACEDO ANCHIETA',
+    cnpj: '63.691.549/0001-90',
+    endereco: 'Rua Himalaia, nº 333 – Parque Novo Oratório - Santo André/SP - CEP 09270-430',
+    contato: '(11) 96296-4884 (Sr. Kayowan Macedo Anchieta)',
+    emails: 'KAYOWAN@HOTMAIL.COM - KAYOWAN@KONEG.COM.BR',
+    site: 'WWW.KONEG.COM.BR',
+    banco: '0260 - Nu Pagamentos S.A (Nubank)',
+    titular: 'Koneg Manutenção',
+    agencia: '0001',
+    conta: '',
+    pix: '63.691.549/0001-90',
+    pixTipo: 'CNPJ',
+    assinatura: 'KAYOWAN MACEDO ANCHIETA',
+  };
+  const EMPRESA_CAMPOS = [
+    ['g', 'Cabeçalho'],
+    ['nome', 'text', 'Nome da empresa', 'full'], ['razao', 'text', 'Razão social'], ['cnpj', 'text', 'CNPJ'],
+    ['endereco', 'text', 'Endereço', 'full'], ['contato', 'text', 'Contato'], ['emails', 'text', 'E-mails'], ['site', 'text', 'Site'],
+    ['g', 'Dados para pagamento'],
+    ['banco', 'text', 'Banco'], ['titular', 'text', 'Titular'], ['agencia', 'text', 'Agência'], ['conta', 'text', 'Conta corrente'],
+    ['pixTipo', 'text', 'Tipo da chave PIX'], ['pix', 'text', 'Chave PIX'],
+    ['g', 'Assinatura'], ['assinatura', 'text', 'Nome que assina os documentos', 'full'],
+  ];
+  let EMP = { ...EMPRESA_PADRAO };
+  let empCarregada = false;
+  async function carregarEmpresa() {
+    if (empCarregada) return;
+    try { const d = await getDoc(fsDoc(fs, 'admin', 'empresa')); if (d.exists()) EMP = { ...EMPRESA_PADRAO, ...d.data() }; empCarregada = true; } catch (_) {}
+  }
+
+  const ESCOPO_PADRAO = [
+    'Limpeza geral e remoção de resíduos de filme acumulados;',
+    'Inspeção e lubrificação de correntes, engrenagens, rolamentos e guias;',
+    'Reaperto e substituição de componentes mecânicos;',
+    'Inspeção, limpeza e regulagem de sensores e chaves de fim de curso;',
+    'Desmontagem e montagem técnica;',
+    'Testes práticos de funcionamento e ciclo operacional;',
+  ];
+  const DOCS = {
+    orc: {
+      col: 'orcamentos', nome: 'Orçamento', plural: 'Orçamentos', novo: 'Novo orçamento', lista: 'orcamentos',
+      campos: [
+        ['g', 'Identificação'],
+        ['numero', 'text', 'Número do orçamento'], ['data', 'date', 'Data'], ['validade', 'text', 'Validade da proposta'],
+        ['titulo', 'text', 'Título do documento', 'full'],
+        ['g', '1. Dados do Cliente'], ['cliente', 'text', 'Empresa cliente', 'full'], ['cnpj', 'text', 'CNPJ'],
+        ['g', '2. Objetivo'], ['objetivo', 'area', 'Texto', 'full'],
+        ['g', '3. Escopo dos Serviços'], ['escopoIntro', 'area', 'Frase de abertura', 'full'], ['escopo', 'lista', 'Atividades (uma por linha)', 'full'],
+        ['g', '4. Itens'], ['secaoItens', 'text', 'Título da seção', 'full'], ['itens', 'itens', 'Itens', 'full'],
+        ['g', '5. Condições Gerais'], ['condicoes', 'lista', 'Condições (uma por linha)', 'full'],
+        ['g', '6. Dados para Pagamento'], ['pagamentoIntro', 'area', 'Frase de abertura (os dados do banco vêm de "Dados da empresa")', 'full'],
+      ],
+      padrao: () => ({
+        numero: '', data: hojeISO(), validade: '15 dias', titulo: 'ORÇAMENTO DE MANUTENÇÃO PREVENTIVA E CORRETIVA',
+        cliente: '', cnpj: '',
+        objetivo: 'Apresentar os valores e condições para a prestação de serviço de manutenção preventiva e corretiva em 02 (duas) Máquina Stretchadeiras (Valfilm), visando garantir seu pleno funcionamento, prevenir paradas inesperadas na linha de produção e aumentar a vida útil do equipamento.',
+        escopoIntro: 'Durante a visita técnica preventiva e corretiva, serão realizadas as seguintes atividades no equipamento:',
+        escopo: [...ESCOPO_PADRAO, 'Emissão de relatório técnico ao final do serviço.'].join('\n'),
+        secaoItens: 'Investimento preventivo',
+        itens: [
+          { desc: 'Mão de obra técnica especializada - Manutenção Preventiva e corretiva em Máquina Stretchadeiras Valfilm', qtd: '1', valor: 2800 },
+          { desc: 'Insumos (lubrificantes, desengraxantes, material de limpeza técnica)', qtd: '1', valor: 200 },
+          { desc: 'Rolamentos, Retentores, Óleo sintético', qtd: '1', valor: 1000 },
+        ],
+        condicoes: [
+          'Prazo de Execução: O serviço será executado em 1 dia útil, em data a ser alinhada previamente com o cliente.',
+          'Manutenção Corretiva e Peças: Este orçamento cobre exclusivamente os serviços e insumos de prevenção. Necessidade de substituição de peças danificadas serão orçadas à parte e substituídas apenas mediante aprovação.',
+        ].join('\n'),
+        pagamentoIntro: 'O pagamento deverá ser efetuado via transferência bancária ou PIX para a conta da empresa:',
+      }),
+    },
+    rel: {
+      col: 'relatorios', nome: 'Relatório de serviço', plural: 'Relatórios de serviço', novo: 'Novo relatório', lista: 'relatorios',
+      campos: [
+        ['g', 'Identificação'],
+        ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'], ['periodo', 'text', 'Horário (início e fim)'],
+        ['orcamentoRef', 'text', 'Orçamento de referência'],
+        ['titulo', 'text', 'Título do documento', 'full'],
+        ['g', '1. Dados do Cliente'], ['cliente', 'text', 'Empresa cliente', 'full'], ['cnpj', 'text', 'CNPJ'], ['local', 'text', 'Local do serviço'],
+        ['g', '2. Equipamento'], ['equipamento', 'area', 'Equipamento atendido', 'full'],
+        ['g', '3. Serviços Executados'], ['servicos', 'lista', 'Serviços (um por linha)', 'full'],
+        ['g', '4. Peças e Insumos Utilizados'], ['pecas', 'pecas', 'Peças', 'full'],
+        ['g', '5. Observações e Recomendações'], ['observacoes', 'area', 'Texto', 'full'],
+        ['g', '6. Situação Final'], ['situacao', 'area', 'Texto', 'full'],
+        ['g', 'Assinaturas'], ['tecnico', 'text', 'Técnico responsável'], ['responsavel', 'text', 'Responsável pelo cliente'],
+      ],
+      padrao: () => ({
+        numero: '', data: hojeISO(), periodo: '', orcamentoRef: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
+        cliente: '', cnpj: '', local: '',
+        equipamento: '02 (duas) Máquinas Stretchadeiras (Valfilm)',
+        servicos: ESCOPO_PADRAO.join('\n'),
+        pecas: [
+          { desc: 'Insumos (lubrificantes, desengraxantes, material de limpeza técnica)', qtd: '1' },
+          { desc: 'Rolamentos, Retentores, Óleo sintético', qtd: '1' },
+        ],
+        observacoes: '',
+        situacao: 'Equipamento testado em ciclo operacional e liberado em pleno funcionamento.',
+        tecnico: 'Kayowan Macedo Anchieta', responsavel: '',
+      }),
+    },
+  };
+
+  const dataLonga = (iso) => {
+    if (!iso) return '';
+    const [a, m, d] = iso.split('-').map(Number);
+    return new Date(a, m - 1, d).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+  const totalItens = (it) => (it || []).reduce((t, x) => t + (Number(x.valor) || 0), 0);
+  function proximoNumero(lista, iso) {
+    const ano = (iso || hojeISO()).slice(0, 4);
+    const max = lista.reduce((m, d) => { const r = String(d.numero || '').match(/^(\d+)\/(\d{4})$/); return r && r[2] === ano ? Math.max(m, Number(r[1])) : m; }, 0);
+    return String(max + 1).padStart(3, '0') + '/' + ano;
+  }
+
+  // ----- Lista -----
+  let dcTipo = 'orc', dcLista = [], pararDocs = null;
+  function abrirListaDocs(tipo) {
+    const T = DOCS[tipo];
+    if (dcTipo !== tipo || !pararDocs) {
+      if (pararDocs) pararDocs();
+      dcTipo = tipo; dcLista = [];
+      $('dc-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Carregando…' }));
+      pararDocs = fsSnap(fsCol(fs, T.col), (snap) => { dcLista = snap.docs.map((d) => ({ id: d.id, ...d.data() })); desenharDocs(); },
+        () => { $('dc-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+    }
+    $('dc-tit').textContent = T.plural;
+    $('dc-novo').textContent = '+ ' + T.novo;
+    $('dc-sub').textContent = T.plural + ' salvos';
+    desenharDocs();
+  }
+  function pararListaDocs() { if (pararDocs) { pararDocs(); pararDocs = null; } dcLista = []; }
+  function desenharDocs() {
+    const box = $('dc-lista'); if (!pararDocs) return;
+    const q = semAcento($('dc-busca').value.trim());
+    const lista = dcLista.filter((d) => !q || semAcento(`${d.cliente || ''} ${d.numero || ''}`).includes(q))
+      .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.numero || '').localeCompare(String(a.numero || '')));
+    box.replaceChildren();
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: dcLista.length ? 'Nada encontrado.' : 'Nenhum documento salvo ainda.' })); return; }
+    lista.forEach((d) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+      const t = document.createElement('b'); t.textContent = `${d.numero || 'Sem número'} · ${d.cliente || 'Sem cliente'}`;
+      const s = document.createElement('span'); s.className = 'sub';
+      s.textContent = dcTipo === 'orc' ? `${dataBR(d.data)} · ${brl.format(totalItens(d.itens))}` : `${dataBR(d.data)} · ${String(d.equipamento || '').split('\n')[0]}`;
+      const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'Abrir';
+      b.append(t, s, tag);
+      b.addEventListener('click', () => { location.hash = `doc-${dcTipo}-${d.id}`; });
+      box.appendChild(b);
+    });
+  }
+  $('dc-busca').addEventListener('input', desenharDocs);
+  $('dc-novo').addEventListener('click', () => { location.hash = `doc-${dcTipo}-novo`; });
+  $('dc-voltar').addEventListener('click', () => { location.hash = 'admin'; });
+
+  // ----- Editor -----
+  let ed = null, edTipo = 'orc', edTimer = null, edFila = Promise.resolve();
+  const edStatus = (t, k) => { $('ed-status').textContent = t || ''; $('ed-status').dataset.kind = k || ''; };
+  function campoEl(def, valor, aoMudar) {
+    const [k, tipo, rotulo, cls] = def;
+    const lb = document.createElement('label'); lb.className = 'fld' + (cls === 'full' ? ' full' : ''); lb.htmlFor = 'ed-' + k;
+    const sp = document.createElement('span'); sp.textContent = rotulo; lb.appendChild(sp);
+    let el;
+    if (tipo === 'area' || tipo === 'lista') {
+      el = document.createElement('textarea'); el.rows = tipo === 'lista' ? Math.max(3, String(valor || '').split('\n').length + 1) : 4;
+    } else { el = document.createElement('input'); el.type = tipo === 'date' ? 'date' : 'text'; el.autocomplete = 'off'; }
+    el.id = 'ed-' + k; el.value = valor == null ? '' : valor;
+    el.addEventListener('input', () => aoMudar(el.value));
+    lb.appendChild(el);
+    if (tipo === 'lista') { const dc = document.createElement('span'); dc.className = 'ed-dica'; dc.textContent = 'Cada linha vira um item com marcador (•) no documento.'; lb.appendChild(dc); }
+    return lb;
+  }
+  function editorItens(box, comValor) {
+    const k = comValor ? 'itens' : 'pecas';
+    const desenhar = () => {
+      box.replaceChildren();
+      const cab = document.createElement('div'); cab.className = 'ed-item-cab' + (comValor ? '' : ' sem-valor');
+      (comValor ? ['Item', 'Descrição', 'Qtd.', 'Valor total', ''] : ['Item', 'Descrição', 'Qtd.', '']).forEach((t) => cab.appendChild(Object.assign(document.createElement('span'), { textContent: t })));
+      box.appendChild(cab);
+      const lista = ed[k] || (ed[k] = []);
+      lista.forEach((it, i) => {
+        const row = document.createElement('div'); row.className = 'ed-item' + (comValor ? '' : ' sem-valor');
+        const n = document.createElement('span'); n.className = 'n'; n.textContent = String(i + 1).padStart(2, '0');
+        const ds = document.createElement('textarea'); ds.rows = 2; ds.value = it.desc || ''; ds.setAttribute('aria-label', `Descrição do item ${i + 1}`);
+        ds.addEventListener('input', () => { it.desc = ds.value; edMudou(); });
+        const q = document.createElement('input'); q.className = 'q'; q.value = it.qtd || ''; q.inputMode = 'numeric'; q.setAttribute('aria-label', `Quantidade do item ${i + 1}`);
+        q.addEventListener('input', () => { it.qtd = q.value; edMudou(); });
+        row.append(n, ds, q);
+        if (comValor) {
+          const v = document.createElement('input'); v.className = 'v'; v.inputMode = 'decimal'; v.value = it.valor ? fmtPreco(it.valor) : ''; v.placeholder = '0,00'; v.setAttribute('aria-label', `Valor total do item ${i + 1}`);
+          v.addEventListener('change', () => { const p = lerPreco(v.value); it.valor = p == null ? 0 : p; v.value = p == null ? '' : fmtPreco(p); atualizarTotal(); edMudou(); });
+          row.appendChild(v);
+        }
+        const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'rm'; rm.textContent = '✕'; rm.setAttribute('aria-label', `Remover item ${i + 1}`);
+        rm.addEventListener('click', () => { lista.splice(i, 1); desenhar(); edMudou(); });
+        row.appendChild(rm);
+        box.appendChild(row);
+      });
+      const rod = document.createElement('div'); rod.className = 'ed-itens-rod';
+      const add = document.createElement('button'); add.type = 'button'; add.className = 'btn'; add.textContent = '+ Adicionar item';
+      add.addEventListener('click', () => { lista.push(comValor ? { desc: '', qtd: '1', valor: 0 } : { desc: '', qtd: '1' }); desenhar(); edMudou(); box.querySelectorAll('.ed-item textarea')[lista.length - 1]?.focus(); });
+      rod.appendChild(add);
+      if (comValor) { const tt = document.createElement('span'); tt.className = 'ed-total'; tt.id = 'ed-total'; rod.appendChild(tt); }
+      box.appendChild(rod);
+      atualizarTotal();
+    };
+    const atualizarTotal = () => { const t = $('ed-total'); if (t) t.textContent = 'Total: ' + brl.format(totalItens(ed.itens)); };
+    desenhar();
+  }
+  function montarFormulario(box, campos, obj, aoMudar) {
+    box.replaceChildren();
+    let sec = null, grid = null;
+    campos.forEach((def) => {
+      if (def[0] === 'g') {
+        sec = document.createElement('section'); sec.className = 'ed-sec';
+        const h = document.createElement('h2'); h.textContent = def[1];
+        grid = document.createElement('div'); grid.className = 'ed-campos';
+        sec.append(h, grid); box.appendChild(sec); return;
+      }
+      if (def[1] === 'itens' || def[1] === 'pecas') { const d = document.createElement('div'); d.className = 'ed-itens full'; grid.appendChild(d); editorItens(d, def[1] === 'itens'); return; }
+      grid.appendChild(campoEl(def, obj[def[0]], (v) => { obj[def[0]] = v; aoMudar(def[0]); }));
+    });
+  }
+  function preencherEditor() {
+    const T = DOCS[edTipo];
+    $('ed-tipo').textContent = T.nome;
+    $('ed-tit').textContent = ed.id ? `${T.nome} ${ed.numero || ''}`.trim() : T.novo;
+    $('ed-gerarrel').hidden = edTipo !== 'orc' || !ed.id;
+    $('ed-dup').hidden = !ed.id;
+    $('ed-excluir').hidden = !ed.id;
+    $('ed-confirm').hidden = true;
+    montarFormulario($('ed-form'), T.campos, ed, (k) => { if (k === 'numero') $('ed-tit').textContent = `${T.nome} ${ed.numero || ''}`.trim(); edMudou(); });
+    edStatus(ed.id ? 'Salvo' : '');
+  }
+  function edMudou() { edStatus('Salvando…'); clearTimeout(edTimer); edTimer = setTimeout(salvarDoc, 700); }
+  function salvarDoc() {
+    clearTimeout(edTimer); edTimer = null;
+    if (!ed) return edFila;
+    const alvo = ed, tipo = edTipo, T = DOCS[tipo];
+    edFila = edFila.catch(() => {}).then(async () => {
+      if (!alvo.id) {
+        alvo.id = fsDoc(fsCol(fs, T.col)).id; alvo.criadoEm = new Date().toISOString();
+        if (ed === alvo && /^#doc-(orc|rel)-novo/.test(location.hash)) history.replaceState(null, '', `#doc-${tipo}-${alvo.id}`);
+      }
+      const { id, ...dados } = alvo;
+      await setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() });
+      if (ed === alvo) { edStatus('Salvo', 'ok'); $('ed-dup').hidden = false; $('ed-excluir').hidden = false; $('ed-gerarrel').hidden = tipo !== 'orc'; }
+    }).catch((e) => edStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
+    return edFila;
+  }
+  async function listaAtual(tipo) {
+    if (dcTipo === tipo && pararDocs) return dcLista;
+    try { const s = await getDocs(fsCol(fs, DOCS[tipo].col)); return s.docs.map((d) => ({ id: d.id, ...d.data() })); } catch (_) { return []; }
+  }
+  async function abrirEditor(tipo, arg) {
+    if (ed && ed.id && edTipo === tipo && arg === ed.id) return;
+    if (edTimer) await salvarDoc();
+    edTipo = tipo; ed = null;
+    $('ed-form').replaceChildren(); edStatus('Carregando…');
+    carregarEmpresa();
+    const T = DOCS[tipo];
+    try {
+      if (arg === 'novo' || arg.startsWith('novo-de-')) {
+        const base = T.padrao();
+        if (arg.startsWith('novo-de-')) {
+          const [, origemTipo, origemId] = arg.match(/^novo-de-(orc|rel)-(.+)$/) || [];
+          const o = origemId ? await getDoc(fsDoc(fs, DOCS[origemTipo].col, origemId)) : null;
+          if (o && o.exists()) {
+            const v = o.data();
+            if (origemTipo === tipo) Object.assign(base, JSON.parse(JSON.stringify(v)), { data: hojeISO(), criadoEm: undefined, atualizadoEm: undefined });
+            else if (origemTipo === 'orc' && tipo === 'rel') {
+              Object.assign(base, { cliente: v.cliente || '', cnpj: v.cnpj || '', orcamentoRef: v.numero || '' });
+              const linhas = String(v.escopo || '').split('\n').map((x) => x.trim()).filter((x) => x && !/^emiss[aã]o de relat[oó]rio/i.test(semAcento(x)));
+              if (linhas.length) base.servicos = linhas.join('\n');
+              const pecas = (v.itens || []).filter((x) => !/m[aã]o de obra/i.test(x.desc || '')).map((x) => ({ desc: x.desc || '', qtd: x.qtd || '1' }));
+              if (pecas.length) base.pecas = pecas;
+            }
+          }
+          delete base.criadoEm; delete base.atualizadoEm;
+        }
+        base.numero = proximoNumero(await listaAtual(tipo), base.data);
+        ed = { id: null, ...base };
+      } else {
+        const s = await getDoc(fsDoc(fs, T.col, arg));
+        if (!s.exists()) { edStatus('Documento não encontrado', 'erro'); location.hash = T.lista; return; }
+        ed = { id: arg, ...s.data() };
+      }
+      preencherEditor();
+    } catch (_) { edStatus('Não foi possível abrir.', 'erro'); }
+  }
+  $('ed-voltar').addEventListener('click', async () => { if (edTimer) await salvarDoc(); location.hash = DOCS[edTipo].lista; });
+  $('ed-dup').addEventListener('click', async () => { if (!ed || !ed.id) return; if (edTimer) await salvarDoc(); location.hash = `doc-${edTipo}-novo-de-${edTipo}-${ed.id}`; });
+  $('ed-gerarrel').addEventListener('click', async () => { if (!ed || !ed.id) return; if (edTimer) await salvarDoc(); location.hash = `doc-rel-novo-de-orc-${ed.id}`; });
+  $('ed-excluir').addEventListener('click', () => { $('ed-confirm').hidden = false; $('ed-excluir-ok').focus(); });
+  $('ed-excluir-no').addEventListener('click', () => { $('ed-confirm').hidden = true; });
+  $('ed-excluir-ok').addEventListener('click', async () => {
+    if (!ed || !ed.id) return;
+    clearTimeout(edTimer); edTimer = null;
+    try { await deleteDoc(fsDoc(fs, DOCS[edTipo].col, ed.id)); const l = DOCS[edTipo].lista; ed = null; location.hash = l; }
+    catch (_) { edStatus('Não foi possível excluir.', 'erro'); }
+  });
+
+  // ----- Documento impresso (modelo da proposta da Koneg) -----
+  function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function linhasP(texto, bullet) {
+    const p = el('p', bullet ? 'bul' : '');
+    String(texto || '').split('\n').map((x) => x.trim()).filter(Boolean).forEach((ln, i) => { if (i) p.appendChild(document.createElement('br')); p.append((bullet ? '• ' : '') + ln); });
+    return p;
+  }
+  function linhasKV(pares) {
+    const p = el('p');
+    pares.filter(([, v]) => v != null && String(v).trim() !== '').forEach(([k, v], i) => { if (i) p.appendChild(document.createElement('br')); p.append(`${k}: ${v}`); });
+    return p;
+  }
+  function cabecalho(titulo) {
+    const h = el('div', 'dh');
+    const img = document.createElement('img'); img.src = '/icones/logo-koneg.png'; img.alt = '';
+    h.append(img, el('div', 'tt', titulo), el('div', 'nm', EMP.nome),
+      el('div', 'ln', `Razão Social: ${EMP.razao} | CNPJ: ${EMP.cnpj}`), el('div', 'ln', `Endereço: ${EMP.endereco}`),
+      el('div', 'ln', `Contato: ${EMP.contato}`), el('div', 'ln', `E-mail: ${EMP.emails}`), el('div', 'ln', `Site: ${EMP.site}`));
+    return h;
+  }
+  function tabelaItens(itens, comValor) {
+    const t = el('table', 'it');
+    const cg = document.createElement('colgroup');
+    (comValor ? ['10%', '52%', '14%', '24%'] : ['10%', '74%', '16%']).forEach((w) => { const c = document.createElement('col'); c.style.width = w; cg.appendChild(c); });
+    t.appendChild(cg);
+    const tr0 = document.createElement('tr');
+    (comValor ? ['Item', 'Descrição do Serviço / Insumo', 'Qtd.', 'Valor Total'] : ['Item', 'Descrição da Peça / Insumo', 'Qtd.']).forEach((x) => tr0.appendChild(el('td', '', x)));
+    t.appendChild(tr0);
+    (itens || []).forEach((it, i) => {
+      const tr = document.createElement('tr');
+      tr.append(el('td', '', String(i + 1).padStart(2, '0')), el('td', '', it.desc || ''), el('td', '', it.qtd || ''));
+      if (comValor) tr.appendChild(el('td', '', brl.format(Number(it.valor) || 0)));
+      t.appendChild(tr);
+    });
+    if (comValor) { const tr = document.createElement('tr'); tr.append(el('td', '', ''), el('td', '', ''), el('td', '', 'TOTAL:'), el('td', '', brl.format(totalItens(itens)))); t.appendChild(tr); }
+    return t;
+  }
+  function montarDocumento(tipo, d) {
+    const doc = el('div', 'folha doc');
+    doc.appendChild(cabecalho(d.titulo || ''));
+    if (tipo === 'orc') {
+      doc.appendChild(Object.assign(linhasKV([['Data', dataLonga(d.data)], ['Número do Orçamento', d.numero], ['Validade da Proposta', d.validade]]), { className: 'meta' }));
+      doc.append(el('h2', '', '1. Dados do Cliente'), linhasKV([['Empresa Cliente', d.cliente], ['CNPJ', d.cnpj]]));
+      doc.append(el('h2', '', '2. Objetivo'), linhasP(d.objetivo));
+      doc.append(el('h2', '', '3. Escopo dos Serviços'), linhasP(d.escopoIntro), linhasP(d.escopo, true));
+      doc.append(el('h2', '', '4. ' + (d.secaoItens || 'Investimento')), tabelaItens(d.itens, true));
+      doc.append(el('h2', '', '5. Condições Gerais'), linhasP(d.condicoes, true));
+      doc.append(el('h2', '', '6. Dados para Pagamento'), linhasP(d.pagamentoIntro),
+        linhasKV([['Banco', EMP.banco], ['Titular', EMP.titular], ['Agência', EMP.agencia], ['Conta Corrente', EMP.conta], [`Chave PIX (${EMP.pixTipo || 'CNPJ'})`, EMP.pix]]));
+      const a = el('p', 'assin'); a.append(EMP.assinatura, document.createElement('br'), EMP.nome); doc.appendChild(a);
+    } else {
+      doc.appendChild(Object.assign(linhasKV([['Data do serviço', dataLonga(d.data)], ['Número do Relatório', d.numero], ['Horário', d.periodo], ['Orçamento de referência', d.orcamentoRef]]), { className: 'meta' }));
+      doc.append(el('h2', '', '1. Dados do Cliente'), linhasKV([['Empresa Cliente', d.cliente], ['CNPJ', d.cnpj], ['Local do serviço', d.local]]));
+      doc.append(el('h2', '', '2. Equipamento'), linhasP(d.equipamento));
+      doc.append(el('h2', '', '3. Serviços Executados'), linhasP(d.servicos, true));
+      doc.appendChild(el('h2', '', '4. Peças e Insumos Utilizados'));
+      doc.appendChild((d.pecas || []).length ? tabelaItens(d.pecas, false) : el('p', '', 'Não houve substituição de peças ou uso de insumos.'));
+      doc.append(el('h2', '', '5. Observações e Recomendações'), String(d.observacoes || '').trim() ? linhasP(d.observacoes) : el('p', '', 'Sem observações.'));
+      doc.append(el('h2', '', '6. Situação Final'), linhasP(d.situacao));
+      const as = el('div', 'assin2');
+      const c1 = el('div', 'ln2'); c1.append(d.tecnico || EMP.assinatura, document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
+      const c2 = el('div', 'ln2'); c2.append(d.responsavel || ' ', document.createElement('br'), `Responsável · ${d.cliente || 'Cliente'}`);
+      as.append(c1, c2); doc.appendChild(as);
+    }
+    return doc;
+  }
+  $('ed-imprimir').addEventListener('click', async () => {
+    if (!ed) return;
+    if (edTimer) await salvarDoc();
+    await carregarEmpresa();
+    const nome = [edTipo === 'orc' ? 'Orçamento' : 'Relatório de serviço', String(ed.numero || '').replace('/', '-'), ed.cliente].filter(Boolean).join(' - ');
+    imprimirConteudo([montarDocumento(edTipo, ed)], nome);
+  });
+
+  // ----- Dados da empresa -----
+  let empTimer = null;
+  async function abrirEmpresa() {
+    $('em-status').textContent = 'Carregando…';
+    empCarregada = false; await carregarEmpresa();
+    montarFormulario($('em-form'), EMPRESA_CAMPOS, EMP, () => {
+      $('em-status').textContent = 'Salvando…';
+      clearTimeout(empTimer);
+      empTimer = setTimeout(async () => {
+        try { await setDoc(fsDoc(fs, 'admin', 'empresa'), { ...EMP }); $('em-status').textContent = 'Salvo'; }
+        catch (e) { $('em-status').textContent = e && e.code === 'permission-denied' ? 'Sem permissão (confira as regras do Firestore)' : 'Não foi possível salvar'; }
+      }, 700);
+    });
+    $('em-status').textContent = EMP.conta ? '' : 'Preencha a conta corrente para sair nos orçamentos.';
+  }
+  $('em-voltar').addEventListener('click', () => { location.hash = 'admin'; });
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
@@ -2207,6 +2724,16 @@ const firestoreDb = {
     if (!permitido(location.hash)) history.replaceState(null, '', APP_CK ? '#checklist' : '#menu');
     $('tela-func').hidden = location.hash !== '#funcionarios';
     $('tela-admin').hidden = location.hash !== '#admin';
+    {
+      const hh = location.hash; const md = hh.match(/^#doc-(orc|rel)-(.+)$/);
+      $('tela-docs').hidden = hh !== '#orcamentos' && hh !== '#relatorios';
+      $('tela-doc').hidden = !md;
+      $('tela-empresa').hidden = hh !== '#empresa';
+      if (hh === '#orcamentos') abrirListaDocs('orc');
+      if (hh === '#relatorios') abrirListaDocs('rel');
+      if (md) abrirEditor(md[1], md[2]);
+      if (hh === '#empresa') abrirEmpresa();
+    }
     if (location.hash === '#funcionarios') ouvirFuncionarios();
     if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
@@ -2224,7 +2751,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin';
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h.startsWith('#doc-');
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', rota);
@@ -2241,8 +2768,8 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
-    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); sairExcluir(); sairEditar(); alternarEdicao(false);
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
     const email = String(u.email || '').toLowerCase();

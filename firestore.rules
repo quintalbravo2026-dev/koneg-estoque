@@ -41,6 +41,16 @@ service cloud.firestore {
       allow write: if admin();
     }
 
+    match /orcamentos/{id} {
+      allow read, write: if admin();
+    }
+    match /relatorios/{id} {
+      allow read, write: if admin();
+    }
+    match /admin/{doc} {
+      allow read, write: if admin();
+    }
+
     match /checklists/{id} {
       allow read: if pode('checklist') || pode('relatorio');
       allow create, update: if pode('checklist');
