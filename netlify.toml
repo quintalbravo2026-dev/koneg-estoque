@@ -5,6 +5,12 @@
   # Gera a página do app do Check List (/checklist/) a partir do index.html
   command = "sed 's|<!--MANIFEST-->|<link rel=\"manifest\" href=\"/checklist.webmanifest\">|' index.html > checklist/index.html"
 
+# A chave do Firebase é pública por natureza (a proteção está nas regras do Firestore);
+# o detector automático do Netlify a confunde com senha e bloqueia a publicação.
+[build.environment]
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+  SECRETS_SCAN_OMIT_PATHS = "android/**,.github/**"
+
 # Sempre buscar a versão mais nova da página
 [[headers]]
   for = "/*"
