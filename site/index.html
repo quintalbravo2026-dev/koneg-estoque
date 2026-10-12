@@ -9,6 +9,7 @@
 <meta property="og:description" content="Manutenção industrial preventiva e corretiva, peças e segurança de galpões.">
 <meta name="theme-color" content="#16191d">
 <link rel="icon" href="/site/favicon.png">
+<meta property="og:image" content="https://koneg.com.br/site/logo-koneg.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -62,16 +63,16 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; tex
 .btn svg { width: 18px; height: 18px; flex: none; }
 
 /* Cabeçalho */
-.topo { position: sticky; top: 0; z-index: 20; background: rgba(22,25,29,.97); color: var(--on-dark); backdrop-filter: blur(6px); }
-.topo .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
-.marca { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
-.marca b { font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: .04em; }
-.marca span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--on-dark-muted); }
+.topo { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.97); color: var(--fg); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.topo .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; }
+.marca { display: flex; align-items: center; text-decoration: none; padding-block: 6px; }
+.marca img { height: 64px; width: auto; display: block; }
 .menu { display: flex; align-items: center; gap: 22px; }
-.menu a.lk { text-decoration: none; color: var(--on-dark-muted); font-size: 15px; }
-.menu a.lk:hover { color: var(--on-dark); }
+.menu a.lk { text-decoration: none; color: var(--muted); font-size: 15px; font-weight: 500; }
+.menu a.lk:hover { color: var(--fg); }
 .menu .btn { padding: 9px 14px; font-size: 14px; }
-@media (max-width: 760px) { .menu a.lk { display: none; } .marca span { display: none; } }
+@media (max-width: 760px) { .menu a.lk { display: none; } .marca img { height: 48px; } .topo .wrap { min-height: 64px; } }
+.contato-logo { height: 70px; width: auto; align-self: flex-start; }
 
 /* Hero */
 .hero { background: var(--dark); color: var(--on-dark); position: relative; overflow: hidden; }
@@ -177,7 +178,7 @@ section.sec { padding-block: 72px; }
 
 <header class="topo">
   <div class="wrap">
-    <a class="marca" href="#inicio" aria-label="Koneg Manutenção, início"><b>KONEG</b><span>Manutenção</span></a>
+    <a class="marca" href="#inicio" aria-label="Koneg Manutenção, início"><img src="/site/logo-koneg.png" alt="Koneg Manutenção – Serviços e soluções industriais" width="256" height="184"></a>
     <nav class="menu" aria-label="Principal">
       <a class="lk" href="#servicos">Serviços</a>
       <a class="lk" href="#preventiva">Preventiva</a>
@@ -357,6 +358,7 @@ section.sec { padding-block: 72px; }
           <div><a class="btn btn-wpp" href="https://wa.me/5511962964884?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Koneg%20e%20gostaria%20de%20um%20or%C3%A7amento." target="_blank" rel="noopener">Chamar no WhatsApp</a></div>
         </div>
         <div class="cbox dados">
+          <img class="contato-logo" src="/site/logo-koneg.png" alt="" width="256" height="184">
           <div><span>Endereço</span>Rua Himalaia, 333 · Parque Novo Oratório<br>Santo André/SP · CEP 09270-430</div>
           <div><span>Razão social</span>63.691.549 Kayowan Macedo Anchieta</div>
           <div><span>CNPJ</span>63.691.549/0001-90</div>
