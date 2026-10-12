@@ -888,16 +888,16 @@ const firestoreDb = {
 
   // Lojas do Check List, agrupadas por cidade
   const CIDADES = [
-    ['Santo André', ['Coop Industrial', 'Coop Dom Pedro I', 'Coop Portugal', 'Coop Pereira Barreto', 'Coop Queirós dos Santos', 'Coop Carijós', 'Coop Queiros Filho', 'Coop Mário Toledo', 'Coop Utinga', 'Coop Vila Luzita']],
+    ['Santo André', ['Coop Industrial', 'Coop Dom Pedro I', 'Coop Pedro Primeiro', 'Coop Portugal', 'Coop Pereira Barreto', 'Coop Carijós', 'Coop Queiros Filho', 'Coop Capuava', 'Coop Utinga', 'Coop Vila Luzita']],
     ['São Bernardo do Campo', ['Coop Cafelândia', 'Coop Senador Vergueiro', 'Coop Demarchi', 'Coop Joaquim Nabuco', 'Coop Ferrazópolis', 'Coop Assunção']],
     ['São Caetano do Sul', ['Coop Joana Angélica']],
     ['Mauá', ['Coop Barão de Mauá', 'Coop Itapark']],
-    ['Diadema', ['Coop Sete de Setembro']],
-    ['Ribeirão Pires', ['Coop Humberto de Campos']],
-    ['Sorocaba', ['Coop Padre Madureira', 'Coop Itavuvu']],
+    ['Diadema', ['Coop Diadema']],
+    ['Ribeirão Pires', ['Coop Ribeirão']],
+    ['Sorocaba', ['Coop Arvore Grande', 'Coop Itavuvu']],
     ['Tatuí', ['Coop Lúcio Seabra']],
-    ['Piracicaba', ['Coop Vollet Sachs']],
-    ['São José dos Campos', ['Coop João Batista', 'Coop Tancredo Neves', 'Coop Morumbi']],
+    ['Piracicaba', ['Coop Piracicaba']],
+    ['São José dos Campos', ['Coop Santana', 'Coop Novo Horizonte', 'Coop Morumbi']],
   ];
   const semAcento = (t) => String(t).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const slugLoja = (t) => semAcento(t).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
