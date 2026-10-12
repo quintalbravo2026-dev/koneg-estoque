@@ -149,13 +149,6 @@ section.sec { padding-block: 72px; }
 .regiao { display: flex; flex-wrap: wrap; gap: 8px; }
 .regiao span { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 15px; }
 
-/* Painel */
-.painel { background: var(--dark); color: var(--on-dark); border-radius: 10px; padding: 32px 28px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
-.painel h2 { font-size: clamp(26px, 3.6vw, 36px); font-weight: 700; }
-.painel p { margin: 8px 0 0; color: var(--on-dark-muted); max-width: 40rem; }
-.painel .eyebrow { color: var(--on-dark-muted); }
-.painel .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
-@media (max-width: 760px) { .painel { grid-template-columns: 1fr; padding: 26px 20px; } }
 
 /* Contato */
 .contato { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; }
@@ -328,21 +321,6 @@ section.sec { padding-block: 72px; }
       </div>
       <div class="regiao">
         <span>Santo André</span><span>São Bernardo do Campo</span><span>São Caetano do Sul</span><span>Mauá</span><span>Diadema</span><span>Ribeirão Pires</span><span>Sorocaba</span><span>Tatuí</span><span>Piracicaba</span><span>São José dos Campos</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" style="padding-top:0" id="painel">
-    <div class="wrap">
-      <div class="painel">
-        <div>
-          <span class="eyebrow">Área restrita</span>
-          <h2>Painel de controle</h2>
-          <p>Acesso restrito à equipe Koneg. Entrada com e-mail e senha cadastrados.</p>
-        </div>
-        <div class="acoes">
-          <a class="btn btn-acc" href="/painel/" rel="noopener">Entrar no painel</a>
-        </div>
       </div>
     </div>
   </section>
