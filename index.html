@@ -468,6 +468,8 @@ html, body { margin: 0; }
 .mitem.nf, .mitem.mail { text-decoration: none; }
 .mitem.mail svg { background: rgba(31, 122, 77, .12); }
 .mitem.nf svg { background: rgba(27, 42, 107, .1); }
+.mitem.bkp svg { background: rgba(120, 80, 20, .1); }
+.mitem.bkp[aria-busy="true"] { opacity: .7; cursor: progress; }
 
 .ad-tit { font-size: clamp(30px, 5vw, 40px); margin-top: 6px; }
 #tela-admin .menu-grid { flex: none; align-content: start; }
@@ -781,6 +783,11 @@ html, body { margin: 0; }
         <span class="mi-t">E-mail</span>
         <span class="mi-d">Webmail do @koneg.com.br (Locaweb) · abre em outra aba</span>
       </a>
+      <button class="mitem bkp" type="button" data-key="backup" id="btn-backup">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6"/><path d="M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/></svg>
+        <span class="mi-t">Backup</span>
+        <span class="mi-d" id="bkp-status">Baixar uma cópia de todos os dados do painel</span>
+      </button>
     </nav>
     <div class="ord-barra" hidden><button class="btn ord-btn" type="button" aria-pressed="false">⇅ Reorganizar botões</button><span class="ed-dica ord-dica" hidden>Use as setas ↑ ↓ para mudar a ordem. Toque em "Concluir" para salvar.</span></div>
   </div>
@@ -3395,13 +3402,55 @@ const firestoreDb = {
   $('ck-menu').addEventListener('click', () => { sairExcluir(); sairEditar(); abrirAddLoja(false); location.hash = 'menu'; });
   $('m-sair').addEventListener('click', () => signOut(auth));
 
+  // ---------- Backup (somente administrador) ----------
+  const BKP_COLECOES = ['itens', 'lojas', 'checklists', 'usuarios', 'orcamentos', 'relatorios', 'receber', 'clientes', 'config', 'admin'];
+  const BKP_TXT = 'Baixar uma cópia de todos os dados do painel';
+  let bkpRodando = false;
+  async function fazerBackup() {
+    if (!P.admin || bkpRodando) return;
+    const comFotos = confirm('Incluir as fotos dos relatórios no backup?\n\nOK = com fotos (arquivo maior)\nCancelar = só os dados, sem fotos');
+    const st = $('bkp-status'), bt = $('btn-backup');
+    bkpRodando = true; bt.setAttribute('aria-busy', 'true');
+    const dados = {}, contagem = [];
+    try {
+      for (const c of BKP_COLECOES) {
+        st.textContent = `Copiando ${c}…`;
+        const s = await getDocs(fsCol(fs, c));
+        dados[c] = {};
+        s.docs.forEach((d) => { dados[c][d.id] = d.data(); });
+        contagem.push(`${c}: ${s.docs.length}`);
+      }
+      if (comFotos) {
+        let n = 0; const ids = Object.keys(dados.relatorios);
+        for (let i = 0; i < ids.length; i++) {
+          st.textContent = `Copiando fotos ${i + 1}/${ids.length}…`;
+          const s = await getDocs(fsCol(fs, 'relatorios', ids[i], 'fotos'));
+          if (s.docs.length) { dados.relatorios[ids[i]]._fotos = {}; s.docs.forEach((d) => { dados.relatorios[ids[i]]._fotos[d.id] = d.data(); n++; }); }
+        }
+        contagem.push(`fotos: ${n}`);
+      }
+      const conv = (_, v) => (v && typeof v.toDate === 'function' ? { _data: v.toDate().toISOString() } : v);
+      const json = JSON.stringify({ sistema: 'Painel Koneg', gerado: new Date().toISOString(), por: auth.currentUser && auth.currentUser.email, comFotos, dados }, conv, 1);
+      const nome = `backup-koneg-${hojeISO()}${comFotos ? '' : '-sem-fotos'}.json`;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+      a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      const tam = json.length < 1048576 ? Math.max(1, Math.round(json.length / 1024)) + ' KB' : (json.length / 1048576).toFixed(1).replace('.', ',') + ' MB';
+      st.textContent = `✓ ${nome} (${tam}) · ${contagem.join(' · ')}`;
+    } catch (e) {
+      st.textContent = 'Não foi possível fazer o backup: ' + (e && e.code ? e.code : e.message || e);
+    } finally {
+      bkpRodando = false; bt.removeAttribute('aria-busy');
+    }
+  }
+  $('btn-backup').addEventListener('click', fazerBackup);
+
   function sairDeTudo() {
     parar.forEach((f) => f()); parar = [];
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
     ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
-    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
+    fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); $('bkp-status').textContent = BKP_TXT; ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
     const email = String(u.email || '').toLowerCase();
