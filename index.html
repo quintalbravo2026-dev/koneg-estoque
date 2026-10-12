@@ -138,6 +138,32 @@ html, body { margin: 0; }
 .userbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .topline { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
 .empty .btn { margin-top: 12px; }
+.btn.wpp { color: #128c4a; border-color: #25d366; }
+.btn.wpp:hover:not(:disabled) { background: rgba(37, 211, 102, .12); }
+.btn.wpp.solid { background: #25d366; color: #06311a; border-color: #25d366; font-weight: 600; }
+.rs-overlay { position: fixed; inset: 0; background: rgba(10, 12, 14, .55); display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; z-index: 50; }
+.rs-dialog { width: 100%; max-width: 30rem; display: flex; flex-direction: column; gap: 12px; }
+.rs-card { background: #ffffff; color: #16191d; border-radius: 10px; padding: 22px 20px 18px; box-shadow: inset 0 5px 0 var(--accent), 0 12px 32px rgba(0,0,0,.25); }
+.rs-card .eyebrow { color: #5d6670; }
+.rs-card .eyebrow::before { background: repeating-linear-gradient(135deg, var(--accent) 0 4px, #16191d 4px 8px); }
+.rs-head { display: flex; flex-direction: column; gap: 2px; padding-bottom: 12px; border-bottom: 1px solid #d9dde1; }
+.rs-head h2 { margin: 4px 0 0; font-family: var(--font-display); font-weight: 600; font-size: 26px; line-height: 1.1; }
+.rs-data { font-size: 13px; color: #5d6670; }
+.rs-lista { display: flex; flex-direction: column; }
+.rs-item { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-bottom: 1px dashed #d9dde1; }
+.rs-item .n { font-weight: 600; font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
+.rs-item .v { font-family: var(--font-mono); font-size: 15px; font-weight: 500; text-align: right; white-space: nowrap; }
+.rs-item .d { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 13px; color: #5d6670; }
+.rs-vazio { padding: 18px 0; color: #5d6670; text-align: center; }
+.rs-totais { display: flex; flex-direction: column; gap: 6px; padding-top: 14px; }
+.rs-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 15px; }
+.rs-linha b { font-family: var(--font-mono); font-weight: 500; white-space: nowrap; }
+.rs-linha.final { background: #fbedb8; margin: 4px -10px 0; padding: 10px; border-radius: 6px; font-weight: 600; }
+.rs-linha.final b { font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+.rs-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rs-acoes .btn { justify-content: center; white-space: normal; text-align: center; }
+.rs-acoes #rs-wpp { grid-column: 1 / -1; }
+.rs-msg { margin: 0; text-align: center; font-size: 13px; color: #fff; min-height: 1em; }
 .rodape { margin: 0; text-align: center; font-size: 12px; color: var(--muted); font-family: var(--font-mono); letter-spacing: .03em; }
 </style>
 </head>
@@ -184,6 +210,7 @@ html, body { margin: 0; }
       <button class="btn primary" id="btn-add" type="button" aria-expanded="false" aria-controls="addform">+ Adicionar item</button>
       <input class="search" id="busca" type="search" placeholder="Buscar item…" aria-label="Buscar item">
       <button class="btn" id="btn-zerados" type="button" aria-pressed="false">Remover itens zerados</button>
+      <button class="btn wpp" id="btn-resumo" type="button" aria-haspopup="dialog">Resumo para WhatsApp</button>
       <button class="btn danger" id="btn-zerar" type="button">Zerar quantidades</button>
     </div>
     <div class="addform" id="addform" hidden>
@@ -218,7 +245,30 @@ html, body { margin: 0; }
       <span class="status" id="status" aria-live="polite"></span>
     </div>
   </section>
-  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026</p>
+  <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026 · resumo para WhatsApp</p>
+<div class="rs-overlay" id="rs-overlay" hidden>
+  <div class="rs-dialog" role="dialog" aria-modal="true" aria-labelledby="rs-titulo">
+    <div class="rs-card" id="rs-card">
+      <div class="rs-head">
+        <span class="eyebrow">Koneg Manutenção</span>
+        <h2 id="rs-titulo">Resumo do estoque</h2>
+        <span class="rs-data" id="rs-data"></span>
+      </div>
+      <div class="rs-lista" id="rs-lista"></div>
+      <div class="rs-totais">
+        <div class="rs-linha"><span>Valor total</span><b id="rs-total">—</b></div>
+        <div class="rs-linha final"><span id="rs-final-lbl">Valor de venda final</span><b id="rs-final">—</b></div>
+      </div>
+    </div>
+    <div class="rs-acoes">
+      <button class="btn wpp solid" id="rs-wpp" type="button">Enviar texto pelo WhatsApp</button>
+      <button class="btn" id="rs-img" type="button">Compartilhar como imagem</button>
+      <button class="btn" id="rs-copiar" type="button">Copiar texto</button>
+      <button class="btn" id="rs-fechar" type="button">Fechar</button>
+    </div>
+    <p class="rs-msg" id="rs-msg" aria-live="polite"></p>
+  </div>
+</div>
 </div>
 
 <script>
@@ -498,6 +548,155 @@ const firestoreDb = {
       if (e && e.code === 'quota_exceeded') errAdd('Não foi possível adicionar agora. Tente de novo em instantes.');
       else erro(e);
     } finally { $('add-ok').disabled = false; }
+  });
+
+  // Resumo para WhatsApp
+  function dadosResumo() {
+    const lista = [...itens.values()]
+      .map((it) => ({ nome: String(it.nome), q: Number(it.quantidade) || 0, p: Number(it.preco) || 0 }))
+      .filter((r) => r.q > 0)
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }))
+      .map((r) => ({ ...r, v: r.q * r.p }));
+    const total = lista.reduce((t, r) => t + r.v, 0);
+    return { lista, total, final: total * percentual / 100, pct: percentual, data: new Date().toLocaleDateString('pt-BR') };
+  }
+  const un = (q) => `${int.format(q)} ${q === 1 ? 'unidade' : 'unidades'}`;
+  const pctTxt = (p) => String(p).replace('.', ',') + '%';
+  function textoResumo(r) {
+    const linhas = ['*Koneg Manutenção · Resumo do estoque*', `_${r.data}_`, ''];
+    r.lista.forEach((i) => {
+      linhas.push(`*${i.nome}*`);
+      linhas.push(`${un(i.q)} × ${brl.format(i.p)} = *${brl.format(i.v)}*`);
+      linhas.push('');
+    });
+    linhas.push('──────────────');
+    linhas.push(`Valor total: *${brl.format(r.total)}*`);
+    linhas.push(`Valor de venda final (${pctTxt(r.pct)}): *${brl.format(r.final)}*`);
+    return linhas.join('\n');
+  }
+  function abrirResumo() {
+    const r = dadosResumo();
+    $('rs-data').textContent = r.data;
+    const box = $('rs-lista'); box.replaceChildren();
+    if (!r.lista.length) {
+      const d = document.createElement('div'); d.className = 'rs-vazio'; d.textContent = 'Nenhum item com quantidade no estoque.'; box.appendChild(d);
+    }
+    r.lista.forEach((i) => {
+      const row = document.createElement('div'); row.className = 'rs-item';
+      const n = document.createElement('span'); n.className = 'n'; n.textContent = i.nome;
+      const v = document.createElement('span'); v.className = 'v'; v.textContent = brl.format(i.v);
+      const d = document.createElement('span'); d.className = 'd'; d.textContent = `${un(i.q)} × ${brl.format(i.p)}`;
+      row.append(n, v, d); box.appendChild(row);
+    });
+    $('rs-total').textContent = brl.format(r.total);
+    $('rs-final-lbl').textContent = `Valor de venda final (${pctTxt(r.pct)})`;
+    $('rs-final').textContent = brl.format(r.final);
+    ['rs-wpp', 'rs-img', 'rs-copiar'].forEach((k) => { $(k).disabled = !r.lista.length; });
+    $('rs-msg').textContent = '';
+    $('rs-overlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+    $('rs-wpp').focus();
+  }
+  function fecharResumo() {
+    $('rs-overlay').hidden = true;
+    document.body.style.overflow = '';
+    $('btn-resumo').focus();
+  }
+  $('btn-resumo').addEventListener('click', abrirResumo);
+  $('rs-fechar').addEventListener('click', fecharResumo);
+  $('rs-overlay').addEventListener('click', (ev) => { if (ev.target === $('rs-overlay')) fecharResumo(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !$('rs-overlay').hidden) fecharResumo(); });
+  $('rs-wpp').addEventListener('click', () => {
+    window.open('https://wa.me/?text=' + encodeURIComponent(textoResumo(dadosResumo())), '_blank', 'noopener');
+  });
+  $('rs-copiar').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(textoResumo(dadosResumo())); $('rs-msg').textContent = 'Texto copiado. Cole na conversa do WhatsApp.'; }
+    catch (_) { $('rs-msg').textContent = 'Não foi possível copiar neste aparelho.'; }
+  });
+
+  // Desenha o resumo como imagem (PNG) para compartilhar
+  async function imagemResumo(r) {
+    try { await document.fonts.ready; } catch (_) {}
+    const W = 1080, P = 64, LH = 1;
+    const disp = "'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif";
+    const body = "'IBM Plex Sans', Arial, sans-serif";
+    const mono = "'IBM Plex Mono', 'Courier New', monospace";
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    const wrap = (txt, font, max) => {
+      ctx.font = font; const out = []; let cur = '';
+      String(txt).split(' ').forEach((w) => { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > max && cur) { out.push(cur); cur = w; } else cur = t; });
+      if (cur) out.push(cur); return out;
+    };
+    // altura
+    const nomeFont = `600 38px ${body}`, valFont = `500 38px ${mono}`, detFont = `400 30px ${mono}`;
+    ctx.font = valFont;
+    const linhasItens = r.lista.map((i) => {
+      const vw = ctx.measureText(brl.format(i.v)).width;
+      return { i, nome: wrap(i.nome, nomeFont, W - 2 * P - vw - 40) };
+    });
+    let H = P + 40 + 30 + 80 + 40 + 40;
+    linhasItens.forEach((l) => { H += l.nome.length * 48 + 44 + 36; });
+    H += 40 + 56 + 130 + P;
+    c.width = W; c.height = H;
+    ctx.fillStyle = '#f3f4f5'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(24, 24, W - 48, H - 48);
+    ctx.fillStyle = '#f2b705'; ctx.fillRect(24, 24, W - 48, 12);
+    let y = P + 40;
+    // faixa zebrada
+    for (let k = 0; k < 6; k++) { ctx.fillStyle = k % 2 ? '#16191d' : '#f2b705'; ctx.fillRect(P + k * 8, y - 18, 8, 16); }
+    ctx.fillStyle = '#5d6670'; ctx.font = `500 26px ${mono}`; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('KONEG MANUTENÇÃO', P + 64, y);
+    y += 70; ctx.fillStyle = '#16191d'; ctx.font = `600 64px ${disp}`; ctx.fillText('Resumo do estoque', P, y);
+    y += 46; ctx.fillStyle = '#5d6670'; ctx.font = `400 30px ${body}`; ctx.fillText(r.data, P, y);
+    y += 34; ctx.fillStyle = '#d9dde1'; ctx.fillRect(P, y, W - 2 * P, 2);
+    y += 20;
+    linhasItens.forEach(({ i, nome }) => {
+      y += 48;
+      ctx.fillStyle = '#16191d'; ctx.font = nomeFont; ctx.textAlign = 'left';
+      nome.forEach((ln, k) => ctx.fillText(ln, P, y + k * 48));
+      ctx.font = valFont; ctx.textAlign = 'right'; ctx.fillText(brl.format(i.v), W - P, y);
+      y += (nome.length - 1) * 48 + 44;
+      ctx.textAlign = 'left'; ctx.fillStyle = '#5d6670'; ctx.font = detFont;
+      ctx.fillText(`${un(i.q)} × ${brl.format(i.p)}`, P, y);
+      y += 30;
+      ctx.strokeStyle = '#d9dde1'; ctx.setLineDash([8, 8]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(P, y); ctx.lineTo(W - P, y); ctx.stroke(); ctx.setLineDash([]);
+      y += 6;
+    });
+    y += 56;
+    ctx.fillStyle = '#16191d'; ctx.font = `400 36px ${body}`; ctx.textAlign = 'left'; ctx.fillText('Valor total', P, y);
+    ctx.font = `500 36px ${mono}`; ctx.textAlign = 'right'; ctx.fillText(brl.format(r.total), W - P, y);
+    y += 36;
+    ctx.fillStyle = '#fbedb8';
+    const bx = P - 16, bw = W - 2 * P + 32, bh = 100;
+    if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(bx, y, bw, bh, 12); ctx.fill(); } else ctx.fillRect(bx, y, bw, bh);
+    ctx.fillStyle = '#16191d'; ctx.textAlign = 'left'; ctx.font = `600 34px ${body}`;
+    ctx.fillText(`Valor de venda final (${pctTxt(r.pct)})`, P, y + 62);
+    ctx.textAlign = 'right'; ctx.font = `600 52px ${disp}`; ctx.fillText(brl.format(r.final), W - P, y + 66);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#5d6670'; ctx.font = `400 26px ${body}`;
+    ctx.fillText('Koneg Manutenção · (11) 96296-4884 · www.koneg.com.br', W / 2, H - P - 4);
+    return new Promise((res) => c.toBlob(res, 'image/png'));
+  }
+  $('rs-img').addEventListener('click', async () => {
+    const r = dadosResumo();
+    $('rs-img').disabled = true; $('rs-msg').textContent = 'Gerando imagem…';
+    try {
+      const blob = await imagemResumo(r);
+      const nome = `resumo-estoque-${r.data.replace(/\//g, '-')}.png`;
+      const file = new File([blob], nome, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Resumo do estoque' });
+        $('rs-msg').textContent = '';
+      } else {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        $('rs-msg').textContent = 'Imagem baixada. Anexe no WhatsApp Web ou no app.';
+      }
+    } catch (e) {
+      $('rs-msg').textContent = e && e.name === 'AbortError' ? '' : 'Não foi possível gerar a imagem.';
+    } finally { $('rs-img').disabled = false; }
   });
 
   // Zerar todas as quantidades, com confirmação na própria página
