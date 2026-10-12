@@ -164,6 +164,28 @@ html, body { margin: 0; }
 .rs-acoes .btn { justify-content: center; white-space: normal; text-align: center; }
 .rs-acoes #rs-wpp { grid-column: 1 / -1; }
 .rs-msg { margin: 0; text-align: center; font-size: 13px; color: #fff; min-height: 1em; }
+.menu { min-height: 100vh; }
+.menu-wrap { max-width: 44rem; margin-inline: auto; padding: 24px 16px 40px; display: flex; flex-direction: column; gap: 18px; }
+.menu-head h1 { font-size: clamp(34px, 6vw, 44px); }
+.menu-sub { margin: 4px 0 0; color: var(--muted); }
+.menu-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.menu-stats > div { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.menu-stats > div.venda { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+.menu-stats span { font-size: 12px; color: var(--muted); }
+.menu-stats b { font-family: var(--font-display); font-weight: 600; font-size: clamp(20px, 4.5vw, 26px); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 10px; }
+.mitem { font: inherit; text-align: left; cursor: pointer; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 16px; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "ic t" "ic d"; column-gap: 14px; row-gap: 2px; align-items: center; transition: border-color .15s, transform .15s; }
+.mitem:hover { border-color: var(--accent); }
+.mitem:active { transform: scale(.99); }
+.mitem:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mitem svg { grid-area: ic; width: 40px; height: 40px; padding: 8px; box-sizing: border-box; border-radius: 10px; background: var(--accent-soft); fill: none; stroke: var(--fg); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mitem.chk svg { background: rgba(31, 122, 77, .14); }
+.mi-t { grid-area: t; font-family: var(--font-display); font-weight: 600; font-size: 20px; }
+.mi-d { grid-area: d; font-size: 13px; color: var(--muted); }
+.btn.voltar { padding: 6px 12px; }
+.ck-vazio { padding: 28px 16px; text-align: center; color: var(--muted); }
+.ck-vazio p { margin: 0; }
+@media (min-width: 641px) { .mitem { grid-template-columns: 1fr; grid-template-areas: "ic" "t" "d"; row-gap: 6px; padding: 20px; } .mitem svg { margin-bottom: 6px; } }
 .rodape { margin: 0; text-align: center; font-size: 12px; color: var(--muted); font-family: var(--font-mono); letter-spacing: .03em; }
 /* ===== Celular ===== */
 @media (max-width: 640px) {
@@ -234,10 +256,51 @@ html, body { margin: 0; }
 </main>
 
 
+<main class="menu" id="tela-menu" hidden>
+  <div class="menu-wrap">
+    <div class="topline">
+      <span class="eyebrow">Koneg Manutenção</span>
+      <span class="userbar"><span id="m-email"></span><button class="btn" id="m-sair" type="button">Sair</button></span>
+    </div>
+    <div class="menu-head">
+      <h1>Menu</h1>
+      <p class="menu-sub">O que você quer fazer agora?</p>
+    </div>
+    <div class="menu-stats">
+      <div><span>Valor total em estoque</span><b id="m-total">—</b></div>
+      <div class="venda"><span>Valor de venda</span><b id="m-venda">—</b></div>
+    </div>
+    <nav class="menu-grid" aria-label="Menu">
+      <button class="mitem" type="button" data-go="estoque">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+        <span class="mi-t">Estoque</span>
+        <span class="mi-d">Ver e editar itens, quantidades e preços</span>
+      </button>
+      <button class="mitem chk" type="button" data-go="checklist">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11.5l1.5 1.5 3-3"/><path d="M8.5 16.5l1.5 1.5 3-3"/><path d="M15 12h1.5M15 17h1.5"/></svg>
+        <span class="mi-t">Check List</span>
+        <span class="mi-d">Conferências e verificações</span>
+      </button>
+    </nav>
+  </div>
+</main>
+
+<main class="wrap" id="tela-checklist" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="ck-menu" type="button">← Menu</button>
+    </div>
+    <h1>Check List</h1>
+  </header>
+  <section class="card ck-vazio">
+    <p>Esta área está em construção.</p>
+  </section>
+</main>
+
 <div class="wrap" id="app" hidden>
   <header>
     <div class="topline">
-      <span class="eyebrow">Koneg Manutenção · peças de empilhadeira</span>
+      <button class="btn voltar" id="btn-menu" type="button">← Menu</button>
       <span class="userbar"><span id="u-email"></span><button class="btn" id="btn-sair" type="button">Sair</button></span>
     </div>
     <h1>Estoque 2026</h1>
@@ -387,6 +450,8 @@ const firestoreDb = {
     itens.forEach((it) => { total += valor(it); if ((Number(it.quantidade) || 0) > 0) comEstoque++; });
     $('t-total').textContent = carregado ? brl.format(total) : '—';
     $('t-venda').textContent = carregado ? brl.format(total * percentual / 100) : '—';
+    $('m-total').textContent = $('t-total').textContent;
+    $('m-venda').textContent = $('t-venda').textContent;
     if (!carregado) return;
     if (!$('lead').dataset.erro) $('lead').hidden = true;
     $('btn-zerar').disabled = !podeEditar || comEstoque === 0;
@@ -647,7 +712,7 @@ const firestoreDb = {
   function fecharResumo() {
     $('rs-overlay').hidden = true;
     document.body.style.overflow = '';
-    $('btn-resumo').focus();
+    if (!$('app').hidden) $('btn-resumo').focus();
   }
   $('btn-resumo').addEventListener('click', abrirResumo);
   $('rs-fechar').addEventListener('click', fecharResumo);
@@ -802,16 +867,36 @@ const firestoreDb = {
   });
   $('btn-sair').addEventListener('click', () => signOut(auth));
 
+  // Menu inicial e navegação (o botão voltar do celular volta ao menu)
+  let logado = false;
+  function rota() {
+    if (!logado) return;
+    const h = location.hash;
+    $('app').hidden = h !== '#estoque';
+    $('tela-checklist').hidden = h !== '#checklist';
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist';
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', rota);
+  document.querySelectorAll('.mitem').forEach((b) => b.addEventListener('click', () => {
+    const go = b.dataset.go;
+    if (location.hash !== '#' + go) location.hash = go; else rota();
+  }));
+  $('btn-menu').addEventListener('click', () => { abrirAdd(false); location.hash = 'menu'; });
+  $('ck-menu').addEventListener('click', () => { location.hash = 'menu'; });
+  $('m-sair').addEventListener('click', () => signOut(auth));
+
   onAuthStateChanged(auth, (u) => {
     parar.forEach((f) => f()); parar = [];
     if (!u) {
       db = null; itens = new Map(); carregado = false;
       rows.forEach((tr) => tr.remove()); rows.clear();
+      logado = false; $('tela-menu').hidden = true; $('tela-checklist').hidden = true;
       $('app').hidden = true; $('tela-login').hidden = false; $('l-senha').value = '';
       return;
     }
-    $('tela-login').hidden = true; $('app').hidden = false;
-    $('u-email').textContent = u.email || '';
+    $('tela-login').hidden = true; logado = true; rota();
+    $('u-email').textContent = u.email || ''; $('m-email').textContent = u.email || '';
     db = firestoreDb; podeEditar = true; $('pct').disabled = false;
     parar.push(db.collection('itens').onSnapshot((snap) => {
       const novo = new Map();
