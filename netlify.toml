@@ -1,5 +1,7 @@
 [build]
   publish = "."
+  # Não publica (e não gasta créditos) quando só mudou o app Android ou a automação do GitHub
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)android' ':(exclude).github'"
   # Gera a página do app do Check List (/checklist/) a partir do index.html
   command = "sed 's|<!--MANIFEST-->|<link rel=\"manifest\" href=\"/checklist.webmanifest\">|' index.html > checklist/index.html"
 
@@ -13,3 +15,38 @@
   for = "/checklist.webmanifest"
   [headers.values]
     Content-Type = "application/manifest+json"
+
+# Domínio koneg.com.br: a página inicial é o site institucional; o painel fica em /painel/
+[[redirects]]
+  from = "https://koneg.com.br/"
+  to = "/site/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.koneg.com.br/"
+  to = "/site/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "http://koneg.com.br/"
+  to = "/site/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "http://www.koneg.com.br/"
+  to = "/site/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/painel"
+  to = "/painel/"
+  status = 301
+
+[[redirects]]
+  from = "/painel/"
+  to = "/index.html"
+  status = 200
