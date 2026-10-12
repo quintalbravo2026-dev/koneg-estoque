@@ -247,11 +247,9 @@ html, body { margin: 0; }
   </section>
   <p class="rodape">Koneg Manutenção · Estoque 2026 · versão de 12/10/2026 · resumo para WhatsApp</p>
 <div class="rs-overlay" id="rs-overlay" hidden>
-  <div class="rs-dialog" role="dialog" aria-modal="true" aria-labelledby="rs-titulo">
+  <div class="rs-dialog" role="dialog" aria-modal="true" aria-label="Resumo do estoque">
     <div class="rs-card" id="rs-card">
       <div class="rs-head">
-        <span class="eyebrow">Koneg Manutenção</span>
-        <h2 id="rs-titulo">Resumo do estoque</h2>
         <span class="rs-data" id="rs-data"></span>
       </div>
       <div class="rs-lista" id="rs-lista"></div>
@@ -563,7 +561,7 @@ const firestoreDb = {
   const un = (q) => `${int.format(q)} ${q === 1 ? 'unidade' : 'unidades'}`;
   const pctTxt = (p) => String(p).replace('.', ',') + '%';
   function textoResumo(r) {
-    const linhas = ['*Koneg Manutenção · Resumo do estoque*', `_${r.data}_`, ''];
+    const linhas = [`_${r.data}_`, ''];
     r.lista.forEach((i) => {
       linhas.push(`*${i.nome}*`);
       linhas.push(`${un(i.q)} × ${brl.format(i.p)} = *${brl.format(i.v)}*`);
@@ -635,20 +633,16 @@ const firestoreDb = {
       const vw = ctx.measureText(brl.format(i.v)).width;
       return { i, nome: wrap(i.nome, nomeFont, W - 2 * P - vw - 40) };
     });
-    let H = P + 40 + 30 + 80 + 40 + 40;
+    let H = P + 30 + 34 + 20;
     linhasItens.forEach((l) => { H += l.nome.length * 48 + 44 + 36; });
-    H += 40 + 56 + 130 + P;
+    H += 56 + 36 + 100 + P;
     c.width = W; c.height = H;
     ctx.fillStyle = '#f3f4f5'; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = '#ffffff'; ctx.fillRect(24, 24, W - 48, H - 48);
     ctx.fillStyle = '#f2b705'; ctx.fillRect(24, 24, W - 48, 12);
-    let y = P + 40;
-    // faixa zebrada
-    for (let k = 0; k < 6; k++) { ctx.fillStyle = k % 2 ? '#16191d' : '#f2b705'; ctx.fillRect(P + k * 8, y - 18, 8, 16); }
-    ctx.fillStyle = '#5d6670'; ctx.font = `500 26px ${mono}`; ctx.textBaseline = 'alphabetic';
-    ctx.fillText('KONEG MANUTENÇÃO', P + 64, y);
-    y += 70; ctx.fillStyle = '#16191d'; ctx.font = `600 64px ${disp}`; ctx.fillText('Resumo do estoque', P, y);
-    y += 46; ctx.fillStyle = '#5d6670'; ctx.font = `400 30px ${body}`; ctx.fillText(r.data, P, y);
+    let y = P + 30;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#5d6670'; ctx.font = `400 30px ${body}`; ctx.fillText(r.data, P, y);
     y += 34; ctx.fillStyle = '#d9dde1'; ctx.fillRect(P, y, W - 2 * P, 2);
     y += 20;
     linhasItens.forEach(({ i, nome }) => {
@@ -674,8 +668,6 @@ const firestoreDb = {
     ctx.fillStyle = '#16191d'; ctx.textAlign = 'left'; ctx.font = `600 34px ${body}`;
     ctx.fillText('Valor de venda final', P, y + 62);
     ctx.textAlign = 'right'; ctx.font = `600 52px ${disp}`; ctx.fillText(brl.format(r.final), W - P, y + 66);
-    ctx.textAlign = 'center'; ctx.fillStyle = '#5d6670'; ctx.font = `400 26px ${body}`;
-    ctx.fillText('Koneg Manutenção · (11) 96296-4884 · www.koneg.com.br', W / 2, H - P - 4);
     return new Promise((res) => c.toBlob(res, 'image/png'));
   }
   $('rs-img').addEventListener('click', async () => {
