@@ -489,6 +489,23 @@ html, body { margin: 0; }
 #impressao.gerando { display: block !important; position: fixed; left: -12000px; top: 0; width: 194mm; background: #fff; color: #000; font-family: Calibri, Carlito, "Liberation Sans", Arial, sans-serif; }
 .html2pdf__container #impressao.gerando { position: static; left: auto; }
 #impressao.gerando .doc { background: #fff; }
+.mitem.osv svg { background: rgba(27, 42, 107, .1); }
+.os-st .btn[data-s="concluida"][aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #fff; }
+.os-st .btn[data-s="andamento"][aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+#os-filtros { margin: 10px 0 2px; }
+.os-fotos { padding: 12px 14px 14px; display: grid; gap: 18px; }
+.os-bloco { display: flex; flex-direction: column; gap: 10px; }
+.os-bloco h3 { margin: 0; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; gap: 8px; }
+.os-bloco h3::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+.os-bloco.antes h3::before { background: #d9822b; }
+.os-bloco.depois h3::before { background: var(--ok); }
+#impressao .doc h3.os-h3 { font-size: 11pt; margin: 3mm 0 1mm; text-transform: uppercase; letter-spacing: .04em; }
+#impressao .doc .os-par { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 2mm; }
+#impressao .doc .os-par .cab { font-weight: 700; font-size: 10.5pt; text-align: center; background: #d9d9d9; padding: 1mm; }
+#impressao .doc .os-par figure { margin: 0; break-inside: avoid; page-break-inside: avoid; }
+#impressao .doc .os-par img { width: 100%; height: 62mm; object-fit: contain; background: #f2f2f2; display: block; border: .5pt solid #999; }
+#impressao .doc .os-par .vazio { height: 62mm; border: .5pt dashed #bbb; }
+#impressao .doc .os-par figcaption { font-size: 9.5pt; margin-top: 1mm; }
 .mitem.bkp svg { background: rgba(120, 80, 20, .1); }
 .mitem.bkp[aria-busy="true"] { opacity: .7; cursor: progress; }
 
@@ -696,6 +713,11 @@ html, body { margin: 0; }
         <span class="mi-t">Check List</span>
         <span class="mi-d">Conferências e verificações</span>
       </button>
+      <button class="mitem osv" type="button" data-go="os" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.4L4 16.8 7.2 20l5.9-5.9a3.5 3.5 0 0 0 4.4-4.6l-2.1 2.1-2.4-.6-.6-2.4z"/><path d="M15.5 17.5l1.6 1.6 3.4-3.4"/></svg>
+        <span class="mi-t">Ordem de serviço</span>
+        <span class="mi-d">Abrir OS, registrar o serviço e fotos de antes e depois</span>
+      </button>
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
         <span class="mi-t">Administração</span>
@@ -884,6 +906,56 @@ html, body { margin: 0; }
       <p class="ed-dica" id="wa-dica"></p>
     </div>
   </section>
+</main>
+
+<main class="wrap" id="tela-os" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="os-menu" type="button">← Menu</button>
+    </div>
+    <span class="eyebrow">Koneg Manutenção</span>
+    <h1>Ordens de serviço</h1>
+  </header>
+  <button class="btn primary dc-novo" id="os-novo" type="button">+ Nova ordem de serviço</button>
+  <input class="search" id="os-busca" type="search" placeholder="Buscar por cliente, número ou equipamento…" aria-label="Buscar ordens de serviço">
+  <div class="rc-filtros" id="os-filtros" role="group" aria-label="Mostrar ordens">
+    <button class="btn" type="button" data-f="abertas" aria-pressed="true">Em aberto</button>
+    <button class="btn" type="button" data-f="concluida" aria-pressed="false">Concluídas</button>
+    <button class="btn" type="button" data-f="todas" aria-pressed="false">Todas</button>
+  </div>
+  <section class="card">
+    <div class="lj-tit" id="os-sub">Ordens de serviço</div>
+    <div id="os-lista" class="lj-hist"></div>
+  </section>
+</main>
+
+<main class="wrap" id="tela-osf" hidden>
+  <header>
+    <div class="topline">
+      <button class="btn voltar" id="osf-voltar" type="button">← Voltar às ordens</button>
+      <span class="status fm-status" id="osf-status" aria-live="polite"></span>
+    </div>
+    <span class="eyebrow">Ordem de serviço</span>
+    <h1 id="osf-tit">Nova ordem de serviço</h1>
+  </header>
+  <section class="card ed-st os-st">
+    <span class="ed-st-l">Situação</span>
+    <div class="rc-filtros" role="group" aria-label="Situação da ordem de serviço" id="osf-st">
+      <button class="btn" type="button" data-s="aberta" aria-pressed="true">Aberta</button>
+      <button class="btn" type="button" data-s="andamento" aria-pressed="false">Em andamento</button>
+      <button class="btn" type="button" data-s="concluida" aria-pressed="false">Concluída</button>
+    </div>
+  </section>
+  <div id="osf-form" class="ed-form"></div>
+  <div class="fm-rodape ed-acoes">
+    <button class="btn primary" id="osf-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn danger" id="osf-excluir" type="button" hidden>Excluir</button>
+  </div>
+  <div class="confirm" id="osf-confirm" hidden>
+    <p>Excluir esta ordem de serviço e as fotos dela? Não dá para desfazer.</p>
+    <button class="btn solid-danger" id="osf-excluir-ok" type="button">Excluir</button>
+    <button class="btn" id="osf-excluir-no" type="button">Cancelar</button>
+  </div>
 </main>
 
 <main class="wrap" id="tela-receber" hidden>
@@ -2409,13 +2481,16 @@ const firestoreDb = {
     ['estoqueQtd', 'Alterar quantidades no estoque'],
     ['checklist', 'Fazer e editar check lists'],
     ['relatorio', 'Emitir o relatório do mês'],
+    ['os', 'Fazer ordens de serviço (com fotos)'],
   ];
-  const SEM_PERM = { admin: false, estoqueVer: false, estoqueQtd: false, checklist: false, relatorio: false };
+  const SEM_PERM = { admin: false, estoqueVer: false, estoqueQtd: false, checklist: false, relatorio: false, os: false };
   let P = { ...SEM_PERM };
   const podeQtd = () => P.admin || P.estoqueQtd;
   const podeEstoque = () => P.admin || P.estoqueVer || P.estoqueQtd;
   const podeCk = () => P.admin || P.checklist || P.relatorio;
+  const podeOS = () => P.admin || P.os;
   function permitido(h) {
+    if (h === '#os' || h.startsWith('#os-')) return podeOS();
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
@@ -2427,6 +2502,7 @@ const firestoreDb = {
     const a = P.admin;
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
+    document.querySelector('.mitem[data-go="os"]').hidden = !podeOS();
     document.querySelector('#tela-menu .mitem[data-go="admin"]').hidden = !a;
     document.querySelector('.mitem[data-go="estoque"] .mi-d').textContent = a ? 'Ver e editar itens, quantidades e preços' : podeQtd() ? 'Ver o estoque e alterar quantidades' : 'Consultar o estoque';
     ['btn-add', 'btn-editar', 'btn-zerar'].forEach((k) => { $(k).hidden = !a; });
@@ -2449,12 +2525,12 @@ const firestoreDb = {
       lb.append(c, ' ' + t); box.appendChild(lb);
     });
   };
-  caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true });
+  caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true, os: true });
   const lerPerms = (box) => Object.fromEntries(PERMS.map(([k]) => [k, !!box.querySelector(`input[data-perm="${k}"]`)?.checked]));
   function mostrarOk(t) { $('fu-ok').textContent = t; $('fu-ok').hidden = !t; }
   function abrirFormFunc(abrir) {
     $('fu-form').hidden = !abrir; $('fu-novo').setAttribute('aria-expanded', String(abrir)); $('fu-err').hidden = true;
-    if (abrir) { mostrarOk(''); $('fu-nome').value = ''; $('fu-email').value = ''; $('fu-senha').value = ''; caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true }); $('fu-nome').focus(); }
+    if (abrir) { mostrarOk(''); $('fu-nome').value = ''; $('fu-email').value = ''; $('fu-senha').value = ''; caixasPerm($('fu-perms-novo'), { estoqueVer: true, checklist: true, os: true }); $('fu-nome').focus(); }
   }
   $('fu-novo').addEventListener('click', () => abrirFormFunc($('fu-form').hidden));
   $('fu-cancelar').addEventListener('click', () => abrirFormFunc(false));
@@ -3554,6 +3630,258 @@ const firestoreDb = {
     document.querySelectorAll('.ord-dica').forEach((d) => { d.hidden = true; });
   }
 
+  // ===== Ordem de serviço (admin e funcionários com permissão) =====
+  const OS_ST = { aberta: 'Aberta', andamento: 'Em andamento', concluida: 'Concluída' };
+  const OS_CAMPOS = [
+    ['g', 'Identificação'],
+    ['numero', 'text', 'Número da OS'], ['data', 'date', 'Data'], ['horario', 'text', 'Horário (início e fim)'], ['tecnico', 'text', 'Técnico responsável'],
+    ['g', 'Cliente e equipamento'],
+    ['cliente', 'text', 'Cliente / loja', 'full'], ['local', 'text', 'Local / setor'], ['solicitante', 'text', 'Quem solicitou'],
+    ['equipamento', 'area', 'Equipamento (modelo, nº de série, patrimônio)', 'full'],
+    ['g', 'Serviço'],
+    ['problema', 'area', 'Problema relatado / serviço solicitado', 'full'],
+    ['servico', 'area', 'Serviço executado', 'full'],
+    ['pecas', 'lista', 'Peças e materiais utilizados (um por linha)', 'full'],
+    ['obs', 'area', 'Observações e recomendações', 'full'],
+    ['g', 'Assinatura do cliente'], ['responsavel', 'text', 'Nome do responsável pelo cliente', 'full'],
+  ];
+  let osLista = [], pararOsLista = null, osFiltro = 'abertas';
+  let osEd = null, osTimer = null, osFila = Promise.resolve();
+  let osFotos = [], pararOsFotos = null, osFotosDe = null;
+  const colFotosOS = (id) => fsCol(fs, 'ordens', id, 'fotos');
+  const osStatus = (t, k) => { $('osf-status').textContent = t || ''; $('osf-status').dataset.kind = k || ''; };
+
+  function ouvirOrdens() {
+    if (pararOsLista) return;
+    $('os-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Carregando…' }));
+    pararOsLista = fsSnap(fsCol(fs, 'ordens'), (snap) => { osLista = snap.docs.map((d) => ({ id: d.id, ...d.data() })); desenharOrdens(); },
+      () => { $('os-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+  }
+  function pararOS() {
+    if (pararOsLista) { pararOsLista(); pararOsLista = null; } osLista = [];
+    pararFotosOS(); clearTimeout(osTimer); osTimer = null; osEd = null; $('osf-form').replaceChildren();
+    osFiltro = 'abertas'; $('os-busca').value = ''; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === 'abertas')));
+  }
+  function pararFotosOS() { if (pararOsFotos) { pararOsFotos(); pararOsFotos = null; } osFotos = []; osFotosDe = null; }
+  function desenharOrdens() {
+    const box = $('os-lista'); if (!pararOsLista) return;
+    const q = semAcento($('os-busca').value.trim());
+    const passa = (o) => osFiltro === 'todas' || (osFiltro === 'concluida' ? o.status === 'concluida' : o.status !== 'concluida');
+    const lista = osLista.filter((o) => passa(o) && (!q || semAcento(`${o.numero || ''} ${o.cliente || ''} ${o.equipamento || ''} ${o.tecnico || ''}`).includes(q)))
+      .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.numero || '').localeCompare(String(a.numero || '')));
+    const abertas = osLista.filter((o) => o.status !== 'concluida').length;
+    $('os-sub').textContent = `${osLista.length} ${osLista.length === 1 ? 'ordem' : 'ordens'} · ${abertas} em aberto`;
+    box.replaceChildren();
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: osLista.length ? 'Nenhuma ordem neste filtro.' : 'Nenhuma ordem de serviço ainda. Use "+ Nova ordem de serviço".' })); return; }
+    lista.forEach((o) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+      const t = document.createElement('b'); t.textContent = `OS ${o.numero || 's/ nº'} · ${o.cliente || 'Sem cliente'}`;
+      const s2 = document.createElement('span'); s2.className = 'sub';
+      s2.textContent = [dataBR(o.data), String(o.equipamento || '').split('\n')[0], o.tecnico].filter(Boolean).join(' · ');
+      const tag = document.createElement('span'); tag.className = 'tag'; const st = o.status || 'aberta';
+      tag.textContent = OS_ST[st] || 'Aberta'; tag.classList.toggle('ok', st === 'concluida'); tag.classList.toggle('env', st === 'andamento');
+      b.append(t, s2, tag);
+      b.addEventListener('click', () => { location.hash = 'os-' + o.id; });
+      box.appendChild(b);
+    });
+  }
+  $('os-busca').addEventListener('input', desenharOrdens);
+  document.querySelectorAll('#os-filtros .btn').forEach((b) => b.addEventListener('click', () => {
+    osFiltro = b.dataset.f; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); desenharOrdens();
+  }));
+  $('os-novo').addEventListener('click', () => { location.hash = 'os-novo'; });
+  $('os-menu').addEventListener('click', () => { location.hash = 'menu'; });
+
+  // ----- Formulário -----
+  function osMudou() { osStatus('Salvando…'); clearTimeout(osTimer); osTimer = setTimeout(salvarOS, 700); }
+  function salvarOS() {
+    clearTimeout(osTimer); osTimer = null;
+    if (!osEd) return osFila;
+    const alvo = osEd;
+    osFila = osFila.catch(() => {}).then(async () => {
+      if (!alvo.id) {
+        alvo.id = fsDoc(fsCol(fs, 'ordens')).id; alvo.criadoEm = new Date().toISOString();
+        alvo.criadoPor = (auth.currentUser && auth.currentUser.email) || '';
+        if (osEd === alvo && location.hash === '#os-novo') history.replaceState(null, '', '#os-' + alvo.id);
+      }
+      const { id, ...dados } = alvo;
+      await setDoc(fsDoc(fs, 'ordens', id), { ...dados, atualizadoEm: new Date().toISOString() });
+      if (osEd === alvo) { osStatus('Salvo', 'ok'); $('osf-excluir').hidden = !P.admin; if (!osFotosDe) ouvirFotosOS(id); }
+    }).catch((e) => osStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
+    return osFila;
+  }
+  async function nomeDoUsuario() {
+    if (P.admin) { await carregarEmpresa(); return EMP.assinatura || 'Kayowan Macedo Anchieta'; }
+    try { const d = await getDoc(fsDoc(fs, 'usuarios', String(auth.currentUser.email).toLowerCase())); return (d.exists() && d.data().nome) || ''; } catch (_) { return ''; }
+  }
+  async function abrirOS(arg) {
+    if (osEd && osEd.id && arg === osEd.id) { pintarOS(); return; }
+    if (osTimer) await salvarOS();
+    osEd = null; pararFotosOS(); $('osf-form').replaceChildren(); osStatus('Carregando…');
+    try {
+      if (arg === 'novo') {
+        let lista = osLista;
+        if (!lista.length) { try { lista = (await getDocs(fsCol(fs, 'ordens'))).docs.map((d) => d.data()); } catch (_) { lista = []; } }
+        osEd = { id: null, numero: proximoNumero(lista, hojeISO()), data: hojeISO(), horario: '', tecnico: await nomeDoUsuario(), cliente: '', local: '', solicitante: '', equipamento: '', problema: '', servico: '', pecas: '', obs: '', responsavel: '', status: 'aberta' };
+      } else {
+        const d = await getDoc(fsDoc(fs, 'ordens', arg));
+        if (!d.exists()) { osStatus('Ordem não encontrada', 'erro'); location.hash = 'os'; return; }
+        osEd = { id: arg, ...d.data() };
+      }
+      montarOS(); osStatus(osEd.id ? 'Salvo' : '');
+    } catch (_) { osStatus('Não foi possível abrir.', 'erro'); }
+  }
+  function pintarOS() {
+    if (!osEd) return;
+    $('osf-tit').textContent = osEd.numero ? `OS ${osEd.numero}` : 'Nova ordem de serviço';
+    document.querySelectorAll('#osf-st .btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === (osEd.status || 'aberta'))));
+    $('osf-excluir').hidden = !(P.admin && osEd.id); $('osf-confirm').hidden = true;
+  }
+  function montarOS() {
+    const box = $('osf-form');
+    montarFormulario(box, OS_CAMPOS, osEd, (k) => { if (k === 'numero') pintarOS(); osMudou(); });
+    // sugestões de cliente: lojas do check list e clientes cadastrados
+    const dl = document.createElement('datalist'); dl.id = 'os-cli-lista';
+    const nomes = new Set([...LOJAS_POR_ID.values()].map((l) => l.nome).concat(P.admin ? clientes.map((c) => c.nome) : []).filter(Boolean));
+    [...nomes].sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((n) => dl.appendChild(new Option(n)));
+    const inpCli = box.querySelector('#ed-cliente'); if (inpCli) { inpCli.setAttribute('list', 'os-cli-lista'); inpCli.placeholder = 'Digite ou escolha'; inpCli.after(dl); }
+    // fotos antes e depois
+    const sec = document.createElement('section'); sec.className = 'ed-sec';
+    const h = document.createElement('h2'); h.textContent = 'Fotos do serviço';
+    const corpo = document.createElement('div'); corpo.className = 'os-fotos';
+    corpo.append(blocoFotos('antes', 'Antes do serviço'), blocoFotos('depois', 'Depois do serviço'));
+    sec.append(h, corpo);
+    const secs = box.querySelectorAll('.ed-sec'); box.insertBefore(sec, secs[secs.length - 1]);
+    pintarOS();
+    if (osEd.id) ouvirFotosOS(osEd.id); else desenharFotosOS();
+  }
+  function blocoFotos(tipo, titulo) {
+    const b = document.createElement('div'); b.className = 'os-bloco ' + tipo;
+    const h3 = document.createElement('h3'); h3.textContent = titulo;
+    const topo = document.createElement('div'); topo.className = 'ft-topo';
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.hidden = true; inp.id = 'os-arq-' + tipo;
+    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn primary'; bt.textContent = tipo === 'antes' ? '+ Foto de antes' : '+ Foto de depois';
+    bt.addEventListener('click', () => inp.click());
+    const dica = document.createElement('span'); dica.className = 'ed-dica'; dica.id = 'os-dica-' + tipo; dica.textContent = 'No celular dá para tirar a foto na hora.';
+    topo.append(bt, inp, dica);
+    const grade = document.createElement('div'); grade.className = 'ft-grade'; grade.id = 'os-grade-' + tipo;
+    b.append(h3, topo, grade);
+    inp.addEventListener('change', async () => {
+      const arqs = [...inp.files]; inp.value = '';
+      if (!arqs.length || !osEd) return;
+      if (!osEd.id) await salvarOS();
+      if (!osEd || !osEd.id) return;
+      ouvirFotosOS(osEd.id);
+      const alvo = osEd.id; let ok = 0;
+      for (const [i, f] of arqs.entries()) {
+        $('os-dica-' + tipo).textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
+        try { const img = await reduzirFoto(f); await setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i }); ok++; }
+        catch (_) { osStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
+      }
+      const d = $('os-dica-' + tipo); if (d) d.textContent = ok ? `${ok} ${ok === 1 ? 'foto adicionada' : 'fotos adicionadas'}.` : 'Nenhuma foto foi adicionada.';
+    });
+    return b;
+  }
+  function ouvirFotosOS(id) {
+    if (osFotosDe === id && pararOsFotos) return;
+    pararFotosOS(); osFotosDe = id;
+    pararOsFotos = fsSnap(colFotosOS(id), (snap) => {
+      osFotos = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+      desenharFotosOS();
+    }, () => {});
+  }
+  function desenharFotosOS() {
+    ['antes', 'depois'].forEach((tipo) => {
+      const g = $('os-grade-' + tipo); if (!g) return;
+      g.replaceChildren();
+      const lista = osFotos.filter((f) => (f.tipo || 'antes') === tipo);
+      if (!lista.length) { g.appendChild(Object.assign(document.createElement('p'), { className: 'ed-dica', textContent: tipo === 'antes' ? 'Nenhuma foto de antes.' : 'Nenhuma foto de depois.' })); return; }
+      lista.forEach((f, i) => {
+        const c = document.createElement('figure'); c.className = 'ft-item';
+        const im = document.createElement('img'); im.src = f.img; im.alt = f.legenda || `Foto ${i + 1} (${tipo})`;
+        const leg = document.createElement('input'); leg.type = 'text'; leg.placeholder = 'Legenda (opcional)'; leg.value = f.legenda || ''; leg.setAttribute('aria-label', `Legenda da foto ${i + 1} de ${tipo}`);
+        leg.addEventListener('change', async () => { try { await updateDoc(fsDoc(colFotosOS(osFotosDe), f.id), { legenda: leg.value.trim() }); osStatus('Legenda salva', 'ok'); } catch (_) { osStatus('Não foi possível salvar a legenda.', 'erro'); } });
+        const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn danger'; rm.textContent = 'Remover';
+        rm.addEventListener('click', async () => {
+          if (!rm.classList.contains('conf')) { rm.classList.add('conf'); rm.textContent = 'Confirmar?'; setTimeout(() => { rm.classList.remove('conf'); rm.textContent = 'Remover'; }, 4000); return; }
+          try { await deleteDoc(fsDoc(colFotosOS(osFotosDe), f.id)); } catch (_) { osStatus('Não foi possível remover a foto.', 'erro'); }
+        });
+        const rod = document.createElement('figcaption'); rod.append(leg, rm);
+        c.append(im, rod); g.appendChild(c);
+      });
+    });
+  }
+  document.querySelectorAll('#osf-st .btn').forEach((b) => b.addEventListener('click', () => {
+    if (!osEd) return;
+    osEd.status = b.dataset.s; osEd.statusEm = hojeISO(); pintarOS(); osMudou();
+  }));
+  $('osf-voltar').addEventListener('click', async () => { if (osTimer) await salvarOS(); location.hash = 'os'; });
+  $('osf-excluir').addEventListener('click', () => { $('osf-confirm').hidden = false; $('osf-excluir-ok').focus(); });
+  $('osf-excluir-no').addEventListener('click', () => { $('osf-confirm').hidden = true; });
+  $('osf-excluir-ok').addEventListener('click', async () => {
+    if (!osEd || !osEd.id || !P.admin) return;
+    clearTimeout(osTimer); osTimer = null;
+    const id = osEd.id;
+    try {
+      const fs2 = (await getDocs(colFotosOS(id))).docs;
+      for (const f of fs2) await deleteDoc(fsDoc(colFotosOS(id), f.id));
+      pararFotosOS(); await deleteDoc(fsDoc(fs, 'ordens', id)); osEd = null; location.hash = 'os';
+    } catch (_) { osStatus('Não foi possível excluir.', 'erro'); }
+  });
+
+  // ----- Impressão da OS -----
+  function documentoOS(d, fts) {
+    const doc = el('div', 'folha doc');
+    doc.appendChild(cabecalho('ORDEM DE SERVIÇO'));
+    doc.appendChild(Object.assign(linhasKV([['Número da OS', d.numero], ['Data', dataLonga(d.data)], ['Horário', d.horario], ['Situação', OS_ST[d.status || 'aberta']], ['Técnico responsável', d.tecnico]]), { className: 'meta' }));
+    doc.append(el('h2', '', '1. Cliente'), linhasKV([['Cliente / loja', d.cliente], ['Local / setor', d.local], ['Solicitante', d.solicitante]]));
+    doc.append(el('h2', '', '2. Equipamento'), String(d.equipamento || '').trim() ? linhasP(d.equipamento) : el('p', '', '—'));
+    doc.append(el('h2', '', '3. Problema relatado / Serviço solicitado'), String(d.problema || '').trim() ? linhasP(d.problema) : el('p', '', '—'));
+    doc.append(el('h2', '', '4. Serviço executado'), String(d.servico || '').trim() ? linhasP(d.servico) : el('p', '', '—'));
+    doc.append(el('h2', '', '5. Peças e materiais utilizados'), String(d.pecas || '').trim() ? linhasP(d.pecas, true) : el('p', '', 'Não houve substituição de peças ou uso de materiais.'));
+    doc.append(el('h2', '', '6. Observações e recomendações'), String(d.obs || '').trim() ? linhasP(d.obs) : el('p', '', 'Sem observações.'));
+    const antes = fts.filter((f) => (f.tipo || 'antes') === 'antes'), depois = fts.filter((f) => f.tipo === 'depois');
+    if (antes.length || depois.length) {
+      doc.appendChild(el('h2', '', '7. Registro fotográfico'));
+      const fig = (f, rot, i) => { const fg = document.createElement('figure'); const im = document.createElement('img'); im.src = f.img; im.alt = ''; fg.append(im, el('figcaption', '', `${rot} ${i + 1}${f.legenda ? ' – ' + f.legenda : ''}`)); return fg; };
+      if (antes.length && depois.length) {
+        const g = el('div', 'os-par'); g.append(el('div', 'cab', 'ANTES'), el('div', 'cab', 'DEPOIS'));
+        for (let i = 0; i < Math.max(antes.length, depois.length); i++) {
+          g.appendChild(antes[i] ? fig(antes[i], 'Antes', i) : el('div', 'vazio'));
+          g.appendChild(depois[i] ? fig(depois[i], 'Depois', i) : el('div', 'vazio'));
+        }
+        doc.appendChild(g);
+      } else {
+        const lista = antes.length ? antes : depois, rot = antes.length ? 'Antes' : 'Depois';
+        doc.appendChild(el('h3', 'os-h3', antes.length ? 'Antes do serviço' : 'Depois do serviço'));
+        const g = el('div', 'os-par'); lista.forEach((f, i) => g.appendChild(fig(f, rot, i))); doc.appendChild(g);
+      }
+    }
+    const as = el('div', 'assin2');
+    const c1 = el('div', 'ln2'); c1.append(d.tecnico || ' ', document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
+    const c2 = el('div', 'ln2'); c2.append(d.responsavel || ' ', document.createElement('br'), `Responsável · ${d.cliente || 'Cliente'}`);
+    as.append(c1, c2); doc.appendChild(as);
+    return doc;
+  }
+  $('osf-imprimir').addEventListener('click', async () => {
+    if (!osEd) return;
+    if (osTimer || !osEd.id) await salvarOS();
+    await carregarEmpresa();
+    let fts = osFotos;
+    if (osEd.id && osFotosDe !== osEd.id) { try { fts = (await getDocs(colFotosOS(osEd.id))).docs.map((d) => d.data()); } catch (_) { fts = []; } }
+    const nome = ['OS', String(osEd.numero || '').replace('/', '-'), osEd.cliente].filter(Boolean).join(' - ');
+    imprimirConteudo([documentoOS(osEd, fts)], nome);
+  });
+
+  function rotaOS(h) {
+    const naLista = h === '#os', m = h.match(/^#os-(.+)$/);
+    $('tela-os').hidden = !naLista; $('tela-osf').hidden = !m;
+    if (naLista || m) ouvirOrdens();
+    if (naLista) desenharOrdens();
+    if (m) abrirOS(m[1]);
+    else if (osEd) { if (osTimer) salvarOS(); pararFotosOS(); osEd = null; $('osf-form').replaceChildren(); }
+  }
+
   // Menu inicial e navegação (o botão voltar do celular volta ao menu)
   let logado = false;
   function rota() {
@@ -3576,6 +3904,7 @@ const firestoreDb = {
       if (hh === '#empresa') abrirEmpresa();
     }
     if (location.hash === '#funcionarios') ouvirFuncionarios();
+    rotaOS(location.hash);
     if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
@@ -3592,7 +3921,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h.startsWith('#doc-');
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-');
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', () => { sairReordenar(); rota(); });
@@ -3605,12 +3934,12 @@ const firestoreDb = {
   $('m-sair').addEventListener('click', () => signOut(auth));
 
   // ---------- Backup (somente administrador) ----------
-  const BKP_COLECOES = ['itens', 'lojas', 'checklists', 'usuarios', 'orcamentos', 'relatorios', 'receber', 'clientes', 'config', 'admin'];
+  const BKP_COLECOES = ['itens', 'lojas', 'checklists', 'usuarios', 'orcamentos', 'relatorios', 'ordens', 'receber', 'clientes', 'config', 'admin'];
   const BKP_TXT = 'Baixar uma cópia de todos os dados do painel';
   let bkpRodando = false;
   async function fazerBackup() {
     if (!P.admin || bkpRodando) return;
-    const comFotos = confirm('Incluir as fotos dos relatórios no backup?\n\nOK = com fotos (arquivo maior)\nCancelar = só os dados, sem fotos');
+    const comFotos = confirm('Incluir as fotos dos relatórios e das ordens de serviço no backup?\n\nOK = com fotos (arquivo maior)\nCancelar = só os dados, sem fotos');
     const st = $('bkp-status'), bt = $('btn-backup');
     bkpRodando = true; bt.setAttribute('aria-busy', 'true');
     const dados = {}, contagem = [];
@@ -3623,11 +3952,14 @@ const firestoreDb = {
         contagem.push(`${c}: ${s.docs.length}`);
       }
       if (comFotos) {
-        let n = 0; const ids = Object.keys(dados.relatorios);
-        for (let i = 0; i < ids.length; i++) {
-          st.textContent = `Copiando fotos ${i + 1}/${ids.length}…`;
-          const s = await getDocs(fsCol(fs, 'relatorios', ids[i], 'fotos'));
-          if (s.docs.length) { dados.relatorios[ids[i]]._fotos = {}; s.docs.forEach((d) => { dados.relatorios[ids[i]]._fotos[d.id] = d.data(); n++; }); }
+        let n = 0;
+        for (const col of ['relatorios', 'ordens']) {
+          const ids = Object.keys(dados[col]);
+          for (let i = 0; i < ids.length; i++) {
+            st.textContent = `Copiando fotos de ${col} ${i + 1}/${ids.length}…`;
+            const s = await getDocs(fsCol(fs, col, ids[i], 'fotos'));
+            if (s.docs.length) { dados[col][ids[i]]._fotos = {}; s.docs.forEach((d) => { dados[col][ids[i]]._fotos[d.id] = d.data(); n++; }); }
+          }
         }
         contagem.push(`fotos: ${n}`);
       }
@@ -3651,12 +3983,13 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-os', 'tela-osf', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    pararOS();
     fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); $('bkp-status').textContent = BKP_TXT; ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
     const email = String(u.email || '').toLowerCase();
-    if (email === ADMIN_EMAIL) return { admin: true, estoqueVer: true, estoqueQtd: true, checklist: true, relatorio: true };
+    if (email === ADMIN_EMAIL) return { admin: true, estoqueVer: true, estoqueQtd: true, checklist: true, relatorio: true, os: true };
     try {
       const d = await getDoc(fsDoc(fs, 'usuarios', email));
       if (!d.exists()) return null;

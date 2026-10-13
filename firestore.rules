@@ -60,6 +60,14 @@ service cloud.firestore {
       allow read, write: if admin();
     }
 
+    match /ordens/{id} {
+      allow read, create, update: if pode('os');
+      allow delete: if admin();
+      match /fotos/{foto} {
+        allow read, write: if pode('os');
+      }
+    }
+
     match /checklists/{id} {
       allow read: if pode('checklist') || pode('relatorio');
       allow create, update: if pode('checklist');
