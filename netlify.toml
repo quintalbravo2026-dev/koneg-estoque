@@ -5,6 +5,10 @@
   # Gera a página do app do Check List (/checklist/) a partir do index.html
   command = "sed 's|<!--MANIFEST-->|<link rel=\"manifest\" href=\"/checklist.webmanifest\">|' index.html > checklist/index.html"
 
+# Funções automáticas (lembrete diário de Contas a receber pelo Telegram)
+[functions]
+  directory = "netlify/functions"
+
 # A chave do Firebase é pública por natureza (a proteção está nas regras do Firestore);
 # o detector automático do Netlify a confunde com senha e bloqueia a publicação.
 [build.environment]
