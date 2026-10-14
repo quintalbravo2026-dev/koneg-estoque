@@ -22,9 +22,21 @@
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+
+[[headers]]
   for = "/checklist.webmanifest"
   [headers.values]
     Content-Type = "application/manifest+json"
+
+# QR code dos equipamentos: koneg.com.br/e/EQ0001 abre o histórico do equipamento no painel (ou no app)
+[[redirects]]
+  from = "/e/:codigo"
+  to = "/painel/#eqc-:codigo"
+  status = 302
+  force = true
 
 # Link curto para baixar o aplicativo do Check List (Android): koneg.com.br/app
 [[redirects]]

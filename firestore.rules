@@ -68,6 +68,12 @@ service cloud.firestore {
       }
     }
 
+    match /equipamentos/{id} {
+      allow read: if admin() || funcionario();
+      allow create, update: if pode('checklist') || pode('os');
+      allow delete: if admin();
+    }
+
     match /checklists/{id} {
       allow read: if pode('checklist') || pode('relatorio');
       allow create, update: if pode('checklist');

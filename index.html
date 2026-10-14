@@ -571,7 +571,7 @@ html, body { margin: 0; }
 .app-ck.casca .voltar, .app-ck.casca main > header > h1, .app-ck.casca #app > header > h1,
 .app-ck.casca main > header > .eyebrow, .app-ck.casca .userbar, .app-ck.casca .ck-topo-app,
 .app-ck.casca #tela-admin .menu-wrap > div:nth-child(2), .app-ck.casca #tela-menu .topline,
-.app-ck.casca #os-novo, .app-ck.casca #lj-novo, .app-ck.casca #dc-novo, .app-ck.casca #cl-novo, .app-ck.casca #rc-novo { display: none !important; }
+.app-ck.casca #os-novo, .app-ck.casca #eq-novo, .app-ck.casca #lj-novo, .app-ck.casca #dc-novo, .app-ck.casca #cl-novo, .app-ck.casca #rc-novo { display: none !important; }
 .app-ck.casca main > header > .topline, .app-ck.casca #app > header > .topline, .app-ck.casca #tela-admin .menu-wrap > .topline { display: none; }
 .app-ck.casca .wrap { padding-top: 16px; gap: 14px; }
 .app-ck.casca main > header:not(:has(> :not(.topline, h1, .eyebrow))) { display: none; }
@@ -597,6 +597,10 @@ html, body { margin: 0; }
 .in-card span { font-size: 13px; color: #c9ced4; }
 .in-card.amarelo { background: var(--accent); color: #1a1500; }
 .in-card.amarelo span { color: #4a3d00; }
+.in-card.vermelho { background: #b3261e; color: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .in-card:not(.amarelo):not(.vermelho) { background: var(--panel); border: 1px solid var(--line); } }
+.in-card.vermelho span { color: #ffd9d5; }
+.in-resumo .in-card:nth-child(3):last-child { grid-column: 1 / -1; }
 .in-card:active { transform: scale(.98); }
 .app-ck.casca #tela-menu .menu-grid, .app-ck.casca #tela-admin .menu-grid { align-content: start; grid-template-columns: 1fr 1fr; max-width: none; gap: 10px; }
 .app-ck.casca #tela-menu .mitem, .app-ck.casca #tela-admin .mitem { grid-template-columns: 1fr; grid-template-areas: "ic" "t"; padding: 16px 14px; row-gap: 12px; border-radius: 14px; align-content: start; min-height: 112px; }
@@ -618,6 +622,59 @@ html, body { margin: 0; }
 
 .sem-rede { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #16191d; color: #fff; font-size: 13px; text-align: center; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 3px solid var(--accent); }
 .sem-rede[hidden] { display: none; }
+.busca-geral { position: relative; max-width: 30rem; width: 100%; margin-inline: auto; }
+.app-ck.casca .busca-geral { max-width: none; }
+.busca-geral svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.busca-geral input { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 13px 14px 13px 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--fg); }
+.busca-geral input:focus-visible { outline: 2px solid var(--accent); border-color: var(--accent); }
+.busca-res { max-width: 30rem; width: 100%; margin-inline: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.app-ck.casca .busca-res { max-width: none; }
+.busca-res[hidden] { display: none; }
+.busca-res .lj-item .tag { font-weight: 500; }
+.busca-com-texto #nav-menu, .busca-com-texto .inicio .in-resumo, .busca-com-texto .ord-barra, .busca-com-texto #aviso-receber { display: none !important; }
+.os-tempo { display: grid; gap: 8px; min-width: 0; }
+.os-tempo-bts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.os-tempo-bts .btn { justify-content: center; min-height: 48px; font-weight: 600; min-width: 0; white-space: normal; text-align: center; }
+.os-tempo-info { display: grid; gap: 2px; font-size: 13px; }
+.os-tempo-info a { color: inherit; }
+.os-pecas { display: flex; flex-direction: column; gap: 8px; }
+.os-pecas-tit { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.os-pecas-linhas { display: flex; flex-direction: column; gap: 8px; }
+.os-peca { display: grid; grid-template-columns: 1fr 4.2rem 2.6rem; gap: 6px; align-items: center; }
+.os-peca input { font: inherit; font-size: 15px; width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
+.os-peca input:nth-child(2) { text-align: center; }
+.os-peca .rm { font: inherit; height: 40px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--danger); cursor: pointer; }
+.os-peca-est { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.os-peca-est:empty { display: none; }
+.os-pecas-rod { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.os-pecas-rod .btn[hidden] { display: none; }
+.eqf-sel { font: inherit; font-size: 15px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); width: 100%; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.mitem.eqp svg { background: rgba(242, 183, 5, .22); }
+.eq-prev { padding: 14px 16px; display: grid; gap: 4px; border-left: 6px solid var(--line); }
+.eq-prev.venc { border-left-color: var(--danger); }
+.eq-prev.breve { border-left-color: var(--accent); }
+.eq-prev.ok { border-left-color: var(--ok); }
+.eq-prev b { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.eq-prev span { color: var(--muted); font-size: 14px; }
+.eq-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.eq-acoes .btn { justify-content: center; min-height: 46px; }
+.eq-acoes .btn[hidden] { display: none; }
+.eq-dados { margin: 0; padding: 4px 16px 12px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 14px; }
+.eq-dados dt { color: var(--muted); }
+.eq-dados dd { margin: 0; overflow-wrap: anywhere; }
+#eq-filtros { margin: 6px 0 2px; }
+.lj-item.minha { box-shadow: inset 4px 0 0 var(--accent); }
+.lj-item .tag.breve { background: var(--accent-soft); color: var(--fg); }
+/* Etiqueta com QR code */
+#impressao .etqs { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; padding: 6mm; font-family: Arial, sans-serif; color: #000; }
+#impressao .etq { border: .8pt solid #000; border-radius: 3mm; padding: 3mm; display: grid; grid-template-columns: 30mm 1fr; gap: 3mm; align-items: center; height: 40mm; box-sizing: border-box; break-inside: avoid; }
+#impressao .etq .qr svg { width: 30mm; height: 30mm; display: block; }
+#impressao .etq .tx { display: flex; flex-direction: column; gap: .8mm; min-width: 0; }
+#impressao .etq .mk { display: flex; align-items: center; gap: 1.5mm; font-weight: 700; font-size: 8pt; }
+#impressao .etq .mk img { width: 7mm; height: 7mm; }
+#impressao .etq .cod { font-size: 15pt; font-weight: 700; letter-spacing: .5pt; }
+#impressao .etq .md { font-size: 8.5pt; line-height: 1.2; }
+#impressao .etq .dc { font-size: 7pt; color: #333; }
 .mitem.bkp svg { background: rgba(120, 80, 20, .1); }
 .mitem.bkp[aria-busy="true"] { opacity: .7; cursor: progress; }
 
@@ -819,6 +876,11 @@ html, body { margin: 0; }
       <p class="in-data" id="in-data"></p>
       <div class="in-resumo" id="in-resumo"></div>
     </section>
+    <div class="busca-geral">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="busca-geral" type="search" placeholder="Buscar cliente, loja, equipamento, série, OS…" aria-label="Buscar em tudo" autocomplete="off">
+    </div>
+    <div class="busca-res" id="busca-res" hidden></div>
     <button class="aviso-receber" id="aviso-receber" type="button" hidden></button>
     <nav class="menu-grid" aria-label="Menu" id="nav-menu" data-ordem="menu">
       <button class="mitem" type="button" data-go="estoque">
@@ -834,7 +896,14 @@ html, body { margin: 0; }
       <button class="mitem osv" type="button" data-go="os" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.4L4 16.8 7.2 20l5.9-5.9a3.5 3.5 0 0 0 4.4-4.6l-2.1 2.1-2.4-.6-.6-2.4z"/><path d="M15.5 17.5l1.6 1.6 3.4-3.4"/></svg>
         <span class="mi-t">Ordem de serviço</span>
+        <span class="mi-badge" id="badge-os" hidden></span>
         <span class="mi-d">Abrir OS, registrar o serviço e fotos de antes e depois</span>
+      </button>
+      <button class="mitem eqp" type="button" data-go="equip" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5M13.5 20.5h2"/></svg>
+        <span class="mi-t">Equipamentos</span>
+        <span class="mi-badge" id="badge-equip" hidden></span>
+        <span class="mi-d">Frota dos clientes, QR code, histórico e agenda de preventivas</span>
       </button>
       <button class="mitem adm" type="button" data-go="admin" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
@@ -1042,6 +1111,7 @@ html, body { margin: 0; }
   <button class="btn primary dc-novo" id="os-novo" type="button">+ Nova ordem de serviço</button>
   <input class="search" id="os-busca" type="search" placeholder="Buscar por cliente, número ou equipamento…" aria-label="Buscar ordens de serviço">
   <div class="rc-filtros" id="os-filtros" role="group" aria-label="Mostrar ordens">
+    <button class="btn" type="button" data-f="minhas" aria-pressed="false">Minhas</button>
     <button class="btn" type="button" data-f="abertas" aria-pressed="true">Em aberto</button>
     <button class="btn" type="button" data-f="concluida" aria-pressed="false">Concluídas</button>
     <button class="btn" type="button" data-f="todas" aria-pressed="false">Todas</button>
@@ -1126,6 +1196,57 @@ html, body { margin: 0; }
     <p class="ed-dica"><b>Quem tem o app antigo "Check List"</b> (ícone de prancheta): desinstale ele primeiro e depois instale o novo. Os dados não se perdem, ficam no servidor.</p>
     <p class="ed-dica">Não funciona em iPhone; no iPhone use o painel pelo navegador em koneg.com.br/painel.</p>
   </section>
+</main>
+
+<main class="wrap" id="tela-equip" hidden>
+  <header>
+    <div class="topline"><button class="btn voltar" id="eq-menu" type="button">← Menu</button></div>
+    <span class="eyebrow">Koneg Manutenção</span>
+    <h1>Equipamentos</h1>
+  </header>
+  <button class="btn primary dc-novo" id="eq-novo" type="button">+ Novo equipamento</button>
+  <input class="search" id="eq-busca" type="search" placeholder="Buscar por modelo, série, código ou cliente…" aria-label="Buscar equipamentos">
+  <div class="rc-filtros" id="eq-filtros" role="group" aria-label="Mostrar equipamentos">
+    <button class="btn" type="button" data-f="todos" aria-pressed="true">Todos</button>
+    <button class="btn" type="button" data-f="vencidas" aria-pressed="false">Vencidas</button>
+    <button class="btn" type="button" data-f="7" aria-pressed="false">7 dias</button>
+    <button class="btn" type="button" data-f="30" aria-pressed="false">30 dias</button>
+  </div>
+  <section class="card">
+    <div class="lj-tit" id="eq-sub">Equipamentos</div>
+    <div id="eq-lista" class="lj-hist"></div>
+  </section>
+</main>
+
+<main class="wrap" id="tela-eq" hidden>
+  <header>
+    <div class="topline"><button class="btn voltar" id="eqd-voltar" type="button">← Equipamentos</button></div>
+    <span class="eyebrow" id="eqd-cod"></span>
+    <h1 id="eqd-tit">Equipamento</h1>
+  </header>
+  <section class="card eq-prev" id="eqd-prev"></section>
+  <div class="eq-acoes">
+    <button class="btn primary" id="eqd-ck" type="button">Novo check list</button>
+    <button class="btn primary" id="eqd-os" type="button">Nova OS</button>
+    <button class="btn" id="eqd-etq" type="button">Imprimir etiqueta QR</button>
+    <button class="btn" id="eqd-editar" type="button">Editar dados</button>
+  </div>
+  <section class="card"><div class="lj-tit">Dados</div><dl class="eq-dados" id="eqd-dados"></dl></section>
+  <section class="card"><div class="lj-tit">Histórico</div><div id="eqd-hist" class="lj-hist"></div></section>
+</main>
+
+<main class="wrap" id="tela-eqf" hidden>
+  <header>
+    <div class="topline"><button class="btn voltar" id="eqf-voltar" type="button">← Voltar</button></div>
+    <span class="eyebrow">Equipamento</span>
+    <h1 id="eqf-tit">Novo equipamento</h1>
+  </header>
+  <div id="eqf-form" class="ed-form"></div>
+  <p class="adderr" id="eqf-err" hidden></p>
+  <div class="fm-rodape ed-acoes">
+    <button class="btn primary" id="eqf-salvar" type="button">Salvar equipamento</button>
+    <button class="btn danger" id="eqf-excluir" type="button" hidden>Excluir</button>
+  </div>
 </main>
 
 <main class="wrap" id="tela-receber" hidden>
@@ -1343,7 +1464,7 @@ html, body { margin: 0; }
 <nav class="bottomnav" id="bottomnav" aria-label="Navegação principal" hidden>
   <button type="button" data-tab="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Início</span></button>
   <button type="button" data-tab="checklist"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 12l1.5 1.5 3-3"/><path d="M8.5 17l1.5 1.5 3-3"/></svg><span>Check List</span></button>
-  <button type="button" data-tab="os"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.4L4 16.8 7.2 20l5.9-5.9a3.5 3.5 0 0 0 4.4-4.6l-2.1 2.1-2.4-.6-.6-2.4z"/></svg><span>OS</span></button>
+  <button type="button" data-tab="os"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.4L4 16.8 7.2 20l5.9-5.9a3.5 3.5 0 0 0 4.4-4.6l-2.1 2.1-2.4-.6-.6-2.4z"/></svg><span>OS</span><i class="bn-badge" id="bn-os" hidden></i></button>
   <button type="button" data-tab="estoque"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><span>Estoque</span></button>
   <button type="button" data-tab="admin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Mais</span><i class="bn-badge" id="bn-badge" hidden></i></button>
 </nav>
@@ -2402,6 +2523,7 @@ const firestoreDb = {
       }
       const r = await gravarNuvem(setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null)));
       if (ck === alvo) { ckStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('fm-excluir').hidden = !P.admin; }
+      preventivaFeita(alvo);
     }).catch((e) => {
       ckStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar' : 'Não foi possível salvar. Verifique a internet.', 'erro');
     });
@@ -2414,6 +2536,8 @@ const firestoreDb = {
     ckLoja = loja;
     if (!docId) {
       ck = { id: null, data: hojeISO(), os: '', serie: '', horimetro: '', tecnico: lerLS('koneg-tecnico') || 'Kayowan Macedo', respostas: {}, comentario: '', assinatura: '' };
+      if (pendenteCk) { Object.assign(ck, pendenteCk); pendenteCk = null; }
+      atualizarSeriesCk();
       preencherForm();
       return;
     }
@@ -2727,6 +2851,8 @@ const firestoreDb = {
   const podeOS = () => P.admin || P.os;
   function permitido(h) {
     if (h === '#os' || h.startsWith('#os-')) return podeOS();
+    if (h.startsWith('#eqf-')) return podeEditarEquip();
+    if (h === '#equip' || h.startsWith('#eq-') || h.startsWith('#eqc-')) return podeEquip();
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
@@ -2739,6 +2865,8 @@ const firestoreDb = {
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
     document.querySelector('.mitem[data-go="os"]').hidden = !podeOS();
+    document.querySelector('.mitem[data-go="equip"]').hidden = !podeEquip();
+    $('eq-novo').hidden = !podeEditarEquip();
     document.querySelector('#tela-menu .mitem[data-go="admin"]').hidden = !a;
     document.querySelector('.mitem[data-go="estoque"] .mi-d').textContent = a ? 'Ver e editar itens, quantidades e preços' : podeQtd() ? 'Ver o estoque e alterar quantidades' : 'Consultar o estoque';
     ['btn-add', 'btn-editar', 'btn-zerar'].forEach((k) => { $(k).hidden = !a; });
@@ -2845,7 +2973,7 @@ const firestoreDb = {
   }
   function ouvirFuncionarios() {
     if (pararFunc) return;
-    pararFunc = fsSnap(fsCol(fs, 'usuarios'), (snap) => { funcLista = snap.docs.map((d) => ({ email: d.id, ...d.data() })); desenharFunc(); },
+    pararFunc = fsSnap(fsCol(fs, 'usuarios'), (snap) => { funcLista = snap.docs.map((d) => ({ email: d.id, ...d.data() })); desenharFunc(); atualizarSelectTecnico(); },
       () => { $('fu-lista').replaceChildren(Object.assign(document.createElement('p'), { className: 'rl-msg', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
   }
   function pararFuncionarios() { if (pararFunc) { pararFunc(); pararFunc = null; } funcLista = []; }
@@ -3919,7 +4047,7 @@ const firestoreDb = {
     ['g', 'Serviço'],
     ['problema', 'area', 'Problema relatado / serviço solicitado', 'full'],
     ['servico', 'area', 'Serviço executado', 'full'],
-    ['pecas', 'lista', 'Peças e materiais utilizados (um por linha)', 'full'],
+    ['pecas', 'lista', 'Outras peças e materiais (texto livre, um por linha)', 'full'],
     ['obs', 'area', 'Observações e recomendações', 'full'],
     ['g', 'Assinatura do cliente'], ['responsavel', 'text', 'Nome do responsável pelo cliente', 'full'],
   ];
@@ -3938,13 +4066,14 @@ const firestoreDb = {
   function pararOS() {
     if (pararOsLista) { pararOsLista(); pararOsLista = null; } osLista = [];
     pararFotosOS(); clearTimeout(osTimer); osTimer = null; osEd = null; $('osf-form').replaceChildren();
-    osFiltro = 'abertas'; $('os-busca').value = ''; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === 'abertas')));
+    osFiltro = 'abertas'; $('os-busca').value = ''; if (pararMinhas) { pararMinhas(); pararMinhas = null; } minhasOS = []; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === 'abertas')));
   }
   function pararFotosOS() { if (pararOsFotos) { pararOsFotos(); pararOsFotos = null; } osFotos = []; osFotosDe = null; }
   function desenharOrdens() {
     const box = $('os-lista'); if (!pararOsLista) return;
     const q = semAcento($('os-busca').value.trim());
-    const passa = (o) => osFiltro === 'todas' || (osFiltro === 'concluida' ? o.status === 'concluida' : o.status !== 'concluida');
+    const eu = meuEmail();
+    const passa = (o) => osFiltro === 'todas' || (osFiltro === 'minhas' ? (o.tecnicoEmail === eu || (!o.tecnicoEmail && o.criadoPor === eu)) && o.status !== 'concluida' : osFiltro === 'concluida' ? o.status === 'concluida' : o.status !== 'concluida');
     const lista = osLista.filter((o) => passa(o) && (!q || semAcento(`${o.numero || ''} ${o.cliente || ''} ${o.equipamento || ''} ${o.tecnico || ''}`).includes(q)))
       .sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.numero || '').localeCompare(String(a.numero || '')));
     const abertas = osLista.filter((o) => o.status !== 'concluida').length;
@@ -3956,6 +4085,7 @@ const firestoreDb = {
       const t = document.createElement('b'); t.textContent = `OS ${o.numero || 's/ nº'} · ${o.cliente || 'Sem cliente'}`;
       const s2 = document.createElement('span'); s2.className = 'sub';
       s2.textContent = [dataBR(o.data), String(o.equipamento || '').split('\n')[0], o.tecnico].filter(Boolean).join(' · ');
+      if (o.tecnicoEmail === eu && o.status !== 'concluida') b.classList.add('minha');
       const tag = document.createElement('span'); tag.className = 'tag'; const st = o.status || 'aberta';
       tag.textContent = OS_ST[st] || 'Aberta'; tag.classList.toggle('ok', st === 'concluida'); tag.classList.toggle('env', st === 'andamento');
       b.append(t, s2, tag);
@@ -3964,6 +4094,31 @@ const firestoreDb = {
     });
   }
   $('os-busca').addEventListener('input', desenharOrdens);
+  const meuEmail = () => String((auth.currentUser && auth.currentUser.email) || '').toLowerCase();
+  function filtroOS(f) { osFiltro = f; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === f))); }
+
+  // OS enviadas para mim: contador e aviso no celular
+  let minhasOS = [], pararMinhas = null;
+  function ouvirMinhasOS() {
+    if (pararMinhas || !podeOS()) return;
+    const eu = meuEmail(); let primeira = true;
+    pararMinhas = fsSnap(query(fsCol(fs, 'ordens'), where('tecnicoEmail', '==', eu)), (snap) => {
+      minhasOS = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const abertas = minhasOS.filter((o) => o.status !== 'concluida');
+      if (primeira) { primeira = false; if (!P.admin && abertas.length) { filtroOS('minhas'); desenharOrdens(); } }
+      const visto = lerLS('koneg-os-visto') || '';
+      const novas = abertas.filter((o) => o.atribuidoEm && o.atribuidoEm > visto && o.atribuidoPor && o.atribuidoPor !== eu);
+      $('badge-os').hidden = !novas.length; $('badge-os').textContent = novas.length ? String(novas.length) : '';
+      $('bn-os').hidden = !novas.length;
+      const avisadas = (lerLS('koneg-os-avisadas') || '').split(',');
+      novas.filter((o) => !avisadas.includes(o.id)).forEach((o) => {
+        try { if (window.KonegApp && window.KonegApp.notificar) window.KonegApp.notificar(`Nova OS ${o.numero || ''} para você`, [o.cliente, String(o.problema || o.equipamento || '').split('\n')[0]].filter(Boolean).join(' · '), '#os-' + o.id); } catch (_) {}
+        avisadas.push(o.id);
+      });
+      gravarLS('koneg-os-avisadas', avisadas.slice(-50).join(','));
+    }, () => {});
+  }
+  function marcarOSVistas() { gravarLS('koneg-os-visto', new Date().toISOString()); $('badge-os').hidden = true; $('bn-os').hidden = true; }
   document.querySelectorAll('#os-filtros .btn').forEach((b) => b.addEventListener('click', () => {
     osFiltro = b.dataset.f; document.querySelectorAll('#os-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); desenharOrdens();
   }));
@@ -4000,7 +4155,8 @@ const firestoreDb = {
       if (arg === 'novo') {
         let lista = osLista;
         if (!lista.length) { try { lista = (await getDocs(fsCol(fs, 'ordens'))).docs.map((d) => d.data()); } catch (_) { lista = []; } }
-        osEd = { id: null, numero: proximoNumero(lista, hojeISO()), data: hojeISO(), horario: '', tecnico: await nomeDoUsuario(), cliente: '', local: '', solicitante: '', equipamento: '', problema: '', servico: '', pecas: '', obs: '', responsavel: '', status: 'aberta' };
+        osEd = { id: null, numero: proximoNumero(lista, hojeISO()), data: hojeISO(), horario: '', tecnico: await nomeDoUsuario(), tecnicoEmail: P.admin ? '' : String((auth.currentUser && auth.currentUser.email) || '').toLowerCase(), cliente: '', local: '', solicitante: '', equipamento: '', problema: '', servico: '', pecas: '', obs: '', responsavel: '', status: 'aberta' };
+        if (pendenteOS) { Object.assign(osEd, pendenteOS); pendenteOS = null; }
       } else {
         const d = await getDoc(fsDoc(fs, 'ordens', arg));
         if (!d.exists()) { osStatus('Ordem não encontrada', 'erro'); location.hash = 'os'; return; }
@@ -4030,10 +4186,161 @@ const firestoreDb = {
     corpo.append(blocoFotos('antes', 'Antes do serviço'), blocoFotos('depois', 'Depois do serviço'));
     sec.append(h, corpo);
     const secs = box.querySelectorAll('.ed-sec'); box.insertBefore(sec, secs[secs.length - 1]);
+    // identificação: técnico responsável e iniciar/finalizar
+    const camposId = secs[0].querySelector('.ed-campos');
+    if (P.admin) { camposId.appendChild(seletorTecnico()); ouvirFuncionarios(); }
+    camposId.appendChild(blocoTempo());
+    // serviço: peças do estoque antes do texto livre
+    const inpPecas = box.querySelector('#ed-pecas');
+    if (inpPecas) inpPecas.closest('.fld').before(editorPecasOS());
     secs[secs.length - 1].querySelector('.ed-campos').appendChild(quadroAssinatura(osEd.assinatura, (url) => { osEd.assinatura = url; osMudou(); }));
     pintarOS();
     if (osEd.id) ouvirFotosOS(osEd.id); else desenharFotosOS();
   }
+  // ----- Técnico responsável (administrador escolhe quem recebe a OS) -----
+  function seletorTecnico() {
+    const lb = document.createElement('label'); lb.className = 'fld full'; lb.htmlFor = 'os-tec';
+    const sp = document.createElement('span'); sp.textContent = 'Enviar esta OS para';
+    const sel = document.createElement('select'); sel.id = 'os-tec'; sel.className = 'eqf-sel';
+    sel.addEventListener('change', () => {
+      if (!osEd) return;
+      const f = funcLista.find((x) => x.email === sel.value);
+      osEd.tecnicoEmail = sel.value; osEd.atribuidoEm = new Date().toISOString(); osEd.atribuidoPor = meuEmail();
+      if (sel.value) { osEd.tecnico = f ? f.nome || f.email : (EMP.assinatura || osEd.tecnico); const t = $('osf-form').querySelector('#ed-tecnico'); if (t) t.value = osEd.tecnico; }
+      osMudou();
+    });
+    const dica = document.createElement('span'); dica.className = 'ed-dica'; dica.id = 'os-tec-dica';
+    lb.append(sp, sel, dica);
+    setTimeout(atualizarSelectTecnico, 0);
+    return lb;
+  }
+  function atualizarSelectTecnico() {
+    const sel = $('os-tec'); if (!sel || !osEd) return;
+    const eu = meuEmail();
+    const tecs = funcLista.filter((f) => f.ativo !== false && f.permissoes && f.permissoes.os);
+    sel.replaceChildren(new Option('— Ninguém (só registro) —', ''), new Option('Eu mesmo', eu), ...tecs.map((f) => new Option(f.nome ? `${f.nome} (${f.email})` : f.email, f.email)));
+    sel.value = osEd.tecnicoEmail || '';
+    if (sel.value !== (osEd.tecnicoEmail || '')) sel.appendChild(new Option(osEd.tecnicoEmail, osEd.tecnicoEmail)), sel.value = osEd.tecnicoEmail;
+    $('os-tec-dica').textContent = tecs.length ? 'O técnico recebe um aviso no celular e a OS aparece em "Minhas".' : 'Para enviar a um funcionário, dê a ele a permissão "Fazer ordens de serviço".';
+  }
+
+  // ----- Início e fim do serviço, com horário e localização -----
+  const diaBR = (iso) => new Date(iso).toLocaleDateString('pt-BR');
+  const horaBR = (iso) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const linkMapa = (p) => `https://maps.google.com/?q=${p.lat},${p.lng}`;
+  function pegarLocal() {
+    return new Promise((res) => {
+      if (!navigator.geolocation) return res(null);
+      navigator.geolocation.getCurrentPosition((p) => res({ lat: +p.coords.latitude.toFixed(6), lng: +p.coords.longitude.toFixed(6), prec: Math.round(p.coords.accuracy) }), () => res(null), { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    });
+  }
+  function blocoTempo() {
+    const w = document.createElement('div'); w.className = 'full os-tempo';
+    const bi = document.createElement('button'); bi.type = 'button'; bi.className = 'btn primary'; bi.id = 'os-iniciar';
+    const bf = document.createElement('button'); bf.type = 'button'; bf.className = 'btn'; bf.id = 'os-finalizar';
+    const info = document.createElement('div'); info.className = 'ed-dica os-tempo-info'; info.id = 'os-tempo-info';
+    const pintar = () => {
+      bi.textContent = osEd.inicio ? '↺ Início de novo' : '▶ Iniciar serviço';
+      bf.textContent = osEd.fim ? '↺ Fim de novo' : '■ Finalizar serviço';
+      bi.classList.toggle('primary', !osEd.inicio); bf.classList.toggle('primary', !!osEd.inicio && !osEd.fim);
+      info.replaceChildren();
+      [['Início', osEd.inicio], ['Fim', osEd.fim]].forEach(([r, t]) => {
+        if (!t) return;
+        const ln = document.createElement('div'); ln.append(`${r}: ${diaBR(t.em)} ${horaBR(t.em)}`);
+        if (t.lat != null) { const a = document.createElement('a'); a.href = linkMapa(t); a.target = '_blank'; a.rel = 'noopener'; a.textContent = ` · ver local no mapa (±${t.prec} m)`; ln.appendChild(a); }
+        else ln.append(' · sem localização');
+        info.appendChild(ln);
+      });
+      if (!osEd.inicio && !osEd.fim) info.textContent = 'Ao iniciar e ao finalizar, o app grava a hora e o local (comprovante para o cliente).';
+    };
+    const registrar = async (qual, botao) => {
+      botao.disabled = true; const txt = botao.textContent; botao.textContent = 'Pegando localização…';
+      const loc = await pegarLocal();
+      if (!osEd) return;
+      osEd[qual] = { em: new Date().toISOString(), ...(loc || {}) };
+      if (osEd.inicio) {
+        osEd.horario = horaBR(osEd.inicio.em) + (osEd.fim ? ' às ' + horaBR(osEd.fim.em) : '');
+        const h = $('osf-form').querySelector('#ed-horario'); if (h) h.value = osEd.horario;
+      }
+      if (qual === 'inicio' && (osEd.status || 'aberta') === 'aberta') osEd.status = 'andamento';
+      if (qual === 'fim') osEd.status = 'concluida';
+      osEd.statusEm = hojeISO();
+      botao.disabled = false; botao.textContent = txt;
+      pintar(); pintarOS(); osMudou();
+      if (!loc) osStatus('Hora registrada. A localização não foi liberada no celular.', 'erro');
+    };
+    bi.addEventListener('click', () => registrar('inicio', bi));
+    bf.addEventListener('click', () => registrar('fim', bf));
+    const bts = document.createElement('div'); bts.className = 'os-tempo-bts'; bts.append(bi, bf);
+    w.append(bts, info); pintar();
+    return w;
+  }
+
+  // ----- Peças do estoque usadas na OS (com baixa no estoque) -----
+  function editorPecasOS() {
+    const w = document.createElement('div'); w.className = 'full os-pecas';
+    const titulo = document.createElement('span'); titulo.className = 'os-pecas-tit'; titulo.textContent = 'Peças do estoque';
+    const dl = document.createElement('datalist'); dl.id = 'os-itens-lista';
+    [...itens.entries()].map(([id, v]) => v.nome).filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((n) => dl.appendChild(new Option(n)));
+    const linhas = document.createElement('div'); linhas.className = 'os-pecas-linhas';
+    const rod = document.createElement('div'); rod.className = 'os-pecas-rod';
+    const add = document.createElement('button'); add.type = 'button'; add.className = 'btn'; add.textContent = '+ Adicionar peça';
+    const baixa = document.createElement('button'); baixa.type = 'button'; baixa.className = 'btn primary'; baixa.id = 'os-baixa';
+    const info = document.createElement('span'); info.className = 'ed-dica'; info.id = 'os-baixa-info';
+    rod.append(add, baixa, info);
+    w.append(titulo, dl, linhas, rod);
+    const lista = () => osEd.pecasItens || (osEd.pecasItens = []);
+    const acharItem = (nome) => { const n = semAcento(String(nome || '').trim()); for (const [id, v] of itens) if (semAcento(String(v.nome || '').trim()) === n) return [id, v]; return null; };
+    const desenhar = () => {
+      linhas.replaceChildren();
+      const travado = !!osEd.baixa;
+      lista().forEach((p, i) => {
+        const row = document.createElement('div'); row.className = 'os-peca';
+        const nome = document.createElement('input'); nome.type = 'text'; nome.value = p.nome || ''; nome.placeholder = itens.size ? 'Digite ou escolha do estoque' : 'Nome da peça'; nome.setAttribute('list', 'os-itens-lista'); nome.disabled = travado; nome.setAttribute('aria-label', `Peça ${i + 1}`);
+        const qtd = document.createElement('input'); qtd.type = 'text'; qtd.inputMode = 'numeric'; qtd.value = p.qtd || '1'; qtd.disabled = travado; qtd.setAttribute('aria-label', `Quantidade da peça ${i + 1}`);
+        const est = document.createElement('span'); est.className = 'os-peca-est';
+        const pintarEst = () => { const it = p.itemId && itens.get(p.itemId); est.textContent = it ? `estoque: ${it.quantidade || 0}` : p.nome ? 'fora do estoque' : ''; };
+        nome.addEventListener('input', () => { p.nome = nome.value; const f = acharItem(nome.value); p.itemId = f ? f[0] : ''; if (f) p.nome = f[1].nome; pintarEst(); pintarBaixa(); osMudou(); });
+        qtd.addEventListener('input', () => { p.qtd = qtd.value.replace(/[^\d]/g, '') || ''; osMudou(); });
+        const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'rm'; rm.textContent = '✕'; rm.disabled = travado; rm.setAttribute('aria-label', `Remover peça ${i + 1}`);
+        rm.addEventListener('click', () => { lista().splice(i, 1); desenhar(); osMudou(); });
+        pintarEst(); row.append(nome, qtd, rm, est); linhas.appendChild(row);
+      });
+      add.hidden = travado;
+      pintarBaixa();
+    };
+    const pintarBaixa = () => {
+      const comItem = lista().filter((p) => p.itemId && Number(p.qtd) > 0);
+      if (osEd.baixa) {
+        baixa.hidden = !P.admin; baixa.textContent = 'Desfazer baixa'; baixa.classList.remove('primary');
+        info.textContent = `✓ Baixa no estoque feita em ${diaBR(osEd.baixa.em)}.`;
+      } else {
+        baixa.hidden = !comItem.length || !podeQtd(); baixa.textContent = 'Dar baixa no estoque'; baixa.classList.add('primary');
+        info.textContent = comItem.length && !podeQtd() ? 'A baixa no estoque será feita pelo administrador.' : comItem.length ? `${comItem.length} ${comItem.length === 1 ? 'peça' : 'peças'} do estoque.` : '';
+      }
+    };
+    add.addEventListener('click', () => { lista().push({ nome: '', qtd: '1', itemId: '' }); desenhar(); linhas.querySelectorAll('.os-peca input')[lista().length * 2 - 2]?.focus(); });
+    baixa.addEventListener('click', async () => {
+      if (!osEd || !db) return;
+      baixa.disabled = true;
+      try {
+        if (osEd.baixa) {
+          if (!P.admin) return;
+          for (const b of osEd.baixa.itens || []) { const it = itens.get(b.itemId); if (it) await gravarNuvem(updateDoc(fsDoc(fs, 'itens', b.itemId), { quantidade: (Number(it.quantidade) || 0) + Number(b.qtd) })); }
+          osEd.baixa = null;
+        } else {
+          const usados = lista().filter((p) => p.itemId && Number(p.qtd) > 0 && itens.get(p.itemId));
+          for (const p of usados) { const it = itens.get(p.itemId); await gravarNuvem(updateDoc(fsDoc(fs, 'itens', p.itemId), { quantidade: Math.max(0, (Number(it.quantidade) || 0) - Number(p.qtd)) })); }
+          osEd.baixa = { em: new Date().toISOString(), por: meuEmail(), itens: usados.map((p) => ({ itemId: p.itemId, nome: p.nome, qtd: Number(p.qtd) })) };
+        }
+        osMudou(); desenhar();
+      } catch (e) { osStatus(e && e.code === 'permission-denied' ? 'Sem permissão para mexer no estoque.' : 'Não foi possível atualizar o estoque.', 'erro'); }
+      finally { baixa.disabled = false; }
+    });
+    desenhar();
+    return w;
+  }
+
   // Quadro para assinar com o dedo (reutilizável)
   function quadroAssinatura(valor, aoMudar) {
     const w = document.createElement('div'); w.className = 'full os-ass';
@@ -4138,12 +4445,14 @@ const firestoreDb = {
   function documentoOS(d, fts) {
     const doc = el('div', 'folha doc');
     doc.appendChild(cabecalho('ORDEM DE SERVIÇO'));
-    doc.appendChild(Object.assign(linhasKV([['Número da OS', d.numero], ['Data', dataLonga(d.data)], ['Horário', d.horario], ['Situação', OS_ST[d.status || 'aberta']], ['Técnico responsável', d.tecnico]]), { className: 'meta' }));
+    const quando = (t) => (t ? `${diaBR(t.em)} às ${horaBR(t.em)}${t.lat != null ? ` · local ${t.lat}, ${t.lng}` : ''}` : '');
+    doc.appendChild(Object.assign(linhasKV([['Número da OS', d.numero], ['Data', dataLonga(d.data)], ['Horário', d.horario], ['Início do serviço', quando(d.inicio)], ['Fim do serviço', quando(d.fim)], ['Situação', OS_ST[d.status || 'aberta']], ['Técnico responsável', d.tecnico]]), { className: 'meta' }));
     doc.append(el('h2', '', '1. Cliente'), linhasKV([['Cliente / loja', d.cliente], ['Local / setor', d.local], ['Solicitante', d.solicitante]]));
     doc.append(el('h2', '', '2. Equipamento'), String(d.equipamento || '').trim() ? linhasP(d.equipamento) : el('p', '', '—'));
     doc.append(el('h2', '', '3. Problema relatado / Serviço solicitado'), String(d.problema || '').trim() ? linhasP(d.problema) : el('p', '', '—'));
     doc.append(el('h2', '', '4. Serviço executado'), String(d.servico || '').trim() ? linhasP(d.servico) : el('p', '', '—'));
-    doc.append(el('h2', '', '5. Peças e materiais utilizados'), String(d.pecas || '').trim() ? linhasP(d.pecas, true) : el('p', '', 'Não houve substituição de peças ou uso de materiais.'));
+    const pecasTxt = [...(d.pecasItens || []).filter((p) => String(p.nome || '').trim()).map((p) => `${p.qtd || 1} × ${p.nome}`), ...String(d.pecas || '').split('\n').map((x) => x.trim()).filter(Boolean)];
+    doc.append(el('h2', '', '5. Peças e materiais utilizados'), pecasTxt.length ? linhasP(pecasTxt.join('\n'), true) : el('p', '', 'Não houve substituição de peças ou uso de materiais.'));
     doc.append(el('h2', '', '6. Observações e recomendações'), String(d.obs || '').trim() ? linhasP(d.obs) : el('p', '', 'Sem observações.'));
     const antes = fts.filter((f) => (f.tipo || 'antes') === 'antes'), depois = fts.filter((f) => f.tipo === 'depois');
     if (antes.length || depois.length) {
@@ -4201,7 +4510,7 @@ const firestoreDb = {
     const naLista = h === '#os', m = h.match(/^#os-(.+)$/);
     $('tela-os').hidden = !naLista; $('tela-osf').hidden = !m;
     if (naLista || m) ouvirOrdens();
-    if (naLista) desenharOrdens();
+    if (naLista) { desenharOrdens(); marcarOSVistas(); }
     if (m) abrirOS(m[1]);
     else if (osEd) { if (osTimer) salvarOS(); pararFotosOS(); osEd = null; $('osf-form').replaceChildren(); }
   }
@@ -4230,6 +4539,7 @@ const firestoreDb = {
     }
     if (location.hash === '#funcionarios') ouvirFuncionarios();
     rotaOS(location.hash);
+    rotaEquip(location.hash);
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
     const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
@@ -4245,15 +4555,325 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h === '#downloads' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-');
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h === '#downloads' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-') || h === '#equip' || h.startsWith('#eq-') || h.startsWith('#eqf-') || h.startsWith('#eqc-');
     window.scrollTo(0, 0);
     casca();
   }
 
+  // ===== Equipamentos (frota dos clientes), QR code e agenda de preventivas =====
+  const INTERVALO_PADRAO = 90; // dias entre preventivas, se o equipamento não tiver outro
+  let equips = [], pararEquips = null, eqFiltro = 'todos', eqAtual = null, pararEqHist = [];
+  let pendenteCk = null, pendenteOS = null;
+  const podeEquip = () => P.admin || P.checklist || P.os || P.relatorio;
+  const podeEditarEquip = () => P.admin || P.checklist || P.os;
+  const normSerie = (t) => semAcento(String(t || '')).replace(/[^a-z0-9]/g, '');
+  const somaDiasISO = (iso, n) => { const [a, m, d] = iso.split('-').map(Number); const x = new Date(a, m - 1, d + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
+  const difDias = (iso) => Math.round((new Date(iso + 'T12:00:00') - new Date(hojeISO() + 'T12:00:00')) / 86400000);
+  function proxima(eq) {
+    if (!eq.ultimaPreventiva) return null;
+    return somaDiasISO(eq.ultimaPreventiva, Number(eq.intervaloDias) || INTERVALO_PADRAO);
+  }
+  function situacao(eq) {
+    const p = proxima(eq);
+    if (!p) return { k: 'sem', t: 'Sem preventiva', d: null };
+    const d = difDias(p);
+    if (d < 0) return { k: 'venc', t: `Vencida há ${-d} ${d === -1 ? 'dia' : 'dias'}`, d, p };
+    if (d === 0) return { k: 'venc', t: 'Vence hoje', d, p };
+    if (d <= 7) return { k: 'breve', t: `Em ${d} ${d === 1 ? 'dia' : 'dias'}`, d, p };
+    if (d <= 30) return { k: 'breve30', t: `Em ${d} dias`, d, p };
+    return { k: 'ok', t: `Faltam ${d} dias`, d, p };
+  }
+  const nomeEq = (e) => [e.modelo || e.tipo || 'Equipamento', e.serie ? `série ${e.serie}` : ''].filter(Boolean).join(' · ');
+  const clienteEq = (e) => (e.lojaId && LOJAS_POR_ID.get(e.lojaId) ? LOJAS_POR_ID.get(e.lojaId).nome : '') || e.cliente || '';
+  function ouvirEquips() {
+    if (pararEquips || !podeEquip()) return;
+    pararEquips = fsSnap(fsCol(fs, 'equipamentos'), (snap) => {
+      equips = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      desenharEquips(); contarAgenda();
+      if (eqAtual) { const n = equips.find((x) => x.id === eqAtual.id); if (n) { eqAtual = n; pintarEq(); } }
+      atualizarSeriesCk();
+    }, () => { $('eq-lista').replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Não foi possível carregar. Confira se as regras novas do Firestore foram publicadas.' })); });
+  }
+  function pararEquipamentos() {
+    if (pararEquips) { pararEquips(); pararEquips = null; } equips = []; eqAtual = null;
+    pararEqHist.forEach((f) => f()); pararEqHist = [];
+    eqFiltro = 'todos'; document.querySelectorAll('#eq-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === 'todos')));
+  }
+  function contarAgenda() {
+    const n = equips.filter((e) => { const s2 = situacao(e); return s2.k === 'venc' || s2.k === 'breve'; }).length;
+    $('badge-equip').hidden = !n; $('badge-equip').textContent = n ? String(n) : '';
+    return n;
+  }
+  function desenharEquips() {
+    const box = $('eq-lista'); if (!pararEquips) return;
+    const q = semAcento($('eq-busca').value.trim());
+    const passa = (e) => { const k = situacao(e); return eqFiltro === 'todos' || (eqFiltro === 'vencidas' ? k.k === 'venc' : eqFiltro === '7' ? (k.k === 'venc' || k.k === 'breve') : (k.k === 'venc' || k.k === 'breve' || k.k === 'breve30')); };
+    const lista = equips.filter((e) => passa(e) && (!q || semAcento(`${e.codigo} ${e.modelo} ${e.marca} ${e.tipo} ${e.serie} ${e.patrimonio} ${clienteEq(e)} ${e.local}`).includes(q)))
+      .sort((a, b) => { const pa = proxima(a) || '9999', pb = proxima(b) || '9999'; return eqFiltro === 'todos' ? clienteEq(a).localeCompare(clienteEq(b), 'pt-BR') || String(a.modelo || '').localeCompare(String(b.modelo || '')) : pa.localeCompare(pb); });
+    const venc = equips.filter((e) => situacao(e).k === 'venc').length;
+    $('eq-sub').textContent = `${equips.length} ${equips.length === 1 ? 'equipamento' : 'equipamentos'}${venc ? ` · ${venc} com preventiva vencida` : ''}`;
+    box.replaceChildren();
+    if (!lista.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: equips.length ? 'Nenhum equipamento neste filtro.' : 'Nenhum equipamento cadastrado. Cadastre as empilhadeiras e máquinas dos clientes para acompanhar as preventivas.' })); return; }
+    lista.forEach((e) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+      const t = document.createElement('b'); t.textContent = nomeEq(e);
+      const s2 = document.createElement('span'); s2.className = 'sub'; s2.textContent = [clienteEq(e), e.local, e.codigo].filter(Boolean).join(' · ');
+      const st = situacao(e); const tag = document.createElement('span'); tag.className = 'tag' + (st.k === 'venc' ? ' nok' : st.k === 'breve' ? ' breve' : st.k === 'ok' ? ' ok' : '');
+      tag.textContent = st.k === 'ok' ? 'Em dia' : st.t;
+      b.append(t, s2, tag); b.addEventListener('click', () => { location.hash = 'eq-' + e.id; });
+      box.appendChild(b);
+    });
+  }
+  $('eq-busca').addEventListener('input', desenharEquips);
+  document.querySelectorAll('#eq-filtros .btn').forEach((b) => b.addEventListener('click', () => {
+    eqFiltro = b.dataset.f; document.querySelectorAll('#eq-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); desenharEquips();
+  }));
+  $('eq-novo').addEventListener('click', () => { location.hash = 'eqf-novo'; });
+  $('eq-menu').addEventListener('click', () => { location.hash = 'menu'; });
+
+  // ----- Detalhe do equipamento -----
+  function abrirEq(id) {
+    eqAtual = equips.find((x) => x.id === id) || null;
+    if (!eqAtual) {
+      $('eqd-tit').textContent = 'Carregando…'; $('eqd-dados').replaceChildren(); $('eqd-hist').replaceChildren();
+      getDoc(fsDoc(fs, 'equipamentos', id)).then((d) => { if (!d.exists()) { location.hash = 'equip'; return; } eqAtual = { id, ...d.data() }; pintarEq(); historicoEq(); }).catch(() => {});
+      return;
+    }
+    pintarEq(); historicoEq();
+  }
+  function pintarEq() {
+    const e = eqAtual; if (!e) return;
+    $('eqd-tit').textContent = nomeEq(e);
+    $('eqd-cod').textContent = [e.codigo, clienteEq(e)].filter(Boolean).join(' · ');
+    const st = situacao(e), pv = $('eqd-prev');
+    pv.className = 'card eq-prev ' + (st.k === 'venc' ? 'venc' : st.k === 'breve' || st.k === 'breve30' ? 'breve' : st.k === 'ok' ? 'ok' : '');
+    const intervalo = Number(e.intervaloDias) || INTERVALO_PADRAO;
+    pv.replaceChildren(
+      Object.assign(document.createElement('b'), { textContent: st.p ? `Próxima preventiva: ${dataBR(st.p)}` : 'Nenhuma preventiva registrada' }),
+      Object.assign(document.createElement('span'), { textContent: st.p ? `${st.t} · a cada ${intervalo} dias${e.intervaloHoras ? ` ou ${e.intervaloHoras} h` : ''}` : 'Faça um check list com o número de série deste equipamento para começar a contar.' }),
+      Object.assign(document.createElement('span'), { textContent: [e.ultimaPreventiva ? `Última: ${dataBR(e.ultimaPreventiva)}` : '', e.horimetro ? `Horímetro: ${e.horimetro} h` : '', e.intervaloHoras && e.horimetro ? `próxima por horas: ${Number(String(e.horimetro).replace(/\D/g, '')) + Number(e.intervaloHoras)} h` : ''].filter(Boolean).join(' · ') }));
+    const dl = $('eqd-dados'); dl.replaceChildren();
+    [['Código', e.codigo], ['Tipo', e.tipo], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Patrimônio', e.patrimonio], ['Cliente / loja', clienteEq(e)], ['Local', e.local], ['Observações', e.obs]]
+      .filter(([, v]) => v).forEach(([k, v]) => dl.append(Object.assign(document.createElement('dt'), { textContent: k }), Object.assign(document.createElement('dd'), { textContent: v })));
+    $('eqd-ck').hidden = !(P.admin || P.checklist) || !e.lojaId || !LOJAS_POR_ID.get(e.lojaId);
+    $('eqd-os').hidden = !podeOS();
+    $('eqd-editar').hidden = !podeEditarEquip();
+  }
+  function historicoEq() {
+    pararEqHist.forEach((f) => f()); pararEqHist = [];
+    const e = eqAtual, box = $('eqd-hist'); if (!e) return;
+    let cks = [], oss = [];
+    const desenhar = () => {
+      const itens = [
+        ...cks.map((c) => ({ data: c.data || '', titulo: `Check list preventiva · ${dataBR(c.data)}`, sub: [c.loja, c.horimetro ? `Horímetro ${c.horimetro}` : '', c.tecnico].filter(Boolean).join(' · '), tag: Object.values(c.respostas || {}).filter((v) => v === 'NOK').length ? `${Object.values(c.respostas || {}).filter((v) => v === 'NOK').length} ÑOK` : 'Check list', nok: Object.values(c.respostas || {}).some((v) => v === 'NOK'), ir: `loja-${c.lojaId}/ck-${c.id}` })),
+        ...oss.map((o) => ({ data: o.data || '', titulo: `OS ${o.numero || ''} · ${dataBR(o.data)}`, sub: String(o.servico || o.problema || '').split('\n')[0], tag: OS_ST[o.status || 'aberta'], ok: o.status === 'concluida', ir: 'os-' + o.id })),
+      ].sort((a, b) => b.data.localeCompare(a.data));
+      box.replaceChildren();
+      if (!itens.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Nenhum check list ou ordem de serviço para este equipamento ainda.' })); return; }
+      itens.forEach((it) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+        b.append(Object.assign(document.createElement('b'), { textContent: it.titulo }), Object.assign(document.createElement('span'), { className: 'sub', textContent: it.sub || '—' }), Object.assign(document.createElement('span'), { className: 'tag' + (it.nok ? ' nok' : it.ok ? ' ok' : ''), textContent: it.tag }));
+        b.addEventListener('click', () => { location.hash = it.ir; });
+        box.appendChild(b);
+      });
+    };
+    box.replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Carregando…' }));
+    if (e.serie && (P.admin || P.checklist || P.relatorio)) {
+      pararEqHist.push(fsSnap(query(fsCol(fs, 'checklists'), where('serie', '==', e.serie)), (sn) => { cks = sn.docs.map((d) => ({ id: d.id, ...d.data() })); desenhar(); }, () => {}));
+    }
+    if (podeOS()) pararEqHist.push(fsSnap(query(fsCol(fs, 'ordens'), where('equipamentoId', '==', e.id)), (sn) => { oss = sn.docs.map((d) => ({ id: d.id, ...d.data() })); desenhar(); }, () => {}));
+    desenhar();
+  }
+  $('eqd-voltar').addEventListener('click', () => { location.hash = 'equip'; });
+  $('eqd-editar').addEventListener('click', () => { if (eqAtual) location.hash = 'eqf-' + eqAtual.id; });
+  $('eqd-ck').addEventListener('click', () => {
+    const e = eqAtual; if (!e || !e.lojaId) return;
+    pendenteCk = { serie: e.serie || '', horimetro: e.horimetro || '' };
+    location.hash = `loja-${e.lojaId}/novo`;
+  });
+  $('eqd-os').addEventListener('click', () => {
+    const e = eqAtual; if (!e) return;
+    pendenteOS = { cliente: clienteEq(e), local: e.local || '', equipamento: [e.tipo, e.marca, e.modelo].filter(Boolean).join(' ') + (e.serie ? ` – nº de série ${e.serie}` : '') + (e.patrimonio ? ` – patrimônio ${e.patrimonio}` : '') + (e.codigo ? ` (${e.codigo})` : ''), equipamentoId: e.id };
+    location.hash = 'os-novo';
+  });
+  $('eqd-etq').addEventListener('click', async () => { if (eqAtual) imprimirEtiquetas([eqAtual]); });
+
+  // ----- Etiqueta com QR code (aponte a câmera do celular: abre o histórico do equipamento) -----
+  const linkEq = (e) => `https://koneg.com.br/e/${encodeURIComponent(e.codigo || e.id)}`;
+  async function imprimirEtiquetas(lista) {
+    await carregarScript('/lib/qrcode.js');
+    const box = el('div', 'etqs');
+    lista.forEach((e) => {
+      const q = window.qrcode(0, 'M'); q.addData(linkEq(e)); q.make();
+      const etq = el('div', 'etq');
+      const qr = el('div', 'qr'); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+      const tx = el('div', 'tx');
+      const mk = el('div', 'mk'); const im = document.createElement('img'); im.src = '/icones/app-192.png'; im.alt = ''; mk.append(im, 'KONEG MANUTENÇÃO');
+      tx.append(mk, el('div', 'cod', e.codigo || ''), el('div', 'md', nomeEq(e)), el('div', 'md', clienteEq(e)), el('div', 'dc', 'Escaneie para ver o histórico e a próxima preventiva'));
+      etq.append(qr, tx); box.appendChild(etq);
+    });
+    imprimirConteudo([box], 'Etiquetas ' + lista.map((e) => e.codigo).join(' '));
+  }
+
+  // ----- Cadastro / edição -----
+  const EQ_CAMPOS = [
+    ['g', 'Equipamento'],
+    ['tipo', 'text', 'Tipo (ex.: Empilhadeira elétrica, Paleteira, Stretchadeira)', 'full'],
+    ['marca', 'text', 'Marca'], ['modelo', 'text', 'Modelo'], ['serie', 'text', 'Número de série'], ['patrimonio', 'text', 'Patrimônio / frota do cliente'],
+    ['g', 'Onde fica'],
+    ['cliente', 'text', 'Cliente (se não for uma loja do Check List)', 'full'], ['local', 'text', 'Local / setor', 'full'],
+    ['g', 'Preventiva'],
+    ['intervaloDias', 'text', 'Fazer preventiva a cada (dias)'], ['intervaloHoras', 'text', 'Ou a cada (horas de horímetro, opcional)'],
+    ['ultimaPreventiva', 'date', 'Última preventiva'], ['horimetro', 'text', 'Horímetro atual'],
+    ['g', 'Observações'], ['obs', 'area', 'Observações', 'full'],
+  ];
+  let eqEd = null;
+  function abrirEqForm(arg) {
+    const e = arg === 'novo' ? null : equips.find((x) => x.id === arg);
+    if (arg !== 'novo' && !e) { location.hash = 'equip'; return; }
+    eqEd = e ? { ...e } : { tipo: 'Empilhadeira elétrica', marca: '', modelo: '', serie: '', patrimonio: '', lojaId: '', cliente: '', local: '', intervaloDias: String(INTERVALO_PADRAO), intervaloHoras: '', ultimaPreventiva: '', horimetro: '', obs: '' };
+    $('eqf-tit').textContent = e ? `Editar ${e.codigo || 'equipamento'}` : 'Novo equipamento';
+    $('eqf-err').hidden = true;
+    const box = $('eqf-form');
+    montarFormulario(box, EQ_CAMPOS, eqEd, () => {});
+    // loja do check list (lista)
+    const lb = document.createElement('label'); lb.className = 'fld full'; lb.htmlFor = 'eqf-loja';
+    const sp = document.createElement('span'); sp.textContent = 'Loja do Check List';
+    const sel = document.createElement('select'); sel.id = 'eqf-loja'; sel.className = 'eqf-sel';
+    sel.appendChild(new Option('— Não é loja do Check List —', ''));
+    [...LOJAS].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).forEach((l) => sel.appendChild(new Option(`${l.nome} (${l.cidade})`, l.id)));
+    sel.value = eqEd.lojaId || '';
+    sel.addEventListener('change', () => { eqEd.lojaId = sel.value; });
+    lb.append(sp, sel);
+    const secOnde = box.querySelectorAll('.ed-sec')[1].querySelector('.ed-campos'); secOnde.prepend(lb);
+    $('eqf-excluir').hidden = !(P.admin && e);
+    $('eqf-excluir').classList.remove('conf'); $('eqf-excluir').textContent = 'Excluir';
+  }
+  function proximoCodigo() {
+    const max = equips.reduce((m, e) => { const r = String(e.codigo || '').match(/^EQ(\d+)$/); return r ? Math.max(m, Number(r[1])) : m; }, 0);
+    return 'EQ' + String(max + 1).padStart(4, '0');
+  }
+  $('eqf-salvar').addEventListener('click', async () => {
+    if (!eqEd) return;
+    const erro = (t) => { $('eqf-err').textContent = t; $('eqf-err').hidden = false; };
+    if (!String(eqEd.modelo || eqEd.tipo || '').trim()) { erro('Preencha pelo menos o tipo ou o modelo.'); return; }
+    if (!eqEd.lojaId && !String(eqEd.cliente || '').trim()) { erro('Escolha a loja ou escreva o cliente.'); return; }
+    const serie = String(eqEd.serie || '').trim();
+    if (serie && equips.some((x) => x.id !== eqEd.id && normSerie(x.serie) === normSerie(serie))) { erro(`Já existe um equipamento com a série ${serie}.`); return; }
+    const { id, ...dados } = eqEd;
+    dados.serie = serie; dados.intervaloDias = String(dados.intervaloDias || '').replace(/\D/g, '') || String(INTERVALO_PADRAO);
+    dados.intervaloHoras = String(dados.intervaloHoras || '').replace(/\D/g, '');
+    dados.atualizadoEm = new Date().toISOString();
+    $('eqf-salvar').disabled = true;
+    try {
+      if (id) { await gravarNuvem(setDoc(fsDoc(fs, 'equipamentos', id), dados)); location.hash = 'eq-' + id; }
+      else {
+        const ref = fsDoc(fsCol(fs, 'equipamentos'));
+        dados.codigo = proximoCodigo(); dados.criadoEm = dados.atualizadoEm; dados.criadoPor = (auth.currentUser && auth.currentUser.email) || '';
+        await gravarNuvem(setDoc(ref, dados)); location.hash = 'eq-' + ref.id;
+      }
+    } catch (e) { erro(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore).' : 'Não foi possível salvar.'); }
+    finally { $('eqf-salvar').disabled = false; }
+  });
+  $('eqf-excluir').addEventListener('click', async () => {
+    const b = $('eqf-excluir'); if (!eqEd || !eqEd.id || !P.admin) return;
+    if (!b.classList.contains('conf')) { b.classList.add('conf'); b.textContent = 'Confirmar exclusão?'; setTimeout(() => { b.classList.remove('conf'); b.textContent = 'Excluir'; }, 4000); return; }
+    try { await deleteDoc(fsDoc(fs, 'equipamentos', eqEd.id)); eqEd = null; location.hash = 'equip'; } catch (_) { $('eqf-err').textContent = 'Não foi possível excluir.'; $('eqf-err').hidden = false; }
+  });
+  $('eqf-voltar').addEventListener('click', () => { location.hash = eqEd && eqEd.id ? 'eq-' + eqEd.id : 'equip'; });
+
+  // ----- Ligação com o check list: série → equipamento -----
+  function atualizarSeriesCk() {
+    let dl = $('fm-series'); if (!dl) { dl = document.createElement('datalist'); dl.id = 'fm-series'; document.body.appendChild(dl); $('fm-serie').setAttribute('list', 'fm-series'); }
+    const daLoja = equips.filter((e) => e.serie && (!ckLoja || e.lojaId === ckLoja.id));
+    dl.replaceChildren(...daLoja.map((e) => new Option(e.serie, nomeEq(e))));
+  }
+  function preventivaFeita(c) {
+    if (!c || !c.serie || !c.data) return;
+    const e = equips.find((x) => normSerie(x.serie) === normSerie(c.serie));
+    if (!e) return;
+    const muda = {};
+    if (!e.ultimaPreventiva || c.data >= e.ultimaPreventiva) { muda.ultimaPreventiva = c.data; if (c.horimetro) muda.horimetro = String(c.horimetro); }
+    if (Object.keys(muda).length && (muda.ultimaPreventiva !== e.ultimaPreventiva || muda.horimetro !== e.horimetro)) {
+      gravarNuvem(updateDoc(fsDoc(fs, 'equipamentos', e.id), { ...muda, atualizadoEm: new Date().toISOString() })).catch(() => {});
+    }
+  }
+  async function abrirPorCodigo(codigo) {
+    const c = decodeURIComponent(codigo || '').toUpperCase();
+    let e = equips.find((x) => String(x.codigo || '').toUpperCase() === c);
+    if (!e) { try { const sn = await getDocs(query(fsCol(fs, 'equipamentos'), where('codigo', '==', c))); if (sn.docs[0]) e = { id: sn.docs[0].id }; } catch (_) {} }
+    history.replaceState(null, '', e ? '#eq-' + e.id : '#equip'); rota();
+  }
+  function rotaEquip(h) {
+    const lista = h === '#equip', md = h.match(/^#eq-(.+)$/), mf = h.match(/^#eqf-(.+)$/), mc = h.match(/^#eqc-(.+)$/);
+    $('tela-equip').hidden = !lista; $('tela-eq').hidden = !md; $('tela-eqf').hidden = !mf;
+    if (lista || md || mf || mc) ouvirEquips();
+    if (lista) desenharEquips();
+    if (md) abrirEq(md[1]); else { pararEqHist.forEach((f) => f()); pararEqHist = []; if (!mf) eqAtual = null; }
+    if (mf) abrirEqForm(mf[1]); else { $('eqf-form').replaceChildren(); eqEd = null; }
+    if (mc) abrirPorCodigo(mc[1]);
+  }
+
+  // ===== Busca geral (Início) =====
+  let buscaDados = null, buscaCarregando = null, buscaTimer = null;
+  async function carregarBusca() {
+    if (buscaDados) return buscaDados;
+    if (buscaCarregando) return buscaCarregando;
+    buscaCarregando = (async () => {
+      const lerTudo = async (col) => { try { return (await getDocs(fsCol(fs, col))).docs.map((d) => ({ id: d.id, ...d.data() })); } catch (_) { return []; } };
+      const [ordens, cks, orcs, rels] = await Promise.all([
+        podeOS() ? lerTudo('ordens') : [], (P.admin || P.checklist || P.relatorio) ? lerTudo('checklists') : [],
+        P.admin ? lerTudo('orcamentos') : [], P.admin ? lerTudo('relatorios') : [],
+      ]);
+      if (P.admin) ouvirClientes();
+      buscaDados = { ordens, cks, orcs, rels };
+      setTimeout(() => { buscaDados = null; }, 5 * 60 * 1000); // renova a cada 5 minutos
+      return buscaDados;
+    })();
+    try { return await buscaCarregando; } finally { buscaCarregando = null; }
+  }
+  async function buscarTudo() {
+    const txt = $('busca-geral').value.trim(), q = semAcento(txt);
+    $('tela-menu').classList.toggle('busca-com-texto', !!q);
+    const box = $('busca-res');
+    if (q.length < 2) { box.hidden = true; box.replaceChildren(); return; }
+    box.hidden = false;
+    if (!buscaDados) box.replaceChildren(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: 'Buscando…' }));
+    const d = await carregarBusca();
+    if (semAcento($('busca-geral').value.trim()) !== q) return;
+    const tem = (...v) => semAcento(v.filter(Boolean).join(' ')).includes(q);
+    const r = [];
+    equips.forEach((e) => { if (tem(e.codigo, e.modelo, e.marca, e.tipo, e.serie, e.patrimonio, clienteEq(e), e.local)) r.push(['Equipamento', nomeEq(e), [clienteEq(e), e.codigo].filter(Boolean).join(' · '), '#eq-' + e.id]); });
+    LOJAS.forEach((l) => { if (tem(l.nome, l.cidade)) r.push(['Loja', l.nome, l.cidade, '#loja-' + l.id]); });
+    d.ordens.forEach((o) => { if (tem(o.numero, o.cliente, o.equipamento, o.problema, o.tecnico, o.solicitante)) r.push(['OS', `OS ${o.numero || ''} · ${o.cliente || ''}`, [dataBR(o.data), OS_ST[o.status || 'aberta']].join(' · '), '#os-' + o.id]); });
+    d.cks.forEach((c) => { if (tem(c.serie, c.os, c.loja, c.tecnico)) r.push(['Check list', `${c.loja || 'Check list'} · ${dataBR(c.data)}`, [c.serie ? `série ${c.serie}` : '', c.tecnico].filter(Boolean).join(' · '), `#loja-${c.lojaId}/ck-${c.id}`]); });
+    if (P.admin) {
+      clientes.forEach((c) => { if (tem(c.nome, c.cnpj, c.contato, c.cidade)) r.push(['Cliente', c.nome, [c.cnpj, c.cidade].filter(Boolean).join(' · '), 'cli:' + c.nome]); });
+      d.orcs.forEach((o) => { if (tem(o.numero, o.cliente, o.titulo)) r.push(['Orçamento', `${o.numero || ''} · ${o.cliente || ''}`, dataBR(o.data), '#doc-orc-' + o.id]); });
+      d.rels.forEach((o) => { if (tem(o.numero, o.cliente, o.equipamento)) r.push(['Relatório', `${o.numero || ''} · ${o.cliente || ''}`, dataBR(o.data), '#doc-rel-' + o.id]); });
+    }
+    if (podeEstoque()) itens.forEach((v) => { if (tem(v.nome)) r.push(['Estoque', v.nome, `${v.quantidade || 0} em estoque`, 'est:' + v.nome]); });
+    box.replaceChildren();
+    if (!r.length) { box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: `Nada encontrado para "${txt}".` })); return; }
+    r.slice(0, 40).forEach(([tipo, t, sub, ir]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
+      b.append(Object.assign(document.createElement('b'), { textContent: t }), Object.assign(document.createElement('span'), { className: 'sub', textContent: sub || '' }), Object.assign(document.createElement('span'), { className: 'tag', textContent: tipo }));
+      b.addEventListener('click', () => {
+        if (ir.startsWith('cli:')) { $('cl-busca').value = ir.slice(4); location.hash = 'clientes'; setTimeout(() => $('cl-busca').dispatchEvent(new Event('input')), 50); }
+        else if (ir.startsWith('est:')) { location.hash = 'estoque'; setTimeout(() => { $('busca').value = ir.slice(4); $('busca').dispatchEvent(new Event('input')); }, 50); }
+        else location.hash = ir.slice(1);
+      });
+      box.appendChild(b);
+    });
+    if (r.length > 40) box.appendChild(Object.assign(document.createElement('div'), { className: 'lj-vazio', textContent: `Mostrando 40 de ${r.length}. Escreva mais para filtrar.` }));
+  }
+  $('busca-geral').addEventListener('input', () => { clearTimeout(buscaTimer); buscaTimer = setTimeout(buscarTudo, 200); });
+  $('busca-geral').addEventListener('focus', () => { carregarBusca(); });
+
   // ===== Casca de app: barra do topo, navegação de baixo, botão "+" e início =====
   const RAIZES = { 'tela-menu': 'menu', 'tela-checklist': 'checklist', 'tela-os': 'os', app: 'estoque', 'tela-admin': 'admin' };
-  const PROFUNDO = { 'tela-form': 2, 'tela-osf': 2, 'tela-doc': 2 };
-  const FAB = { 'tela-os': ['os-novo', 'Nova OS'], 'tela-loja': ['lj-novo', 'Novo check list'], 'tela-docs': ['dc-novo', ''], 'tela-clientes': ['cl-novo', 'Novo cliente'], 'tela-receber': ['rc-novo', 'Nova conta'] };
+  const PROFUNDO = { 'tela-form': 2, 'tela-osf': 2, 'tela-doc': 2, 'tela-eqf': 2 };
+  const FAB = { 'tela-os': ['os-novo', 'Nova OS'], 'tela-loja': ['lj-novo', 'Novo check list'], 'tela-docs': ['dc-novo', ''], 'tela-clientes': ['cl-novo', 'Novo cliente'], 'tela-receber': ['rc-novo', 'Nova conta'], 'tela-equip': ['eq-novo', 'Novo equipamento'] };
   let telaAtual = null, obsCasca = null;
   function telaVisivel() {
     return [...document.querySelectorAll('body > main, body > #app')].find((m) => !m.hidden && m.id !== 'tela-login' && m.id !== 'tela-semacesso') || null;
@@ -4328,6 +4948,10 @@ const firestoreDb = {
         cards.push(['os', 'amarelo', n, n === 1 ? 'ordem de serviço em aberto' : 'ordens de serviço em aberto']);
       } catch (_) {}
     }
+    if (podeEquip() && equips.length) {
+      const n = contarAgenda();
+      cards.push(['equip-7', n ? 'vermelho' : '', n, n === 1 ? 'preventiva vencida ou nesta semana' : 'preventivas vencidas ou nesta semana']);
+    }
     if (podeCk()) {
       try {
         const ym = hojeISO().slice(0, 7);
@@ -4341,7 +4965,10 @@ const firestoreDb = {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'in-card' + (cor ? ' ' + cor : '');
       const nb = document.createElement('b'); nb.textContent = String(n);
       const sp = document.createElement('span'); sp.textContent = txt;
-      b.append(nb, sp); b.addEventListener('click', () => { location.hash = ir; });
+      b.append(nb, sp); b.addEventListener('click', () => {
+        if (ir === 'equip-7') { eqFiltro = '7'; document.querySelectorAll('#eq-filtros .btn').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === '7'))); location.hash = 'equip'; return; }
+        location.hash = ir;
+      });
       return b;
     }));
   }
@@ -4415,8 +5042,9 @@ const firestoreDb = {
     db = null; itens = new Map(); carregado = false; P = { ...SEM_PERM };
     rows.forEach((tr) => tr.remove()); rows.clear();
     logado = false;
-    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-downloads', 'tela-os', 'tela-osf', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
-    pararOS();
+    ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-downloads', 'tela-os', 'tela-osf', 'tela-equip', 'tela-eq', 'tela-eqf', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
+    pararOS(); pararEquipamentos(); pendenteCk = null; pendenteOS = null;
+    buscaDados = null; $('busca-geral').value = ''; $('busca-res').hidden = true; $('tela-menu').classList.remove('busca-com-texto');
     if (APP_CK) { $('in-resumo').replaceChildren(); $('inicio').hidden = true; casca(); }
     fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); $('bkp-status').textContent = BKP_TXT; ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
@@ -4434,7 +5062,11 @@ const firestoreDb = {
   onAuthStateChanged(auth, async (u) => {
     $('carregando').hidden = true;
     sairDeTudo();
-    if (!u) { $('tela-login').hidden = false; $('l-senha').value = ''; return; }
+    if (!u) {
+      $('tela-login').hidden = false; $('l-senha').value = '';
+      try { if (window.KonegApp && window.KonegApp.registrarSessao) window.KonegApp.registrarSessao('', '', '', ''); } catch (_) {}
+      return;
+    }
     $('tela-login').hidden = true;
     $('carregando').hidden = false; $('carregando-txt').textContent = 'Carregando o painel…';
     const perfil = await descobrirPerfil(u);
@@ -4455,6 +5087,14 @@ const firestoreDb = {
     carregarOrdem();
     if (P.admin) ouvirContas();
     if (podeCk()) iniciarLojas();
+    if (podeEquip()) ouvirEquips();
+    if (podeOS()) ouvirMinhasOS();
+    try {
+      if (window.KonegApp && window.KonegApp.registrarSessao && podeOS()) {
+        const cfg = window.FIREBASE_CONFIG || {};
+        window.KonegApp.registrarSessao(u.refreshToken || '', String(u.email || '').toLowerCase(), cfg.apiKey || '', cfg.projectId || '');
+      }
+    } catch (_) {}
     if (podeEstoque()) {
       parar.push(db.collection('itens').onSnapshot((snap) => {
         const novo = new Map();

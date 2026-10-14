@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Celular no modo escuro: o app (e a página) também ficam escuros -->
+    <style name="Tema" parent="android:Theme.Material.NoActionBar">
+        <item name="android:isLightTheme">false</item>
+        <item name="android:statusBarColor">#16191D</item>
+        <item name="android:navigationBarColor">#121417</item>
+        <item name="android:windowBackground">@drawable/abertura</item>
+    </style>
+</resources>

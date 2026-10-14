@@ -1,10 +1,15 @@
 package br.com.koneg.checklist;
 
 import android.app.Activity;
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +21,7 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -29,16 +35,24 @@ import android.widget.Toast;
 import androidx.core.content.FileProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 /**
  * App Koneg: abre o painel (check list, ordem de serviço, estoque) em tela cheia.
@@ -55,6 +69,8 @@ public class MainActivity extends Activity {
     private static final String AUTORIDADE = BuildConfig.APPLICATION_ID + ".arquivos";
     private static final int PEDIDO_FOTO = 10;
     private static final int PEDIDO_PERMISSAO_INSTALAR = 11;
+    private static final int PEDIDO_LOCAL = 12;
+    private static final int PEDIDO_AVISOS = 13;
     private static final long INTERVALO_VERIFICACAO = 6L * 60 * 60 * 1000; // 6 horas
 
     private WebView web;
@@ -65,6 +81,9 @@ public class MainActivity extends Activity {
     private volatile boolean travado = false;
 
     private File apkNovo;
+    private boolean instalarAoSair = false;
+    private GeolocationPermissions.Callback localRetorno;
+    private String localOrigem;
     private boolean verificando = false;
     private long ultimaVerificacao = 0;
 
@@ -75,7 +94,8 @@ public class MainActivity extends Activity {
 
         puxar = new SwipeRefreshLayout(this);
         web = new WebView(this);
-        web.setBackgroundColor(0xFFF3F4F5);
+        boolean noite = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        web.setBackgroundColor(noite ? 0xFF121417 : 0xFFF3F4F5);
         puxar.addView(web, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         puxar.setColorSchemeColors(0xFFF2B705, 0xFF16191D);
         puxar.setOnChildScrollUpCallback((pai, filho) -> travado || web.getScrollY() > 0);
@@ -89,6 +109,7 @@ public class MainActivity extends Activity {
         s.setLoadWithOverviewMode(true);
         s.setUseWideViewPort(true);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
+        s.setGeolocationEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(true);
         s.setUserAgentString(s.getUserAgentString() + " KonegChecklistApp/" + BuildConfig.VERSION_CODE);
 
@@ -102,6 +123,14 @@ public class MainActivity extends Activity {
                 boolean varias = params != null && params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE;
                 escolherFoto(varias);
                 return true;
+            }
+
+            /** Localização para o início/fim da OS: pede a permissão do Android na primeira vez. */
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origem, GeolocationPermissions.Callback retorno) {
+                if (temLocal()) { retorno.invoke(origem, true, false); return; }
+                localOrigem = origem; localRetorno = retorno;
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PEDIDO_LOCAL);
             }
         });
         web.setWebViewClient(new WebViewClient() {
@@ -136,7 +165,50 @@ public class MainActivity extends Activity {
             }
         });
 
-        if (salvo != null) web.restoreState(salvo); else web.loadUrl(ENDERECO);
+        String destino = destinoDo(getIntent());
+        if (salvo != null && destino == null) web.restoreState(salvo); else web.loadUrl(ENDERECO + (destino == null ? "" : destino));
+        if (!Avisos.prefs(this).getString("rt", "").isEmpty()) agendarAvisos();
+    }
+
+    /** Link do QR code (koneg.com.br/e/EQ0001) ou toque num aviso: para qual tela ir. */
+    private String destinoDo(Intent i) {
+        if (i == null) return null;
+        String d = i.getStringExtra("destino");
+        if (d != null && d.startsWith("#")) return d;
+        Uri u = i.getData();
+        if (u != null && u.getPath() != null && u.getPath().startsWith("/e/")) {
+            String cod = u.getPath().substring(3).replace("/", "");
+            if (!cod.isEmpty()) return "#eqc-" + Uri.encode(cod);
+        }
+        return null;
+    }
+
+    @Override
+    protected void onNewIntent(Intent i) {
+        super.onNewIntent(i);
+        setIntent(i);
+        String d = destinoDo(i);
+        if (d != null) web.evaluateJavascript("location.hash=" + JSONObject.quote(d.substring(1)), null);
+    }
+
+    private boolean temLocal() {
+        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int pedido, String[] perms, int[] res) {
+        super.onRequestPermissionsResult(pedido, perms, res);
+        if (pedido == PEDIDO_LOCAL && localRetorno != null) {
+            localRetorno.invoke(localOrigem, temLocal(), false);
+            localRetorno = null;
+        }
+    }
+
+    private void agendarAvisos() {
+        Constraints net = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+        PeriodicWorkRequest r = new PeriodicWorkRequest.Builder(AvisosWorker.class, 15, TimeUnit.MINUTES).setConstraints(net).build();
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("avisos-os", ExistingPeriodicWorkPolicy.KEEP, r);
     }
 
     @Override
@@ -271,6 +343,25 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> puxar.setEnabled(!travar));
         }
 
+        /** Aviso no celular (usado quando chega uma OS nova com o app aberto). */
+        @JavascriptInterface
+        public void notificar(final String titulo, final String texto, final String destino) {
+            Avisos.notificar(MainActivity.this, titulo, texto, destino);
+        }
+
+        /** Guarda a sessão para conferir OS novas em segundo plano (vazio = saiu da conta). */
+        @JavascriptInterface
+        public void registrarSessao(final String rt, final String email, final String apiKey, final String projeto) {
+            Avisos.prefs(MainActivity.this).edit().putString("rt", rt).putString("email", email).putString("apiKey", apiKey).putString("projeto", projeto).apply();
+            runOnUiThread(() -> {
+                if (rt == null || rt.isEmpty()) { WorkManager.getInstance(MainActivity.this).cancelUniqueWork("avisos-os"); return; }
+                agendarAvisos();
+                if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, PEDIDO_AVISOS);
+                }
+            });
+        }
+
         @JavascriptInterface
         public String versao() {
             return String.valueOf(BuildConfig.VERSION_CODE);
@@ -307,7 +398,12 @@ public class MainActivity extends Activity {
                     if (!arq.exists() || (tamanho > 0 && arq.length() != tamanho)) baixarArquivo(url, arq);
                     final String notas = j.optString("body", "");
                     final int v = nova;
-                    runOnUiThread(() -> { apkNovo = arq; perguntarInstalar(v, notas); });
+                    runOnUiThread(() -> {
+                        apkNovo = arq;
+                        // Android 12+ e o app já é o "dono" das próprias atualizações: instala sozinho quando sair do app
+                        if (podeSilencioso() && !Avisos.prefs(this).getBoolean("silenciosoFalhou", false)) instalarAoSair = true;
+                        else perguntarInstalar(v, notas);
+                    });
                 } else if (manual) {
                     runOnUiThread(() -> Toast.makeText(this, "O app já está na versão mais nova.", Toast.LENGTH_LONG).show());
                 }
@@ -331,6 +427,46 @@ public class MainActivity extends Activity {
             .show();
     }
 
+    private boolean podeSilencioso() {
+        if (Build.VERSION.SDK_INT < 31 || !podeInstalar()) return false;
+        try { return getPackageName().equals(getPackageManager().getInstallSourceInfo(getPackageName()).getInstallingPackageName()); }
+        catch (Exception e) { return false; }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (instalarAoSair && apkNovo != null && apkNovo.exists()) {
+            instalarAoSair = false;
+            final File apk = apkNovo;
+            new Thread(() -> instalarSessao(apk, true)).start();
+        }
+    }
+
+    /** Instala pelo PackageInstaller (assim o app vira o "dono" das atualizações e as próximas podem ser silenciosas). */
+    private void instalarSessao(File apk, boolean silencioso) {
+        try {
+            PackageInstaller pi = getPackageManager().getPackageInstaller();
+            PackageInstaller.SessionParams sp = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+            sp.setAppPackageName(getPackageName());
+            if (Build.VERSION.SDK_INT >= 31) sp.setRequireUserAction(silencioso ? PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED : PackageInstaller.SessionParams.USER_ACTION_REQUIRED);
+            int id = pi.createSession(sp);
+            try (PackageInstaller.Session sessao = pi.openSession(id)) {
+                try (InputStream in = new FileInputStream(apk); OutputStream out = sessao.openWrite("koneg.apk", 0, apk.length())) {
+                    byte[] b = new byte[65536]; int n;
+                    while ((n = in.read(b)) > 0) out.write(b, 0, n);
+                    sessao.fsync(out);
+                }
+                Intent it = new Intent(this, InstalarReceiver.class);
+                int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
+                PendingIntent pend = PendingIntent.getBroadcast(this, id, it, flags);
+                sessao.commit(pend.getIntentSender());
+            }
+        } catch (Exception e) {
+            if (!silencioso) runOnUiThread(this::instalarPeloArquivo);
+        }
+    }
+
     private boolean podeInstalar() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.O || getPackageManager().canRequestPackageInstalls();
     }
@@ -350,6 +486,12 @@ public class MainActivity extends Activity {
                 .show();
             return;
         }
+        final File apk = apkNovo;
+        new Thread(() -> instalarSessao(apk, false)).start();
+    }
+
+    private void instalarPeloArquivo() {
+        if (apkNovo == null || !apkNovo.exists()) return;
         try {
             Uri u = FileProvider.getUriForFile(this, AUTORIDADE, apkNovo);
             Intent i = new Intent(Intent.ACTION_VIEW);

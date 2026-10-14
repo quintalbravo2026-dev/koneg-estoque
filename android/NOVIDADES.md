@@ -1,11 +1,7 @@
-• Visual de aplicativo: barra no topo, navegação embaixo, botão + e tela de início com resumo
-• Novo nome e ícone: Koneg
-• Menu completo conforme a permissão de cada um: Check List, Ordem de serviço e Estoque
-• Câmera e galeria para as fotos de antes e depois da Ordem de serviço
-• Funciona sem internet: o que for salvo fica no celular e é enviado quando o sinal voltar
-• Assinatura do cliente na tela da Ordem de serviço
-• Enviar o PDF do check list e da OS direto pelo WhatsApp
-• Puxe a tela para baixo para atualizar; a tela não apaga enquanto o app está aberto
-• Atualização automática: o app avisa quando há versão nova e instala com um toque
-
-
+• Equipamentos com QR code: aponte a câmera para a etiqueta e o app abre o histórico
+• Agenda de preventivas: avisa o que está vencido ou vence nesta semana
+• OS enviada para o técnico, com aviso no celular mesmo com o app fechado
+• Início e fim da OS com hora e localização
+• Peças da OS saindo do estoque
+• Busca geral no Início e modo escuro automático
+• Atualizações silenciosas (Android 12 ou mais novo, a partir da próxima versão)

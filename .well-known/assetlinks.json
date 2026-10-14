@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "br.com.koneg.checklist",
+    "sha256_cert_fingerprints": ["7F:A7:54:CA:05:74:1A:80:FE:63:27:37:88:FF:94:B0:B1:BD:75:BF:E1:3D:05:72:6D:71:D9:80:54:C1:56:EB"]
+  }
+}]
