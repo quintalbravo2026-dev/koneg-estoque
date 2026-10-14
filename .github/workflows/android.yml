@@ -1,4 +1,4 @@
-name: App Android do Check List
+name: App Android Koneg
 
 on:
   push:
@@ -24,6 +24,28 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      # A chave de assinatura fica nos segredos do repositório (Settings > Secrets and variables > Actions).
+      # Sem ela, o app é só compilado para conferir que está tudo certo, mas NÃO é publicado.
+      - name: Preparar a chave de assinatura
+        id: chave
+        env:
+          KS: ${{ secrets.KEYSTORE_BASE64 }}
+          SENHA: ${{ secrets.KEYSTORE_SENHA }}
+        run: |
+          if [ -n "$KS" ] && [ -n "$SENHA" ]; then
+            echo "$KS" | base64 -d > "$RUNNER_TEMP/koneg.jks"
+            echo "KONEG_KEYSTORE=$RUNNER_TEMP/koneg.jks" >> "$GITHUB_ENV"
+            echo "KONEG_KEYSTORE_SENHA=$SENHA" >> "$GITHUB_ENV"
+            echo "publicar=sim" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Segredos KEYSTORE_BASE64/KEYSTORE_SENHA ausentes: compilando só para teste, sem publicar."
+            keytool -genkeypair -keystore "$RUNNER_TEMP/teste.jks" -alias koneg -keyalg RSA -keysize 2048 -validity 1 \
+              -storepass teste123 -keypass teste123 -dname "CN=Teste" >/dev/null
+            echo "KONEG_KEYSTORE=$RUNNER_TEMP/teste.jks" >> "$GITHUB_ENV"
+            echo "KONEG_KEYSTORE_SENHA=teste123" >> "$GITHUB_ENV"
+            echo "publicar=nao" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Gerar o APK
         working-directory: android
         run: gradle assembleRelease --no-daemon --stacktrace
@@ -31,11 +53,12 @@ jobs:
       - name: Nomear o arquivo
         run: cp android/app/build/outputs/apk/release/app-release.apk checklist-koneg.apk
 
-      - name: Publicar para download
+      - name: Publicar para download (e para a atualização automática do app)
+        if: steps.chave.outputs.publicar == 'sim'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: app-v${{ github.run_number }}
-          name: Check List Koneg (versão ${{ github.run_number }})
-          body: App Android do Check List da Koneg. Baixe o arquivo checklist-koneg.apk no celular e toque nele para instalar.
+          name: App Koneg (versão ${{ github.run_number }})
+          body_path: android/NOVIDADES.md
           files: checklist-koneg.apk
           make_latest: true

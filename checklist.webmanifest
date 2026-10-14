@@ -1,18 +1,33 @@
 {
   "id": "/checklist/",
-  "name": "Check List Koneg",
-  "short_name": "Check List",
-  "description": "Check list de manutenção preventiva de empilhadeiras nas lojas.",
+  "name": "Koneg",
+  "short_name": "Koneg",
+  "description": "App da Koneg Manutenção: check list, ordem de serviço e estoque.",
   "start_url": "/checklist/",
   "scope": "/checklist/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f3f4f5",
+  "background_color": "#ffffff",
   "theme_color": "#16191d",
   "lang": "pt-BR",
   "icons": [
-    { "src": "/icones/ck-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icones/ck-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icones/ck-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icones/app-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/app-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/app-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

@@ -10,16 +10,22 @@ android {
         applicationId 'br.com.koneg.checklist'
         minSdk 24
         targetSdk 34
+        // Cada publicação no GitHub gera um número maior; o app compara para saber se há atualização
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
-        versionName "1.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionName "2.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
+    // A chave de assinatura NÃO fica no repositório: vem dos segredos do GitHub (KEYSTORE_BASE64 / KEYSTORE_SENHA)
     signingConfigs {
         koneg {
-            storeFile file('koneg.jks')
-            storePassword 'koneg-checklist'
+            storeFile file(System.getenv('KONEG_KEYSTORE') ?: 'sem-chave.jks')
+            storePassword System.getenv('KONEG_KEYSTORE_SENHA') ?: ''
             keyAlias 'koneg'
-            keyPassword 'koneg-checklist'
+            keyPassword System.getenv('KONEG_KEYSTORE_SENHA') ?: ''
         }
     }
 
@@ -34,4 +40,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }

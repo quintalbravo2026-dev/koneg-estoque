@@ -14,13 +14,13 @@
     var h = document.head;
     function add(t, a) { var e = document.createElement(t); for (var k in a) e.setAttribute(k, a[k]); h.appendChild(e); }
     if (!document.querySelector('link[rel=manifest]')) add('link', { rel: 'manifest', href: '/checklist.webmanifest' });
-    add('link', { rel: 'apple-touch-icon', href: '/icones/ck-180.png' });
+    add('link', { rel: 'apple-touch-icon', href: '/icones/app-180.png' });
     add('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
     add('meta', { name: 'mobile-web-app-capable', content: 'yes' });
-    add('meta', { name: 'apple-mobile-web-app-title', content: 'Check List' });
+    add('meta', { name: 'apple-mobile-web-app-title', content: 'Koneg' });
     add('meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'default' });
     add('meta', { name: 'theme-color', content: '#16191d' });
-    document.title = 'Check List · Koneg';
+    document.title = 'Koneg';
     document.documentElement.classList.add('app-ck');
   })();
 </script>
@@ -334,6 +334,7 @@ html, body { margin: 0; }
 .fm-ass { width: 100%; max-width: 100%; aspect-ratio: 3 / 1; background: #fff; border: 1px dashed var(--muted); border-radius: 6px; touch-action: none; display: block; }
 .fm-dica { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
 .fm-rodape { display: flex; gap: 8px; flex-wrap: wrap; }
+.fm-rodape #fm-enviar { flex: 1 1 12rem; justify-content: center; min-height: 46px; }
 .fm-rodape #fm-imprimir { flex: 1 1 14rem; justify-content: center; min-height: 46px; font-size: 15px; }
 .fm-rodape #fm-excluir { justify-content: center; min-height: 46px; }
 @media (max-width: 640px) {
@@ -373,8 +374,6 @@ html, body { margin: 0; }
 .loja.excluir::after { content: "✕" !important; transform: none !important; border: 0 !important; width: auto !important; height: auto !important; font-size: 14px; color: var(--danger); }
 
 /* App do Check List */
-.app-ck #ck-menu { display: none; }
-.app-ck .ck-topo-app { display: flex; }
 .ck-topo-app { display: none; justify-content: space-between; align-items: center; gap: 8px; width: 100%; }
 
 /* Relatório mensal */
@@ -497,7 +496,7 @@ html, body { margin: 0; }
 .os-bloco.antes h3::before { background: #d9822b; }
 .os-bloco.depois h3::before { background: var(--ok); }
 #impressao .doc h3.os-h3 { font-size: 11pt; margin: 3mm 0 1mm; text-transform: uppercase; letter-spacing: .04em; }
-#impressao .doc .os-par { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 2mm; }
+#impressao .doc .os-par { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 3mm; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .os-par .cab { font-weight: 700; font-size: 10.5pt; text-align: center; background: #d9d9d9; padding: 1mm; }
 #impressao .doc .os-par figure { margin: 0; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .os-par img { width: 100%; height: 62mm; object-fit: contain; background: #f2f2f2; display: block; border: .5pt solid #999; }
@@ -519,6 +518,16 @@ html, body { margin: 0; }
 .dl-como { padding: 16px; margin-top: 12px; }
 .dl-como h2 { margin: 0 0 8px; font-size: 16px; }
 .dl-como ol { margin: 0 0 10px; padding-left: 1.3em; display: grid; gap: 6px; font-size: 14px; line-height: 1.5; }
+.pdf-painel { position: fixed; inset: 0; z-index: 60; background: rgba(10, 12, 15, .55); display: flex; align-items: flex-end; justify-content: center; }
+.pdf-painel[hidden] { display: none; }
+.pdf-caixa { background: var(--panel); color: var(--fg); width: min(100%, 30rem); border-radius: 14px 14px 0 0; padding: 18px 16px calc(16px + env(safe-area-inset-bottom)); display: grid; gap: 10px; box-shadow: 0 -8px 30px rgba(0,0,0,.25); }
+.pdf-caixa b { font-size: 17px; }
+.pdf-caixa p { margin: 0; font-size: 14px; color: var(--muted); }
+.pdf-acoes { display: grid; gap: 8px; }
+.pdf-acoes[hidden] { display: none; }
+.pdf-caixa .btn { justify-content: center; text-align: center; text-decoration: none; min-height: 46px; }
+.sem-rede { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #16191d; color: #fff; font-size: 13px; text-align: center; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 3px solid var(--accent); }
+.sem-rede[hidden] { display: none; }
 .mitem.bkp svg { background: rgba(120, 80, 20, .1); }
 .mitem.bkp[aria-busy="true"] { opacity: .7; cursor: progress; }
 
@@ -575,7 +584,9 @@ html, body { margin: 0; }
 #impressao .doc table.it { width: 100%; border-collapse: collapse; margin-top: 1mm; table-layout: fixed; border: 0; }
 #impressao .doc table.it td, #impressao .doc table.it th { border: .7pt solid #000; padding: .6mm 1.6mm; font-size: 10.5pt; font-weight: 400; text-align: left; vertical-align: top; white-space: normal; height: auto; color: #000; background: none; position: static; text-transform: none; letter-spacing: 0; line-height: 1.3; }
 #impressao .doc .assin { margin-top: 12mm; }
-#impressao .doc .assin2 { margin-top: 18mm; display: grid; grid-template-columns: 1fr 1fr; gap: 14mm; break-inside: avoid; }
+#impressao .doc .assin2 { margin-top: 18mm; display: grid; grid-template-columns: 1fr 1fr; gap: 14mm; break-inside: avoid; align-items: end; }
+#impressao .doc .assin2 .ass-img { display: block; height: 18mm; max-width: 100%; margin: 0 auto 1mm; object-fit: contain; }
+.os-ass { display: flex; flex-direction: column; gap: 6px; }
 #impressao .doc .assin2 .ln2 { border-top: .7pt solid #000; padding-top: 1.5mm; text-align: center; font-size: 10.5pt; }
 
 .mitem.orc svg { background: rgba(46, 116, 181, .12); }
@@ -604,7 +615,7 @@ html, body { margin: 0; }
 .ft-item figcaption input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
 .ft-item figcaption .btn { font-size: 13px; padding: 6px 9px; }
 .ft-item figcaption .btn.conf { background: var(--danger); color: #fff; border-color: var(--danger); }
-#impressao .doc .fotos-imp { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 2mm; }
+#impressao .doc .fotos-imp { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 3mm; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .fotos-imp figure { margin: 0; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .fotos-imp img { width: 100%; height: 62mm; object-fit: contain; background: #f2f2f2; display: block; border: .5pt solid #999; }
 #impressao .doc .fotos-imp figcaption { font-size: 9.5pt; margin-top: 1mm; }
@@ -841,7 +852,7 @@ html, body { margin: 0; }
       <button class="mitem dl" type="button" data-go="downloads">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/></svg>
         <span class="mi-t">Downloads</span>
-        <span class="mi-d">Aplicativo do Check List para Android e como instalar</span>
+        <span class="mi-d">App Koneg para Android e como instalar</span>
       </button>
       <button class="mitem bkp" type="button" data-key="backup" id="btn-backup">
         <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6"/><path d="M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/></svg>
@@ -966,6 +977,7 @@ html, body { margin: 0; }
   <div id="osf-form" class="ed-form"></div>
   <div class="fm-rodape ed-acoes">
     <button class="btn primary" id="osf-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn wa" id="osf-enviar" type="button">Enviar PDF (WhatsApp)</button>
     <button class="btn danger" id="osf-excluir" type="button" hidden>Excluir</button>
   </div>
   <div class="confirm" id="osf-confirm" hidden>
@@ -985,18 +997,20 @@ html, body { margin: 0; }
   </header>
   <section class="card dl-card">
     <div class="dl-app">
-      <img src="/icones/ck-192.png" alt="" width="64" height="64">
+      <img src="/icones/app-192.png" alt="" width="64" height="64">
       <div>
-        <h2>Check List Koneg</h2>
-        <p>Aplicativo para Android. Os técnicos entram com o e-mail e a senha deles e fazem os check lists de preventiva das lojas.</p>
+        <h2>App Koneg</h2>
+        <p>Aplicativo para Android. Cada técnico entra com o e-mail e a senha dele e vê só o que pode usar: Check List, Ordem de serviço (com câmera) e Estoque. Funciona sem internet e se atualiza sozinho.</p>
       </div>
     </div>
     <div class="dl-corpo">
       <div class="dl-acoes">
         <a class="btn primary dl-baixar" href="https://github.com/quintalbravo2026-dev/koneg-estoque/releases/latest/download/checklist-koneg.apk" download>⬇ Baixar o aplicativo (APK)</a>
         <button class="btn" id="dl-copiar" type="button">Copiar link</button>
-        <a class="btn wa" id="dl-wa" href="https://wa.me/?text=Baixe%20o%20aplicativo%20Check%20List%20Koneg%20(Android)%3A%20https%3A%2F%2Fkoneg.com.br%2Fapp" target="_blank" rel="noopener">Enviar link pelo WhatsApp</a>
+        <button class="btn" id="dl-atualizar" type="button" hidden>Procurar atualização agora</button>
+        <a class="btn wa" id="dl-wa" href="https://wa.me/?text=Baixe%20o%20app%20Koneg%20(Android)%3A%20https%3A%2F%2Fkoneg.com.br%2Fapp" target="_blank" rel="noopener">Enviar link pelo WhatsApp</a>
         <p class="ed-dica">Link para os funcionários: <b>koneg.com.br/app</b> <span id="dl-copiado" aria-live="polite"></span></p>
+        <p class="ed-dica" id="dl-versao" hidden></p>
       </div>
       <figure class="dl-qr">
         <img src="/icones/qr-app.svg" alt="QR code para baixar o aplicativo" width="170" height="170">
@@ -1011,9 +1025,11 @@ html, body { margin: 0; }
       <li>Quando terminar, abra o arquivo <b>checklist-koneg.apk</b> pela notificação ou pela pasta Downloads.</li>
       <li>Se aparecer "instalação bloqueada", toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>. Depois volte e toque em <b>Instalar</b>.</li>
       <li>Se o Google Play Protect avisar que o app é desconhecido, toque em <b>Mais detalhes</b> e depois em <b>Instalar mesmo assim</b>. O app é seu e não está na Play Store, por isso o aviso.</li>
-      <li>Abra o <b>Check List Koneg</b> e entre com o e-mail e a senha do funcionário (criados em Administração → Funcionários).</li>
+      <li>Abra o app <b>Koneg</b> e entre com o e-mail e a senha do funcionário (criados em Administração → Funcionários).</li>
     </ol>
-    <p class="ed-dica">Para atualizar, é só baixar e instalar de novo por cima: os dados ficam guardados no servidor. Não funciona em iPhone; no iPhone use o painel pelo navegador.</p>
+    <p class="ed-dica"><b>Atualizações:</b> o app procura versão nova sozinho. Quando houver, ele baixa e mostra "Atualização disponível" — é só tocar em <b>Instalar agora</b>. Na primeira vez o Android pede para "Permitir desta fonte".</p>
+    <p class="ed-dica"><b>Quem tem o app antigo "Check List"</b> (ícone de prancheta): desinstale ele primeiro e depois instale o novo. Os dados não se perdem, ficam no servidor.</p>
+    <p class="ed-dica">Não funciona em iPhone; no iPhone use o painel pelo navegador em koneg.com.br/painel.</p>
   </section>
 </main>
 
@@ -1207,6 +1223,7 @@ html, body { margin: 0; }
 
   <div class="fm-rodape">
     <button class="btn primary" id="fm-imprimir" type="button">Imprimir / salvar PDF</button>
+    <button class="btn wa" id="fm-enviar" type="button">Enviar PDF (WhatsApp)</button>
     <button class="btn danger" id="fm-excluir" type="button">Excluir</button>
   </div>
   <div class="confirm" id="fm-confirm" hidden>
@@ -1216,6 +1233,19 @@ html, body { margin: 0; }
   </div>
 </main>
 
+<div class="pdf-painel" id="pdf-painel" role="dialog" aria-modal="true" aria-labelledby="pdf-tit" hidden>
+  <div class="pdf-caixa">
+    <b id="pdf-tit">Enviar PDF</b>
+    <p id="pdf-msg" aria-live="polite"></p>
+    <div class="pdf-acoes" id="pdf-acoes" hidden>
+      <button class="btn wa" id="pdf-comp" type="button">Compartilhar PDF (WhatsApp, e-mail…)</button>
+      <button class="btn" id="pdf-baixar" type="button">Baixar PDF</button>
+      <a class="btn" id="pdf-wa" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    </div>
+    <button class="btn" id="pdf-fechar" type="button">Fechar</button>
+  </div>
+</div>
+<div class="sem-rede" id="sem-rede" role="status" hidden>Sem internet · o que você salvar fica no aparelho e é enviado quando a conexão voltar</div>
 <div id="impressao" aria-hidden="true"></div>
 
 <div class="wrap" id="app" hidden>
@@ -1322,12 +1352,15 @@ html, body { margin: 0; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, getDocs, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc as fsDoc, collection as fsCol, onSnapshot as fsSnap, updateDoc, setDoc, getDoc, getDocs, deleteDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 const fbApp = initializeApp(window.FIREBASE_CONFIG);
 const auth = getAuth(fbApp);
-const fs = getFirestore(fbApp);
+// Guarda uma cópia dos dados no aparelho: funciona sem internet e envia quando a conexão voltar
+let fs;
+try { fs = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch (_) { fs = getFirestore(fbApp); }
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 // Mesma interface usada pela página: doc(path).update/set/onSnapshot e collection(path).onSnapshot
@@ -1352,6 +1385,29 @@ const firestoreDb = {
   const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const int = new Intl.NumberFormat('pt-BR');
   const $ = (id) => document.getElementById(id);
+
+  // ----- Sem internet -----
+  // O Firestore grava na hora no aparelho, mas só "confirma" quando o servidor recebe.
+  // Sem internet não esperamos essa confirmação (a tela não fica presa em "Salvando…").
+  const SALVO_LOCAL = 'Salvo no aparelho · envia quando tiver internet';
+  function gravar(p) {
+    const r = p.then(() => 'ok'); r.catch(() => {});
+    return Promise.race([r, new Promise((res) => setTimeout(() => res('local'), navigator.onLine === false ? 0 : 8000))]);
+  }
+  // ----- Arquivos: no app Android passam pela "ponte" (compartilhar/salvar); no navegador, download normal -----
+  const PONTE = () => (window.KonegApp && typeof window.KonegApp.compartilharArquivo === 'function') ? window.KonegApp : null;
+  function blobBase64(blob) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = rej; r.readAsDataURL(blob); }); }
+  async function baixarArquivo(blob, nome, texto) {
+    const k = PONTE();
+    if (k) { k.compartilharArquivo(await blobBase64(blob), nome, blob.type || 'application/octet-stream', texto || ''); return 'app'; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    return 'download';
+  }
+  function travarPuxar(v) { try { if (window.KonegApp && window.KonegApp.travarAtualizar) window.KonegApp.travarAtualizar(!!v); } catch (_) {} }
+
+  function avisoRede() { const a = document.getElementById('sem-rede'); if (a) a.hidden = navigator.onLine !== false; }
+  window.addEventListener('online', avisoRede); window.addEventListener('offline', avisoRede); avisoRede();
 
   let db = null;
   let podeEditar = true;
@@ -1766,10 +1822,8 @@ const firestoreDb = {
         await navigator.share({ files: [file], title: 'Resumo do estoque' });
         $('rs-msg').textContent = '';
       } else {
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
-        document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-        $('rs-msg').textContent = 'Imagem baixada. Anexe no WhatsApp Web ou no app.';
+        const como = await baixarArquivo(blob, nome, 'Resumo do estoque');
+        $('rs-msg').textContent = como === 'app' ? '' : 'Imagem baixada. Anexe no WhatsApp Web ou no app.';
       }
     } catch (e) {
       $('rs-msg').textContent = e && e.name === 'AbortError' ? '' : 'Não foi possível gerar a imagem.';
@@ -2230,8 +2284,8 @@ const firestoreDb = {
         alvo.criadoEm = new Date().toISOString();
         if (ck === alvo && location.hash === `#loja-${loja.id}/novo`) history.replaceState(null, '', `#loja-${loja.id}/ck-${alvo.id}`);
       }
-      await setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null));
-      if (ck === alvo) { ckStatus('Salvo', 'ok'); $('fm-excluir').hidden = !P.admin; }
+      const r = await gravar(setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null)));
+      if (ck === alvo) { ckStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('fm-excluir').hidden = !P.admin; }
     }).catch((e) => {
       ckStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar' : 'Não foi possível salvar. Verifique a internet.', 'erro');
     });
@@ -2276,7 +2330,7 @@ const firestoreDb = {
     const img = new Image(); img.onload = () => { limparCanvas(); cx.drawImage(img, 0, 0, cv.width, cv.height); }; img.src = url;
   }
   const ponto = (ev) => { const r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) * cv.width / r.width, y: (ev.clientY - r.top) * cv.height / r.height }; };
-  cv.addEventListener('pointerdown', (ev) => { if (!ck) return; desenhando = true; ultimo = ponto(ev); cv.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+  cv.addEventListener('pointerdown', (ev) => { if (!ck) return; travarPuxar(true); desenhando = true; ultimo = ponto(ev); cv.setPointerCapture(ev.pointerId); ev.preventDefault(); });
   cv.addEventListener('pointermove', (ev) => {
     if (!desenhando) return;
     const p = ponto(ev);
@@ -2285,6 +2339,7 @@ const firestoreDb = {
     ultimo = p; assinou = true; ev.preventDefault();
   });
   const fimTraco = () => {
+    travarPuxar(false);
     if (!desenhando) return; desenhando = false;
     if (!ck || !assinou) return;
     ck.assinatura = cv.toDataURL('image/png');
@@ -2391,6 +2446,12 @@ const firestoreDb = {
     if (ckTimer) await salvarCk();
     const nome = ['Preventiva', ckLoja.nome, ck.serie, dataBR(ck.data).replace(/\//g, '-')].filter(Boolean).join(' - ');
     imprimirConteudo([montarFolha(ck, ckLoja.nome)], nome);
+  });
+  $('fm-enviar').addEventListener('click', async () => {
+    if (!ck) return;
+    if (ckTimer || !ck.id) await salvarCk();
+    const nome = ['Preventiva', ckLoja.nome, ck.serie, dataBR(ck.data).replace(/\//g, '-')].filter(Boolean).join(' - ');
+    enviarPdf(montarFolha(ck, ckLoja.nome), nome, `Olá! Segue o check list de manutenção preventiva – ${ckLoja.nome}, ${dataBR(ck.data)}${ck.serie ? ', série ' + ck.serie : ''}.`, '');
   });
   window.addEventListener('afterprint', () => { if (tituloAntes) { document.title = tituloAntes; tituloAntes = null; } });
 
@@ -2528,7 +2589,7 @@ const firestoreDb = {
   // Modo app do Check List (endereço /checklist/)
   const APP_CK = document.documentElement.classList.contains('app-ck');
   if (APP_CK) {
-    const t = document.querySelector('#tela-login h1'); if (t) t.textContent = 'Check List';
+    const t = document.querySelector('#tela-login h1'); if (t) t.textContent = 'Koneg';
     $('a-sair').addEventListener('click', () => signOut(auth));
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/checklist/sw.js', { scope: '/checklist/' }).catch(() => {});
   }
@@ -2934,8 +2995,8 @@ const firestoreDb = {
         if (ed === alvo && /^#doc-(orc|rel)-novo/.test(location.hash)) history.replaceState(null, '', `#doc-${tipo}-${alvo.id}`);
       }
       const { id, ...dados } = alvo;
-      await setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() });
-      if (ed === alvo) { edStatus('Salvo', 'ok'); $('ed-dup').hidden = false; $('ed-excluir').hidden = false; $('ed-gerarrel').hidden = tipo !== 'orc'; }
+      const r = await gravar(setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() }));
+      if (ed === alvo) { edStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('ed-dup').hidden = false; $('ed-excluir').hidden = false; $('ed-gerarrel').hidden = tipo !== 'orc'; }
     }).catch((e) => edStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
     return edFila;
   }
@@ -3259,7 +3320,7 @@ const firestoreDb = {
         $('ft-dica').textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
         try {
           const img = await reduzirFoto(f);
-          await setDoc(fsDoc(colFotos(ed.id)), { img, legenda: '', ordem: Date.now() + i });
+          await gravar(setDoc(fsDoc(colFotos(ed.id)), { img, legenda: '', ordem: Date.now() + i }));
           ok++;
         } catch (_) { edStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
@@ -3385,9 +3446,7 @@ const firestoreDb = {
       `SUMMARY:${esc(tituloLembrete(c))}`, `DESCRIPTION:${esc([c.descricao, c.obs].filter(Boolean).join(' - '))}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${esc(tituloLembrete(c))}`, 'TRIGGER:PT0M', 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-    a.download = `receber-${(c.cliente || 'conta').replace(/[^\w]+/g, '-').toLowerCase()}-${c.vencimento}.ics`;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    baixarArquivo(new Blob([ics], { type: 'text/calendar' }), `receber-${(c.cliente || 'conta').replace(/[^\w]+/g, '-').toLowerCase()}-${c.vencimento}.ics`);
   }
   let rcOrigem = null;
   function abrirConta(c) {
@@ -3504,9 +3563,11 @@ const firestoreDb = {
       doc.append(el('h2', '', '6. Situação Final'), linhasP(d.situacao));
       if (fotosImp && fotosImp.length) {
         doc.appendChild(el('h2', '', '7. Registro Fotográfico'));
-        const gr = el('div', 'fotos-imp');
-        fotosImp.forEach((f, i) => { const fg = document.createElement('figure'); const im = document.createElement('img'); im.src = f.img; im.alt = ''; fg.append(im, el('figcaption', '', `Foto ${i + 1}${f.legenda ? ' – ' + f.legenda : ''}`)); gr.appendChild(fg); });
-        doc.appendChild(gr);
+        let gr = null;
+        fotosImp.forEach((f, i) => {
+          if (i % 2 === 0) { gr = el('div', 'fotos-imp'); doc.appendChild(gr); }
+          const fg = document.createElement('figure'); const im = document.createElement('img'); im.src = f.img; im.alt = ''; fg.append(im, el('figcaption', '', `Foto ${i + 1}${f.legenda ? ' – ' + f.legenda : ''}`)); gr.appendChild(fg);
+        });
       }
       const as = el('div', 'assin2');
       const c1 = el('div', 'ln2'); c1.append(d.tecnico || EMP.assinatura, document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
@@ -3562,10 +3623,49 @@ const firestoreDb = {
         margin: [8, 8, 8, 8], image: { type: 'jpeg', quality: 0.9 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['figure', '.assin2', 'tr', 'h2'] },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.os-par', '.fotos-imp', '.assin2', 'tr', 'h2'] },
       }).from(box).outputPdf('blob');
     } finally { box.classList.remove('gerando'); box.replaceChildren(); }
   }
+  // Painel genérico: gera o PDF de um documento e oferece compartilhar / baixar / abrir o WhatsApp
+  let pdfAtual = null;
+  async function enviarPdf(no, nome, texto, fone, aoEnviar) {
+    const pn = $('pdf-painel');
+    pn.hidden = false; $('pdf-acoes').hidden = true; $('pdf-msg').textContent = 'Gerando o PDF… isso leva alguns segundos.';
+    pdfAtual = null;
+    try {
+      const blob = await gerarPdf(no);
+      const arq = (nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\- ]+/g, '').trim() || 'documento') + '.pdf';
+      pdfAtual = { blob, arq, texto, aoEnviar };
+      const tam = blob.size < 1048576 ? Math.max(1, Math.round(blob.size / 1024)) + ' KB' : (blob.size / 1048576).toFixed(1).replace('.', ',') + ' MB';
+      $('pdf-msg').textContent = `✓ PDF pronto: ${arq} (${tam})`;
+      const podeComp = !!PONTE() || !!(navigator.canShare && navigator.canShare({ files: [new File([blob], arq, { type: 'application/pdf' })] }));
+      $('pdf-comp').hidden = !podeComp;
+      $('pdf-baixar').hidden = !!PONTE();
+      const f = foneWa(fone);
+      $('pdf-wa').hidden = podeComp;
+      $('pdf-wa').href = f ? `https://wa.me/${f}?text=${encodeURIComponent(texto)}` : `https://wa.me/?text=${encodeURIComponent(texto)}`;
+      $('pdf-acoes').hidden = false;
+      if (!podeComp) $('pdf-msg').textContent += ' · Baixe o PDF e anexe na conversa do WhatsApp (clipe 📎).';
+      if (PONTE()) { await baixarArquivo(blob, arq, texto); if (aoEnviar) aoEnviar(); }
+    } catch (e) {
+      console.error('PDF:', e);
+      $('pdf-msg').textContent = 'Não foi possível gerar o PDF. Verifique a internet e tente de novo.';
+    }
+  }
+  $('pdf-fechar').addEventListener('click', () => { $('pdf-painel').hidden = true; });
+  $('pdf-painel').addEventListener('click', (e) => { if (e.target === $('pdf-painel')) $('pdf-painel').hidden = true; });
+  $('pdf-baixar').addEventListener('click', () => { if (pdfAtual) baixarArquivo(pdfAtual.blob, pdfAtual.arq); });
+  $('pdf-wa').addEventListener('click', () => { if (pdfAtual && pdfAtual.aoEnviar) pdfAtual.aoEnviar(); });
+  $('pdf-comp').addEventListener('click', async () => {
+    if (!pdfAtual) return;
+    try {
+      if (PONTE()) await baixarArquivo(pdfAtual.blob, pdfAtual.arq, pdfAtual.texto);
+      else await navigator.share({ files: [new File([pdfAtual.blob], pdfAtual.arq, { type: 'application/pdf' })], text: pdfAtual.texto, title: pdfAtual.arq });
+      if (pdfAtual.aoEnviar) pdfAtual.aoEnviar();
+    } catch (e) { if (!e || e.name !== 'AbortError') $('pdf-msg').textContent = 'O celular não deixou compartilhar. Use "Baixar PDF".'; }
+  });
+
   $('ed-whats').addEventListener('click', async () => {
     if (!ed || waGerando) return;
     if (edTimer || !ed.id) await salvarDoc();
@@ -3587,7 +3687,7 @@ const firestoreDb = {
       $('wa-texto').value = edTipo === 'orc'
         ? `Olá! Segue o orçamento nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}, no valor total de ${brl.format(totalItens(ed.itens))}. Qualquer dúvida, estou à disposição.`
         : `Olá! Segue o relatório de serviço executado nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}${ed.data ? ', referente ao serviço de ' + dataBR(ed.data) : ''}. Qualquer dúvida, estou à disposição.`;
-      const podeComp = !!(navigator.canShare && navigator.canShare({ files: [waPdf] }));
+      const podeComp = !!PONTE() || !!(navigator.canShare && navigator.canShare({ files: [waPdf] }));
       $('wa-compartilhar').hidden = !podeComp;
       $('wa-abrir').href = linkWa();
       $('wa-dica').textContent = podeComp
@@ -3603,12 +3703,15 @@ const firestoreDb = {
   $('wa-abrir').addEventListener('click', () => { marcarEnviado(); });
   $('wa-baixar').addEventListener('click', () => {
     if (!waPdf) return;
-    const a = document.createElement('a'); a.href = URL.createObjectURL(waPdf); a.download = waNome;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    baixarArquivo(waPdf, waNome);
   });
   $('wa-compartilhar').addEventListener('click', async () => {
     if (!waPdf) return;
-    try { await navigator.share({ files: [waPdf], text: $('wa-texto').value.trim(), title: waNome }); marcarEnviado(); }
+    try {
+      if (PONTE()) await baixarArquivo(waPdf, waNome, $('wa-texto').value.trim());
+      else await navigator.share({ files: [waPdf], text: $('wa-texto').value.trim(), title: waNome });
+      marcarEnviado();
+    }
     catch (e) { if (!e || e.name !== 'AbortError') $('wa-dica').textContent = 'O celular não deixou compartilhar. Use "Baixar PDF" e anexe pelo WhatsApp.'; }
   });
   $('wa-fechar').addEventListener('click', () => { $('wa-painel').hidden = true; });
@@ -3764,8 +3867,8 @@ const firestoreDb = {
         if (osEd === alvo && location.hash === '#os-novo') history.replaceState(null, '', '#os-' + alvo.id);
       }
       const { id, ...dados } = alvo;
-      await setDoc(fsDoc(fs, 'ordens', id), { ...dados, atualizadoEm: new Date().toISOString() });
-      if (osEd === alvo) { osStatus('Salvo', 'ok'); $('osf-excluir').hidden = !P.admin; if (!osFotosDe) ouvirFotosOS(id); }
+      const r = await gravar(setDoc(fsDoc(fs, 'ordens', id), { ...dados, atualizadoEm: new Date().toISOString() }));
+      if (osEd === alvo) { osStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('osf-excluir').hidden = !P.admin; if (!osFotosDe) ouvirFotosOS(id); }
     }).catch((e) => osStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
     return osFila;
   }
@@ -3811,8 +3914,35 @@ const firestoreDb = {
     corpo.append(blocoFotos('antes', 'Antes do serviço'), blocoFotos('depois', 'Depois do serviço'));
     sec.append(h, corpo);
     const secs = box.querySelectorAll('.ed-sec'); box.insertBefore(sec, secs[secs.length - 1]);
+    secs[secs.length - 1].querySelector('.ed-campos').appendChild(quadroAssinatura(osEd.assinatura, (url) => { osEd.assinatura = url; osMudou(); }));
     pintarOS();
     if (osEd.id) ouvirFotosOS(osEd.id); else desenharFotosOS();
+  }
+  // Quadro para assinar com o dedo (reutilizável)
+  function quadroAssinatura(valor, aoMudar) {
+    const w = document.createElement('div'); w.className = 'full os-ass';
+    const topo = document.createElement('div'); topo.className = 'fm-ass-topo';
+    const lb = document.createElement('span'); lb.className = 'fm-ass-lbl'; lb.textContent = 'Assinatura do responsável';
+    const limpar = document.createElement('button'); limpar.type = 'button'; limpar.className = 'btn'; limpar.textContent = 'Limpar';
+    topo.append(lb, limpar);
+    const c = document.createElement('canvas'); c.className = 'fm-ass'; c.width = 900; c.height = 300; c.setAttribute('aria-label', 'Área para o cliente assinar com o dedo');
+    const dica = document.createElement('p'); dica.className = 'fm-dica'; dica.textContent = 'Peça ao responsável do cliente para assinar com o dedo dentro do quadro.';
+    w.append(topo, c, dica);
+    const x = c.getContext('2d'); let des = false, ult = null, riscou = false;
+    const branco = () => { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); };
+    branco();
+    if (valor) { const im = new Image(); im.onload = () => { branco(); x.drawImage(im, 0, 0, c.width, c.height); }; im.src = valor; }
+    const pt = (ev) => { const r = c.getBoundingClientRect(); return { x: (ev.clientX - r.left) * c.width / r.width, y: (ev.clientY - r.top) * c.height / r.height }; };
+    c.addEventListener('pointerdown', (ev) => { travarPuxar(true); des = true; riscou = false; ult = pt(ev); c.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+    c.addEventListener('pointermove', (ev) => {
+      if (!des) return; const p = pt(ev);
+      x.strokeStyle = '#1b2a6b'; x.lineWidth = 4; x.lineCap = 'round'; x.lineJoin = 'round';
+      x.beginPath(); x.moveTo(ult.x, ult.y); x.lineTo(p.x, p.y); x.stroke(); ult = p; riscou = true; ev.preventDefault();
+    });
+    const fim = () => { travarPuxar(false); if (!des) return; des = false; if (riscou) aoMudar(c.toDataURL('image/png')); };
+    c.addEventListener('pointerup', fim); c.addEventListener('pointercancel', fim); c.addEventListener('pointerleave', fim);
+    limpar.addEventListener('click', () => { branco(); aoMudar(''); });
+    return w;
   }
   function blocoFotos(tipo, titulo) {
     const b = document.createElement('div'); b.className = 'os-bloco ' + tipo;
@@ -3834,7 +3964,7 @@ const firestoreDb = {
       const alvo = osEd.id; let ok = 0;
       for (const [i, f] of arqs.entries()) {
         $('os-dica-' + tipo).textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
-        try { const img = await reduzirFoto(f); await setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i }); ok++; }
+        try { const img = await reduzirFoto(f); await gravar(setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i })); ok++; }
         catch (_) { osStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
       const d = $('os-dica-' + tipo); if (d) d.textContent = ok ? `${ok} ${ok === 1 ? 'foto adicionada' : 'fotos adicionadas'}.` : 'Nenhuma foto foi adicionada.';
@@ -3903,25 +4033,44 @@ const firestoreDb = {
     if (antes.length || depois.length) {
       doc.appendChild(el('h2', '', '7. Registro fotográfico'));
       const fig = (f, rot, i) => { const fg = document.createElement('figure'); const im = document.createElement('img'); im.src = f.img; im.alt = ''; fg.append(im, el('figcaption', '', `${rot} ${i + 1}${f.legenda ? ' – ' + f.legenda : ''}`)); return fg; };
+      // cada linha (par de fotos) é um bloco próprio, para nunca ser cortada na troca de página
+      const linha = (...itens) => { const l = el('div', 'os-par'); l.append(...itens); return l; };
       if (antes.length && depois.length) {
-        const g = el('div', 'os-par'); g.append(el('div', 'cab', 'ANTES'), el('div', 'cab', 'DEPOIS'));
         for (let i = 0; i < Math.max(antes.length, depois.length); i++) {
-          g.appendChild(antes[i] ? fig(antes[i], 'Antes', i) : el('div', 'vazio'));
-          g.appendChild(depois[i] ? fig(depois[i], 'Depois', i) : el('div', 'vazio'));
+          const l = linha(antes[i] ? fig(antes[i], 'Antes', i) : el('div', 'vazio'), depois[i] ? fig(depois[i], 'Depois', i) : el('div', 'vazio'));
+          if (i === 0) l.prepend(el('div', 'cab', 'ANTES'), el('div', 'cab', 'DEPOIS')); // títulos presos à primeira linha
+          doc.appendChild(l);
         }
-        doc.appendChild(g);
       } else {
         const lista = antes.length ? antes : depois, rot = antes.length ? 'Antes' : 'Depois';
         doc.appendChild(el('h3', 'os-h3', antes.length ? 'Antes do serviço' : 'Depois do serviço'));
-        const g = el('div', 'os-par'); lista.forEach((f, i) => g.appendChild(fig(f, rot, i))); doc.appendChild(g);
+        for (let i = 0; i < lista.length; i += 2) doc.appendChild(linha(...lista.slice(i, i + 2).map((f, j) => fig(f, rot, i + j))));
       }
     }
     const as = el('div', 'assin2');
     const c1 = el('div', 'ln2'); c1.append(d.tecnico || ' ', document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
     const c2 = el('div', 'ln2'); c2.append(d.responsavel || ' ', document.createElement('br'), `Responsável · ${d.cliente || 'Cliente'}`);
-    as.append(c1, c2); doc.appendChild(as);
+    const col2 = el('div', 'col');
+    if (d.assinatura) { const im = document.createElement('img'); im.src = d.assinatura; im.alt = ''; im.className = 'ass-img'; col2.appendChild(im); }
+    col2.appendChild(c2);
+    const col1 = el('div', 'col'); col1.appendChild(c1);
+    as.append(col1, col2); doc.appendChild(as);
     return doc;
   }
+  async function fotosParaImprimir() {
+    if (osEd.id && osFotosDe === osEd.id) return osFotos;
+    if (!osEd.id) return [];
+    try { return (await getDocs(colFotosOS(osEd.id))).docs.map((d) => d.data()); } catch (_) { return []; }
+  }
+  $('osf-enviar').addEventListener('click', async () => {
+    if (!osEd) return;
+    if (osTimer || !osEd.id) await salvarOS();
+    await carregarEmpresa();
+    const nome = ['OS', String(osEd.numero || '').replace('/', '-'), osEd.cliente].filter(Boolean).join(' - ');
+    const texto = `Olá! Segue a ordem de serviço nº ${osEd.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}${osEd.cliente ? ' – ' + osEd.cliente : ''}, com as fotos de antes e depois do serviço.`;
+    const fone = P.admin ? (() => { const n = semAcento(String(osEd.cliente || '').trim()); const c = n && clientes.find((x) => semAcento(String(x.nome || '').trim()) === n); return c ? c.telefone || '' : ''; })() : '';
+    enviarPdf(documentoOS(osEd, await fotosParaImprimir()), nome, texto, fone);
+  });
   $('osf-imprimir').addEventListener('click', async () => {
     if (!osEd) return;
     if (osTimer || !osEd.id) await salvarOS();
@@ -3945,7 +4094,7 @@ const firestoreDb = {
   let logado = false;
   function rota() {
     if (!logado) return;
-    if (!permitido(location.hash)) history.replaceState(null, '', APP_CK ? '#checklist' : '#menu');
+    if (!permitido(location.hash)) history.replaceState(null, '', '#menu');
     $('tela-func').hidden = location.hash !== '#funcionarios';
     $('tela-admin').hidden = location.hash !== '#admin';
     {
@@ -3965,7 +4114,6 @@ const firestoreDb = {
     }
     if (location.hash === '#funcionarios') ouvirFuncionarios();
     rotaOS(location.hash);
-    if (APP_CK && !location.hash.startsWith('#loja-') && location.hash !== '#checklist' && location.hash !== '#relatorio') history.replaceState(null, '', '#checklist');
     const h = location.hash;
     const m = h.match(/^#loja-([a-z0-9-]+?)(?:\/(novo|ck-([A-Za-z0-9]+)))?$/);
     const lj = m ? LOJAS_POR_ID.get(m[1]) : null;
@@ -4026,8 +4174,7 @@ const firestoreDb = {
       const conv = (_, v) => (v && typeof v.toDate === 'function' ? { _data: v.toDate().toISOString() } : v);
       const json = JSON.stringify({ sistema: 'Painel Koneg', gerado: new Date().toISOString(), por: auth.currentUser && auth.currentUser.email, comFotos, dados }, conv, 1);
       const nome = `backup-koneg-${hojeISO()}${comFotos ? '' : '-sem-fotos'}.json`;
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-      a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      await baixarArquivo(new Blob([json], { type: 'application/json' }), nome, 'Backup do painel Koneg');
       const tam = json.length < 1048576 ? Math.max(1, Math.round(json.length / 1024)) + ' KB' : (json.length / 1048576).toFixed(1).replace('.', ',') + ' MB';
       st.textContent = `✓ ${nome} (${tam}) · ${contagem.join(' · ')}`;
     } catch (e) {
@@ -4038,6 +4185,10 @@ const firestoreDb = {
   }
   $('btn-backup').addEventListener('click', fazerBackup);
   $('dl-voltar').addEventListener('click', () => { location.hash = 'admin'; });
+  if (window.KonegApp && typeof window.KonegApp.versao === 'function') {
+    try { $('dl-versao').textContent = `Você está usando o app versão ${window.KonegApp.versao()}.`; $('dl-versao').hidden = false; } catch (_) {}
+    if (typeof window.KonegApp.procurarAtualizacao === 'function') { $('dl-atualizar').hidden = false; $('dl-atualizar').addEventListener('click', () => window.KonegApp.procurarAtualizacao()); }
+  }
   $('dl-copiar').addEventListener('click', async () => {
     const t = 'https://koneg.com.br/app';
     try { await navigator.clipboard.writeText(t); $('dl-copiado').textContent = '· copiado!'; }
@@ -4074,10 +4225,9 @@ const firestoreDb = {
     const perfil = await descobrirPerfil(u);
     if (auth.currentUser !== u) return;
     $('carregando').hidden = true;
-    if (!perfil || perfil === 'desativado' || (APP_CK && !(perfil.admin || perfil.checklist || perfil.relatorio))) {
+    if (!perfil || perfil === 'desativado') {
       $('sa-email').textContent = u.email || '';
       $('sa-txt').textContent = perfil === 'desativado' ? 'Seu acesso foi desativado. Fale com o administrador.'
-        : perfil ? 'Seu acesso não inclui o Check List. Fale com o administrador.'
         : 'Este e-mail ainda não tem acesso ao painel. Peça ao administrador para liberar.';
       $('tela-semacesso').hidden = false;
       return;
