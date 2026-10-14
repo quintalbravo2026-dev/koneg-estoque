@@ -33,8 +33,12 @@ jobs:
           SENHA: ${{ secrets.KEYSTORE_SENHA }}
         run: |
           if [ -n "$KS" ] && [ -n "$SENHA" ]; then
-            echo "$KS" | base64 -d > "$RUNNER_TEMP/koneg.jks"
+            # tolera espaços e quebras de linha que entram ao colar o texto
+            printf '%s' "$KS" | tr -d ' \r\n\t' | base64 -d > "$RUNNER_TEMP/koneg.jks" || { echo "::error::KEYSTORE_BASE64 inválido: cole de novo a linha inteira que começa com MII"; exit 1; }
+            SENHA="$(printf '%s' "$SENHA" | tr -d ' \r\n\t')"
+            keytool -list -keystore "$RUNNER_TEMP/koneg.jks" -storepass "$SENHA" >/dev/null 2>&1 || { echo "::error::A chave não abriu com a KEYSTORE_SENHA: confira se a senha e a chave são do mesmo arquivo"; exit 1; }
             echo "KONEG_KEYSTORE=$RUNNER_TEMP/koneg.jks" >> "$GITHUB_ENV"
+            echo "::add-mask::$SENHA"
             echo "KONEG_KEYSTORE_SENHA=$SENHA" >> "$GITHUB_ENV"
             echo "publicar=sim" >> "$GITHUB_OUTPUT"
           else
