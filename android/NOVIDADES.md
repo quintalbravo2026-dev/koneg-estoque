@@ -1,3 +1,4 @@
+• Visual de aplicativo: barra no topo, navegação embaixo, botão + e tela de início com resumo
 • Novo nome e ícone: Koneg
 • Menu completo conforme a permissão de cada um: Check List, Ordem de serviço e Estoque
 • Câmera e galeria para as fotos de antes e depois da Ordem de serviço
