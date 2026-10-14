@@ -8,3 +8,4 @@
 • Puxe a tela para baixo para atualizar; a tela não apaga enquanto o app está aberto
 • Atualização automática: o app avisa quando há versão nova e instala com um toque
 
+
