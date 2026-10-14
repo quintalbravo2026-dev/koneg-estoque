@@ -526,6 +526,96 @@ html, body { margin: 0; }
 .pdf-acoes { display: grid; gap: 8px; }
 .pdf-acoes[hidden] { display: none; }
 .pdf-caixa .btn { justify-content: center; text-align: center; text-decoration: none; min-height: 46px; }
+/* Busca nas listas: não esticar */
+.wrap > .search { flex: none; }
+
+/* ================= Casca de app (app Koneg) ================= */
+.appbar, .bottomnav, .fab, .inicio { display: none; }
+.app-ck { -webkit-tap-highlight-color: transparent; }
+.app-ck body { overscroll-behavior-y: none; }
+.app-ck button, .app-ck .mitem, .app-ck .bottomnav, .app-ck .appbar { -webkit-user-select: none; user-select: none; }
+.app-ck input, .app-ck textarea, .app-ck select { font-size: 16px; }
+.app-ck.casca body { padding-top: calc(60px + env(safe-area-inset-top)); }
+.app-ck.casca.com-nav body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+
+.app-ck.casca .appbar { display: flex; flex-direction: row; position: fixed; z-index: 40; top: 0; left: 0; right: 0; height: 56px; padding: env(safe-area-inset-top) 6px 0; box-sizing: content-box; align-items: center; gap: 4px; background: #16191d; color: #fff; }
+.app-ck.casca .appbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 4px; background: repeating-linear-gradient(135deg, var(--accent) 0 10px, #16191d 10px 20px); }
+.appbar[hidden], .bottomnav[hidden], .fab[hidden] { display: none !important; }
+.ab-btn { all: unset; cursor: pointer; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; flex: none; }
+.ab-btn:active { background: rgba(255,255,255,.12); }
+.ab-btn:focus-visible { outline: 2px solid var(--accent); }
+.ab-btn svg { width: 24px; height: 24px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ab-btn[hidden] { display: none; }
+.ab-logo { width: 30px; height: 30px; border-radius: 8px; margin: 0 6px 0 10px; flex: none; }
+.ab-logo[hidden] { display: none; }
+.ab-tit { flex: 1; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 4px; }
+.ab-status { font-size: 12px; color: #c9ced4; white-space: nowrap; max-width: 42%; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.ab-status[data-kind="erro"] { color: #ff9b91; }
+
+.app-ck.casca.com-nav .bottomnav { display: flex; position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; height: 64px; padding-bottom: env(safe-area-inset-bottom); background: var(--panel); border-top: 1px solid var(--line); box-shadow: 0 -2px 12px rgba(0,0,0,.06); }
+.bottomnav button { all: unset; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; font-weight: 500; color: var(--muted); position: relative; }
+.bottomnav button[hidden] { display: none; }
+.bottomnav svg { width: 24px; height: 24px; padding: 3px 16px; border-radius: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: background .18s; }
+.bottomnav button[aria-current="page"] { color: var(--fg); font-weight: 600; }
+.bottomnav button[aria-current="page"] svg { background: var(--accent); stroke: #1a1500; }
+.bottomnav button:focus-visible svg { outline: 2px solid var(--accent); }
+.bn-badge { position: absolute; top: 6px; left: calc(50% + 8px); min-width: 8px; height: 8px; border-radius: 4px; background: var(--danger); }
+
+.app-ck.casca .fab { display: inline-flex; position: fixed; z-index: 41; right: 16px; bottom: calc(80px + env(safe-area-inset-bottom)); align-items: center; gap: 8px; height: 56px; padding: 0 20px 0 16px; border: 0; border-radius: 16px; background: var(--accent); color: #1a1500; font: inherit; font-weight: 600; font-size: 15px; box-shadow: 0 6px 18px rgba(0,0,0,.22); cursor: pointer; }
+.app-ck.casca:not(.com-nav) .fab { bottom: calc(20px + env(safe-area-inset-bottom)); }
+.fab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.fab:active { transform: scale(.97); }
+.app-ck.casca.com-fab main:not([hidden]), .app-ck.casca.com-fab #app:not([hidden]) { padding-bottom: 96px; }
+
+/* O título e o "voltar" passam para a barra do topo */
+.app-ck.casca .voltar, .app-ck.casca main > header > h1, .app-ck.casca #app > header > h1,
+.app-ck.casca main > header > .eyebrow, .app-ck.casca .userbar, .app-ck.casca .ck-topo-app,
+.app-ck.casca #tela-admin .menu-wrap > div:nth-child(2), .app-ck.casca #tela-menu .topline,
+.app-ck.casca #os-novo, .app-ck.casca #lj-novo, .app-ck.casca #dc-novo, .app-ck.casca #cl-novo, .app-ck.casca #rc-novo { display: none !important; }
+.app-ck.casca main > header > .topline, .app-ck.casca #app > header > .topline, .app-ck.casca #tela-admin .menu-wrap > .topline { display: none; }
+.app-ck.casca .wrap { padding-top: 16px; gap: 14px; }
+.app-ck.casca main > header:not(:has(> :not(.topline, h1, .eyebrow))) { display: none; }
+
+/* Entrada das telas */
+@media (prefers-reduced-motion: no-preference) {
+  .app-ck.casca .entra { animation: entraTela .22s cubic-bezier(.2,.7,.3,1); }
+  .app-ck.casca .volta { animation: voltaTela .22s cubic-bezier(.2,.7,.3,1); }
+}
+@keyframes entraTela { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+@keyframes voltaTela { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+
+/* Início do app */
+.app-ck.casca #tela-menu { min-height: 0; }
+.app-ck.casca .inicio:not([hidden]) { display: block; padding: 6px 2px 0; }
+.in-ola { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 30px; line-height: 1.1; }
+.in-data { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.in-data::first-letter { text-transform: uppercase; }
+.in-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.in-resumo:empty { display: none; }
+.in-card { all: unset; box-sizing: border-box; cursor: pointer; background: #16191d; color: #fff; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.in-card b { font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.in-card span { font-size: 13px; color: #c9ced4; }
+.in-card.amarelo { background: var(--accent); color: #1a1500; }
+.in-card.amarelo span { color: #4a3d00; }
+.in-card:active { transform: scale(.98); }
+.app-ck.casca #tela-menu .menu-grid, .app-ck.casca #tela-admin .menu-grid { align-content: start; grid-template-columns: 1fr 1fr; max-width: none; gap: 10px; }
+.app-ck.casca #tela-menu .mitem, .app-ck.casca #tela-admin .mitem { grid-template-columns: 1fr; grid-template-areas: "ic" "t"; padding: 16px 14px; row-gap: 12px; border-radius: 14px; align-content: start; min-height: 112px; }
+.app-ck.casca #tela-menu .mi-d, .app-ck.casca #tela-admin .mi-d { display: none; }
+.app-ck.casca #tela-menu .mi-t, .app-ck.casca #tela-admin .mi-t { font-size: 17px; line-height: 1.2; }
+.app-ck.casca .mitem svg { width: 44px; height: 44px; border-radius: 12px; }
+.app-ck.casca .mitem:active { transform: scale(.98); }
+.app-ck.casca #tela-menu .menu-wrap, .app-ck.casca #tela-admin .menu-wrap { padding-top: 18px; }
+.app-ck.casca .sem-rede { bottom: 0; }
+.app-ck.casca.com-nav .sem-rede { bottom: calc(64px + env(safe-area-inset-bottom)); }
+
+/* Login do app: tela cheia, sem cara de cartão de site */
+.app-ck .login { align-items: stretch; padding: 0; background: #16191d; }
+.app-ck .login-card { max-width: none; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; background: #16191d; }
+.app-ck .login-topo { flex: 1; min-height: 34vh; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; background: #16191d url('/icones/app-redondo.png') center 42% / 96px 96px no-repeat; }
+.app-ck .login-corpo { background: var(--panel); border-radius: 22px 22px 0 0; padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+.app-ck .login-rodape a { display: none; }
+.app-ck .login-zebra { width: 100%; }
+
 .sem-rede { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #16191d; color: #fff; font-size: 13px; text-align: center; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 3px solid var(--accent); }
 .sem-rede[hidden] { display: none; }
 .mitem.bkp svg { background: rgba(120, 80, 20, .1); }
@@ -724,6 +814,11 @@ html, body { margin: 0; }
       <span class="eyebrow">Koneg Manutenção</span>
       <span class="userbar"><span id="m-email"></span><button class="btn" id="m-sair" type="button">Sair</button></span>
     </div>
+    <section class="inicio" id="inicio" hidden>
+      <p class="in-ola" id="in-ola">Olá</p>
+      <p class="in-data" id="in-data"></p>
+      <div class="in-resumo" id="in-resumo"></div>
+    </section>
     <button class="aviso-receber" id="aviso-receber" type="button" hidden></button>
     <nav class="menu-grid" aria-label="Menu" id="nav-menu" data-ordem="menu">
       <button class="mitem" type="button" data-go="estoque">
@@ -1233,6 +1328,27 @@ html, body { margin: 0; }
   </div>
 </main>
 
+<!-- Casca do app (só aparece no app Koneg / endereço /checklist/) -->
+<header class="appbar" id="appbar" hidden>
+  <button class="ab-btn" id="ab-voltar" type="button" aria-label="Voltar" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <img class="ab-logo" id="ab-logo" src="/icones/app-redondo.png" alt="" width="30" height="30">
+  <span class="ab-tit" id="ab-tit">Koneg</span>
+  <span class="ab-status" id="ab-status" aria-live="polite"></span>
+  <button class="ab-btn" id="ab-sair" type="button" aria-label="Sair da conta" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg>
+  </button>
+</header>
+<nav class="bottomnav" id="bottomnav" aria-label="Navegação principal" hidden>
+  <button type="button" data-tab="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Início</span></button>
+  <button type="button" data-tab="checklist"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 12l1.5 1.5 3-3"/><path d="M8.5 17l1.5 1.5 3-3"/></svg><span>Check List</span></button>
+  <button type="button" data-tab="os"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.4L4 16.8 7.2 20l5.9-5.9a3.5 3.5 0 0 0 4.4-4.6l-2.1 2.1-2.4-.6-.6-2.4z"/></svg><span>OS</span></button>
+  <button type="button" data-tab="estoque"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><span>Estoque</span></button>
+  <button type="button" data-tab="admin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Mais</span><i class="bn-badge" id="bn-badge" hidden></i></button>
+</nav>
+<button class="fab" id="fab" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span id="fab-txt">Novo</span></button>
+
 <div class="pdf-painel" id="pdf-painel" role="dialog" aria-modal="true" aria-labelledby="pdf-tit" hidden>
   <div class="pdf-caixa">
     <b id="pdf-tit">Enviar PDF</b>
@@ -1390,7 +1506,7 @@ const firestoreDb = {
   // O Firestore grava na hora no aparelho, mas só "confirma" quando o servidor recebe.
   // Sem internet não esperamos essa confirmação (a tela não fica presa em "Salvando…").
   const SALVO_LOCAL = 'Salvo no aparelho · envia quando tiver internet';
-  function gravar(p) {
+  function gravarNuvem(p) {
     const r = p.then(() => 'ok'); r.catch(() => {});
     return Promise.race([r, new Promise((res) => setTimeout(() => res('local'), navigator.onLine === false ? 0 : 8000))]);
   }
@@ -1537,7 +1653,7 @@ const firestoreDb = {
 
   function gravar(id, fn) {
     const anterior = filas.get(id) || Promise.resolve();
-    const p = anterior.catch(() => {}).then(fn);
+    const p = anterior.catch(() => {}).then(() => gravarNuvem(Promise.resolve().then(fn))); // sem internet não trava a fila
     filas.set(id, p);
     return p;
   }
@@ -2284,7 +2400,7 @@ const firestoreDb = {
         alvo.criadoEm = new Date().toISOString();
         if (ck === alvo && location.hash === `#loja-${loja.id}/novo`) history.replaceState(null, '', `#loja-${loja.id}/ck-${alvo.id}`);
       }
-      const r = await gravar(setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null)));
+      const r = await gravarNuvem(setDoc(fsDoc(fs, 'checklists', alvo.id), dadosCk.call(null)));
       if (ck === alvo) { ckStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('fm-excluir').hidden = !P.admin; }
     }).catch((e) => {
       ckStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar' : 'Não foi possível salvar. Verifique a internet.', 'erro');
@@ -2589,7 +2705,7 @@ const firestoreDb = {
   // Modo app do Check List (endereço /checklist/)
   const APP_CK = document.documentElement.classList.contains('app-ck');
   if (APP_CK) {
-    const t = document.querySelector('#tela-login h1'); if (t) t.textContent = 'Koneg';
+    const t = document.querySelector('#tela-login h1'); if (t) t.textContent = 'Entrar';
     $('a-sair').addEventListener('click', () => signOut(auth));
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/checklist/sw.js', { scope: '/checklist/' }).catch(() => {});
   }
@@ -2995,7 +3111,7 @@ const firestoreDb = {
         if (ed === alvo && /^#doc-(orc|rel)-novo/.test(location.hash)) history.replaceState(null, '', `#doc-${tipo}-${alvo.id}`);
       }
       const { id, ...dados } = alvo;
-      const r = await gravar(setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() }));
+      const r = await gravarNuvem(setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() }));
       if (ed === alvo) { edStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('ed-dup').hidden = false; $('ed-excluir').hidden = false; $('ed-gerarrel').hidden = tipo !== 'orc'; }
     }).catch((e) => edStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
     return edFila;
@@ -3320,7 +3436,7 @@ const firestoreDb = {
         $('ft-dica').textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
         try {
           const img = await reduzirFoto(f);
-          await gravar(setDoc(fsDoc(colFotos(ed.id)), { img, legenda: '', ordem: Date.now() + i }));
+          await gravarNuvem(setDoc(fsDoc(colFotos(ed.id)), { img, legenda: '', ordem: Date.now() + i }));
           ok++;
         } catch (_) { edStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
@@ -3867,7 +3983,7 @@ const firestoreDb = {
         if (osEd === alvo && location.hash === '#os-novo') history.replaceState(null, '', '#os-' + alvo.id);
       }
       const { id, ...dados } = alvo;
-      const r = await gravar(setDoc(fsDoc(fs, 'ordens', id), { ...dados, atualizadoEm: new Date().toISOString() }));
+      const r = await gravarNuvem(setDoc(fsDoc(fs, 'ordens', id), { ...dados, atualizadoEm: new Date().toISOString() }));
       if (osEd === alvo) { osStatus(r === 'ok' ? 'Salvo' : SALVO_LOCAL, 'ok'); $('osf-excluir').hidden = !P.admin; if (!osFotosDe) ouvirFotosOS(id); }
     }).catch((e) => osStatus(e && e.code === 'permission-denied' ? 'Sem permissão para salvar (confira as regras do Firestore)' : 'Não foi possível salvar. Verifique a internet.', 'erro'));
     return osFila;
@@ -3964,7 +4080,7 @@ const firestoreDb = {
       const alvo = osEd.id; let ok = 0;
       for (const [i, f] of arqs.entries()) {
         $('os-dica-' + tipo).textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
-        try { const img = await reduzirFoto(f); await gravar(setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i })); ok++; }
+        try { const img = await reduzirFoto(f); await gravarNuvem(setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i })); ok++; }
         catch (_) { osStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
       const d = $('os-dica-' + tipo); if (d) d.textContent = ok ? `${ok} ${ok === 1 ? 'foto adicionada' : 'fotos adicionadas'}.` : 'Nenhuma foto foi adicionada.';
@@ -4131,7 +4247,105 @@ const firestoreDb = {
     if (noForm) abrirForm(loja, m[3] || null);
     $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h === '#downloads' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-');
     window.scrollTo(0, 0);
+    casca();
   }
+
+  // ===== Casca de app: barra do topo, navegação de baixo, botão "+" e início =====
+  const RAIZES = { 'tela-menu': 'menu', 'tela-checklist': 'checklist', 'tela-os': 'os', app: 'estoque', 'tela-admin': 'admin' };
+  const PROFUNDO = { 'tela-form': 2, 'tela-osf': 2, 'tela-doc': 2 };
+  const FAB = { 'tela-os': ['os-novo', 'Nova OS'], 'tela-loja': ['lj-novo', 'Novo check list'], 'tela-docs': ['dc-novo', ''], 'tela-clientes': ['cl-novo', 'Novo cliente'], 'tela-receber': ['rc-novo', 'Nova conta'] };
+  let telaAtual = null, obsCasca = null;
+  function telaVisivel() {
+    return [...document.querySelectorAll('body > main, body > #app')].find((m) => !m.hidden && m.id !== 'tela-login' && m.id !== 'tela-semacesso') || null;
+  }
+  function casca() {
+    if (!APP_CK) return;
+    const raiz = document.documentElement;
+    const m = logado ? telaVisivel() : null;
+    raiz.classList.toggle('casca', !!m);
+    $('appbar').hidden = !m; $('bottomnav').hidden = !m;
+    if (!m) { raiz.classList.remove('com-nav', 'com-fab'); $('fab').hidden = true; telaAtual = null; if (obsCasca) obsCasca.disconnect(); return; }
+    const inicio = m.id === 'tela-menu';
+    // título e "voltar"
+    const h1 = m.querySelector('h1');
+    $('ab-tit').textContent = inicio ? 'Koneg' : (h1 && h1.textContent.trim()) || 'Koneg';
+    $('ab-logo').hidden = !inicio;
+    const voltar = m.querySelector('.voltar');
+    $('ab-voltar').hidden = !!RAIZES[m.id] || !voltar;
+    $('ab-sair').hidden = !inicio;
+    // status de salvamento da tela ("Salvando…", "Salvo") passa para a barra
+    const st = m.querySelector('header .status, header .fm-status');
+    const copiar = () => { $('ab-status').textContent = st ? st.textContent : ''; $('ab-status').dataset.kind = st ? st.dataset.kind || '' : ''; if (h1 && !inicio) $('ab-tit').textContent = h1.textContent.trim() || 'Koneg'; };
+    if (obsCasca) obsCasca.disconnect();
+    obsCasca = new MutationObserver(copiar);
+    if (st) obsCasca.observe(st, { childList: true, characterData: true, subtree: true, attributes: true });
+    if (h1) obsCasca.observe(h1, { childList: true, characterData: true, subtree: true });
+    copiar();
+    // navegação de baixo
+    const tab = RAIZES[m.id];
+    raiz.classList.toggle('com-nav', !!tab);
+    document.querySelectorAll('#bottomnav [data-tab]').forEach((b) => {
+      const t = b.dataset.tab;
+      const tile = t === 'menu' ? null : document.querySelector(`#nav-menu .mitem[data-go="${t}"]`);
+      b.hidden = !!tile && tile.hidden;
+      if (t === tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    $('bn-badge').hidden = $('badge-admin').hidden;
+    // botão "+" flutuante
+    const f = FAB[m.id], alvo = f && $(f[0]);
+    const temFab = !!(alvo && !alvo.hidden);
+    $('fab').hidden = !temFab; raiz.classList.toggle('com-fab', temFab);
+    if (temFab) $('fab-txt').textContent = f[1] || alvo.textContent.replace(/^\+\s*/, '');
+    // animação ao trocar de tela (para a frente ou para trás)
+    if (telaAtual !== m) {
+      const nivel = (el) => (!el ? 0 : RAIZES[el.id] ? 0 : PROFUNDO[el.id] || 1);
+      const cls = telaAtual && nivel(m) < nivel(telaAtual) ? 'volta' : 'entra';
+      if (telaAtual) { m.classList.remove('entra', 'volta'); void m.offsetWidth; m.classList.add(cls); }
+      telaAtual = m;
+      if (inicio) preencherInicio();
+    }
+  }
+  document.addEventListener('animationend', (e) => { if (e.target.classList) e.target.classList.remove('entra', 'volta'); });
+  $('ab-voltar').addEventListener('click', () => { const m = telaVisivel(); const v = m && m.querySelector('.voltar'); if (v) v.click(); else history.back(); });
+  $('ab-sair').addEventListener('click', () => signOut(auth));
+  document.querySelectorAll('#bottomnav [data-tab]').forEach((b) => b.addEventListener('click', () => {
+    const t = b.dataset.tab; if (location.hash !== '#' + t) location.hash = t; else window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+  $('fab').addEventListener('click', () => { const m = telaVisivel(); const f = m && FAB[m.id]; if (f && $(f[0])) $(f[0]).click(); });
+
+  async function preencherInicio() {
+    if (!APP_CK || !logado) return;
+    $('inicio').hidden = false;
+    const h = new Date().getHours();
+    const nome = String(await nomeDoUsuario() || '').trim().split(/\s+/)[0] || '';
+    const primeiro = nome ? nome.charAt(0).toUpperCase() + nome.slice(1).toLowerCase() : '';
+    $('in-ola').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + (primeiro ? `, ${primeiro}` : '');
+    $('in-data').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const cards = [];
+    if (podeOS()) {
+      try {
+        const n = (await getDocs(fsCol(fs, 'ordens'))).docs.filter((d) => (d.data().status || 'aberta') !== 'concluida').length;
+        cards.push(['os', 'amarelo', n, n === 1 ? 'ordem de serviço em aberto' : 'ordens de serviço em aberto']);
+      } catch (_) {}
+    }
+    if (podeCk()) {
+      try {
+        const ym = hojeISO().slice(0, 7);
+        const n = (await getDocs(query(fsCol(fs, 'checklists'), where('data', '>=', ym + '-01'), where('data', '<=', ym + '-31')))).docs.length;
+        const mes = new Date().toLocaleDateString('pt-BR', { month: 'long' });
+        cards.push(['checklist', '', n, `${n === 1 ? 'check list feito' : 'check lists feitos'} em ${mes}`]);
+      } catch (_) {}
+    }
+    if (!logado) return;
+    $('in-resumo').replaceChildren(...cards.map(([ir, cor, n, txt]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'in-card' + (cor ? ' ' + cor : '');
+      const nb = document.createElement('b'); nb.textContent = String(n);
+      const sp = document.createElement('span'); sp.textContent = txt;
+      b.append(nb, sp); b.addEventListener('click', () => { location.hash = ir; });
+      return b;
+    }));
+  }
+
   window.addEventListener('hashchange', () => { sairReordenar(); rota(); });
   document.querySelectorAll('.mitem[data-go]').forEach((b) => b.addEventListener('click', () => {
     const go = b.dataset.go;
@@ -4203,6 +4417,7 @@ const firestoreDb = {
     logado = false;
     ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-downloads', 'tela-os', 'tela-osf', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
     pararOS();
+    if (APP_CK) { $('in-resumo').replaceChildren(); $('inicio').hidden = true; casca(); }
     fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); $('bkp-status').textContent = BKP_TXT; ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
   }
   async function descobrirPerfil(u) {
