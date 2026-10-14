@@ -33,6 +33,7 @@ jobs:
           SENHA: ${{ secrets.KEYSTORE_SENHA }}
         run: |
           SENHA="$(printf '%s' "$SENHA" | tr -d ' \r\n\t')"
+          echo "::notice::KEYSTORE_SENHA tem ${#SENHA} caracteres (o certo são 24)"
           if [ -n "$SENHA" ]; then
             # 1º: a chave guardada no repositório, trancada com a senha (android/koneg.jks.enc)
             # 2º: o segredo KEYSTORE_BASE64, se existir e for válido
