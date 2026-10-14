@@ -26,6 +26,13 @@
   [headers.values]
     Content-Type = "application/manifest+json"
 
+# Link curto para baixar o aplicativo do Check List (Android): koneg.com.br/app
+[[redirects]]
+  from = "/app"
+  to = "https://github.com/quintalbravo2026-dev/koneg-estoque/releases/latest/download/checklist-koneg.apk"
+  status = 302
+  force = true
+
 # Domínio koneg.com.br: a página inicial é o site institucional; o painel fica em /painel/
 [[redirects]]
   from = "https://koneg.com.br/"
