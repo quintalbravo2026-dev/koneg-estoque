@@ -32,17 +32,20 @@ jobs:
           KS: ${{ secrets.KEYSTORE_BASE64 }}
           SENHA: ${{ secrets.KEYSTORE_SENHA }}
         run: |
-          if [ -n "$KS" ] && [ -n "$SENHA" ]; then
-            # tolera espaços e quebras de linha que entram ao colar o texto
-            printf '%s' "$KS" | tr -d ' \r\n\t' | base64 -d > "$RUNNER_TEMP/koneg.jks" || { echo "::error::KEYSTORE_BASE64 inválido: cole de novo a linha inteira que começa com MII"; exit 1; }
-            SENHA="$(printf '%s' "$SENHA" | tr -d ' \r\n\t')"
+          SENHA="$(printf '%s' "$SENHA" | tr -d ' \r\n\t')"
+          if [ -n "$SENHA" ]; then
+            # 1º: a chave guardada no repositório, trancada com a senha (android/koneg.jks.enc)
+            # 2º: o segredo KEYSTORE_BASE64, se existir e for válido
+            if ! openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in android/koneg.jks.enc -out "$RUNNER_TEMP/koneg.jks" -pass env:SENHA 2>/dev/null; then
+              printf '%s' "$KS" | tr -d ' \r\n\t' | base64 -d > "$RUNNER_TEMP/koneg.jks" 2>/dev/null || { echo "::error::Não consegui abrir a chave: confira o segredo KEYSTORE_SENHA (só a senha de 24 caracteres)"; exit 1; }
+            fi
             keytool -list -keystore "$RUNNER_TEMP/koneg.jks" -storepass "$SENHA" >/dev/null 2>&1 || { echo "::error::A chave não abriu com a KEYSTORE_SENHA: confira se a senha e a chave são do mesmo arquivo"; exit 1; }
             echo "KONEG_KEYSTORE=$RUNNER_TEMP/koneg.jks" >> "$GITHUB_ENV"
             echo "::add-mask::$SENHA"
             echo "KONEG_KEYSTORE_SENHA=$SENHA" >> "$GITHUB_ENV"
             echo "publicar=sim" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::Segredos KEYSTORE_BASE64/KEYSTORE_SENHA ausentes: compilando só para teste, sem publicar."
+            echo "::warning::Segredo KEYSTORE_SENHA ausente: compilando só para teste, sem publicar."
             keytool -genkeypair -keystore "$RUNNER_TEMP/teste.jks" -alias koneg -keyalg RSA -keysize 2048 -validity 1 \
               -storepass teste123 -keypass teste123 -dname "CN=Teste" >/dev/null
             echo "KONEG_KEYSTORE=$RUNNER_TEMP/teste.jks" >> "$GITHUB_ENV"
