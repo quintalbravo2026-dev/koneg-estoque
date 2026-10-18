@@ -3525,22 +3525,100 @@ const firestoreDb = {
     }, () => {});
   }
   function pararFotosRel() { if (pararFotos) { pararFotos(); pararFotos = null; } fotos = []; fotosDe = null; }
-  function reduzirFoto(file) {
-    return new Promise((res, rej) => {
-      const url = URL.createObjectURL(file); const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const max = 1280; let w = img.naturalWidth, h = img.naturalHeight;
-        if (Math.max(w, h) > max) { const r = max / Math.max(w, h); w = Math.round(w * r); h = Math.round(h * r); }
-        const c = document.createElement('canvas'); c.width = w; c.height = h;
-        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
-        let q = 0.72, d = c.toDataURL('image/jpeg', q);
-        while (d.length > 700000 && q > 0.35) { q -= 0.1; d = c.toDataURL('image/jpeg', q); }
-        res(d);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('imagem')); };
-      img.src = url;
+  // ----- Carimbo nas fotos: data/hora, local e identificação do serviço -----
+  // Lê a data e o GPS que a câmera grava dentro da foto (EXIF), para o carimbo ser verdadeiro
+  function lerExif(buf) {
+    try {
+      const v = new DataView(buf);
+      if (v.getUint16(0) !== 0xFFD8) return {};
+      let o = 2;
+      while (o < v.byteLength - 10) {
+        const mk = v.getUint16(o), len = v.getUint16(o + 2);
+        if (mk === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) return lerTiff(v, o + 10);
+        if ((mk & 0xFF00) !== 0xFF00 || mk === 0xFFDA) break;
+        o += 2 + len;
+      }
+    } catch (_) {}
+    return {};
+  }
+  function lerTiff(v, t) {
+    const le = v.getUint16(t) === 0x4949;
+    const u16 = (p) => v.getUint16(p, le), u32 = (p) => v.getUint32(p, le);
+    const ifd = (p) => { const n = u16(p), m = {}; for (let i = 0; i < n; i++) { const e = p + 2 + i * 12; m[u16(e)] = { n: u32(e + 4), val: e + 8 }; } return m; };
+    const txt = (en) => { const off = en.n > 4 ? t + u32(en.val) : en.val; let s2 = ''; for (let i = 0; i < en.n - 1; i++) s2 += String.fromCharCode(v.getUint8(off + i)); return s2; };
+    const rac = (off) => u32(off) / (u32(off + 4) || 1);
+    const r = {};
+    const i0 = ifd(t + u32(t + 4));
+    if (i0[0x8769]) { const ex = ifd(t + u32(i0[0x8769].val)); const d = ex[0x9003] || ex[0x9004]; if (d) r.data = txt(d); }
+    if (!r.data && i0[0x0132]) r.data = txt(i0[0x0132]);
+    if (i0[0x8825]) {
+      const g = ifd(t + u32(i0[0x8825].val));
+      if (g[2] && g[4]) {
+        const grau = (en) => { const off = t + u32(en.val); return rac(off) + rac(off + 8) / 60 + rac(off + 16) / 3600; };
+        let lat = grau(g[2]), lng = grau(g[4]);
+        if (g[1] && String.fromCharCode(v.getUint8(g[1].val)) === 'S') lat = -lat;
+        if (g[3] && String.fromCharCode(v.getUint8(g[3].val)) === 'W') lng = -lng;
+        if (lat || lng) { r.lat = +lat.toFixed(6); r.lng = +lng.toFixed(6); }
+      }
+    }
+    return r;
+  }
+  const exifData = (t) => { const m = String(t || '').match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?/); return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)) : null; };
+  let logoCarimbo = null;
+  function carregarLogoCarimbo() {
+    if (logoCarimbo) return logoCarimbo;
+    logoCarimbo = new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = '/icones/app-redondo.png'; });
+    return logoCarimbo;
+  }
+  // Decide data e local de cada foto: da própria foto (EXIF); se foi tirada agora, usa a hora e o GPS do celular
+  async function dadosDaFoto(file, localAgora) {
+    let ex = {};
+    try { ex = lerExif(await file.slice(0, 256 * 1024).arrayBuffer()); } catch (_) {}
+    const recente = Date.now() - (file.lastModified || 0) < 15 * 60 * 1000;
+    const quando = exifData(ex.data) || (recente ? new Date() : new Date(file.lastModified || Date.now()));
+    const local = ex.lat != null ? { lat: ex.lat, lng: ex.lng } : (recente && localAgora ? localAgora : null);
+    return { quando, local, daCamera: !!ex.data || recente };
+  }
+  function desenharCarimbo(x, w, h, logo, d, texto) {
+    const base = Math.max(14, Math.round(Math.min(w, h) * 0.034));
+    const pad = Math.round(base * 0.8), alt = Math.round(base * 3.9) + pad;
+    const y0 = h - alt;
+    x.fillStyle = 'rgba(16, 18, 21, .72)'; x.fillRect(0, y0, w, alt);
+    // faixa amarela e preta (marca Koneg)
+    const fx = Math.max(3, Math.round(base * 0.28));
+    x.save(); x.beginPath(); x.rect(0, y0 - fx, w, fx); x.clip();
+    for (let i = -fx * 2; i < w + fx * 2; i += fx * 4) { x.fillStyle = '#f2b705'; x.beginPath(); x.moveTo(i, y0); x.lineTo(i + fx * 2, y0); x.lineTo(i + fx * 3, y0 - fx); x.lineTo(i + fx, y0 - fx); x.fill(); }
+    x.restore();
+    let tx = pad;
+    if (logo) { const ls = alt - pad * 2; x.drawImage(logo, pad, y0 + pad, ls, ls); tx = pad * 2 + ls; }
+    const quando = d.quando.toLocaleDateString('pt-BR') + ' ' + d.quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const onde = d.local ? `${d.local.lat.toFixed(5)}, ${d.local.lng.toFixed(5)}${d.local.prec ? ` (±${d.local.prec} m)` : ''}` : 'Local não registrado';
+    x.textBaseline = 'top'; x.fillStyle = '#fff';
+    x.font = `700 ${Math.round(base * 1.15)}px "IBM Plex Sans", Arial, sans-serif`; x.fillText(quando, tx, y0 + pad * 0.7, w - tx - pad);
+    x.font = `500 ${base}px "IBM Plex Sans", Arial, sans-serif`; x.fillStyle = '#e4e7ea';
+    x.fillText(onde, tx, y0 + pad * 0.7 + base * 1.35, w - tx - pad);
+    x.fillStyle = '#f2b705'; x.font = `600 ${base}px "IBM Plex Sans", Arial, sans-serif`;
+    x.fillText(texto || 'Koneg Manutenção', tx, y0 + pad * 0.7 + base * 2.6, w - tx - pad);
+  }
+  // Reduz a foto (e carimba, se pedido). Sem carimbo devolve o texto da imagem; com carimbo, { img, meta }
+  async function reduzirFoto(file, carimbo) {
+    const d = carimbo ? await dadosDaFoto(file, carimbo.local) : null;
+    const logo = carimbo ? await carregarLogoCarimbo() : null;
+    const img = await new Promise((res, rej) => {
+      const url = URL.createObjectURL(file); const im = new Image();
+      im.onload = () => { URL.revokeObjectURL(url); res(im); };
+      im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('imagem')); };
+      im.src = url;
     });
+    const max = 1280; let w = img.naturalWidth, h = img.naturalHeight;
+    if (Math.max(w, h) > max) { const r = max / Math.max(w, h); w = Math.round(w * r); h = Math.round(h * r); }
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
+    if (d) desenharCarimbo(x, w, h, logo, d, carimbo.texto);
+    let q = 0.72, d2 = c.toDataURL('image/jpeg', q);
+    while (d2.length > 700000 && q > 0.35) { q -= 0.1; d2 = c.toDataURL('image/jpeg', q); }
+    if (!d) return d2;
+    return { img: d2, meta: { tiradaEm: d.quando.toISOString(), ...(d.local ? { lat: d.local.lat, lng: d.local.lng } : {}) } };
   }
   function editorFotos(box) {
     fotosBox = box;
@@ -3560,11 +3638,14 @@ const firestoreDb = {
       if (!ed.id) return;
       ouvirFotos(ed.id);
       let ok = 0;
+      $('ft-dica').textContent = 'Preparando…';
+      const local = arqs.some((f) => Date.now() - (f.lastModified || 0) < 15 * 60 * 1000) ? await pegarLocal() : null;
+      const texto = ['Koneg', ed.numero ? `Relatório ${ed.numero}` : '', ed.cliente].filter(Boolean).join(' · ');
       for (const [i, f] of arqs.entries()) {
         $('ft-dica').textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
         try {
-          const img = await reduzirFoto(f);
-          await gravarNuvem(setDoc(fsDoc(colFotos(ed.id)), { img, legenda: '', ordem: Date.now() + i }));
+          const r = await reduzirFoto(f, { local, texto });
+          await gravarNuvem(setDoc(fsDoc(colFotos(ed.id)), { img: r.img, ...r.meta, legenda: '', ordem: Date.now() + i }));
           ok++;
         } catch (_) { edStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
@@ -4385,9 +4466,12 @@ const firestoreDb = {
       if (!osEd || !osEd.id) return;
       ouvirFotosOS(osEd.id);
       const alvo = osEd.id; let ok = 0;
+      $('os-dica-' + tipo).textContent = 'Pegando a localização…';
+      const local = arqs.some((f) => Date.now() - (f.lastModified || 0) < 15 * 60 * 1000) ? await pegarLocal() : null;
+      const texto = ['Koneg', `OS ${osEd.numero || ''}`.trim(), tipo === 'antes' ? 'ANTES' : 'DEPOIS', osEd.cliente].filter(Boolean).join(' · ');
       for (const [i, f] of arqs.entries()) {
         $('os-dica-' + tipo).textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
-        try { const img = await reduzirFoto(f); await gravarNuvem(setDoc(fsDoc(colFotosOS(alvo)), { tipo, img, legenda: '', ordem: Date.now() + i })); ok++; }
+        try { const r = await reduzirFoto(f, { local, texto }); await gravarNuvem(setDoc(fsDoc(colFotosOS(alvo)), { tipo, img: r.img, ...r.meta, legenda: '', ordem: Date.now() + i })); ok++; }
         catch (_) { osStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
       }
       const d = $('os-dica-' + tipo); if (d) d.textContent = ok ? `${ok} ${ok === 1 ? 'foto adicionada' : 'fotos adicionadas'}.` : 'Nenhuma foto foi adicionada.';
