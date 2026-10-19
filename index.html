@@ -779,8 +779,6 @@ html, body { margin: 0; }
 #impressao .doc.coop > table.it { width: calc(100% - 20mm); }
 #impressao .doc.coop h2.cp-h2 { color: #002746; font-family: Arial, Helvetica, sans-serif; font-size: 12pt; margin: 5mm 10mm 1.5mm; padding-left: 2.5mm; border-left: 1.6mm solid #dd3b46; }
 #impressao .doc.coop table.it tr:first-child td { background: #002746; color: #fff; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-#impressao .doc.coop .cp-rod { margin: 8mm 10mm 0; padding-top: 2mm; border-top: .7pt solid #002746; display: flex; align-items: center; gap: 3mm; font-size: 8.5pt; color: #3d4b59; }
-#impressao .doc.coop .cp-rod img { height: 9mm; width: auto; }
 .mitem .mi-logo { grid-area: ic; width: 40px; height: 40px; object-fit: contain; background: #fff; border-radius: 10px; padding: 4px; box-sizing: border-box; }
 .app-ck.casca .mitem .mi-logo { width: 44px; height: 44px; border-radius: 12px; }
 #impressao .doc .fotos-imp { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 3mm; break-inside: avoid; page-break-inside: avoid; }
@@ -3116,8 +3114,8 @@ const firestoreDb = {
     campos: [
       ['g', 'Identificação'],
       ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'], ['periodo', 'text', 'Horário (início e fim)'],
-      ['chamado', 'text', 'Nº do chamado / OS da Coop'],
-      ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'], ['setor', 'text', 'Setor / local na loja'], ['solicitante', 'text', 'Solicitante (Coop)'],
+      ['chamado', 'text', 'Nº da OS'],
+      ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'], ['setor', 'text', 'Setor / local na loja'],
       ['g', '2. Equipamento'], ['equipamento', 'area', 'Equipamento atendido (modelo, série, patrimônio)', 'full'],
       ['g', '3. Serviços Executados'], ['servicos', 'lista', 'Serviços (um por linha)', 'full'],
       ['g', '4. Peças e Materiais'], ['pecas', 'pecas', 'Peças', 'full'],
@@ -3128,10 +3126,10 @@ const firestoreDb = {
     ],
     padrao: () => ({
       numero: '', data: hojeISO(), periodo: '', chamado: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
-      lojaId: '', loja: '', cidade: '', cliente: '', setor: '', solicitante: '',
+      lojaId: '', loja: '', cidade: '', cliente: '', setor: '',
       equipamento: '', servicos: '', pecas: [], observacoes: '',
       situacao: 'Equipamento testado e liberado em pleno funcionamento.',
-      tecnico: 'Kayowan Macedo Anchieta', responsavel: '',
+      tecnico: '', responsavel: '',
     }),
   };
   DOCS.rel.fotos = true;
@@ -3338,6 +3336,7 @@ const firestoreDb = {
           delete base.criadoEm; delete base.atualizadoEm;
         }
         base.numero = proximoNumero(await listaAtual(tipo), base.data);
+        if (tipo === 'coop') base.tecnico = nomeBonito(await nomeDoUsuario());
         ed = { id: null, ...base };
       } else {
         const s = await getDoc(fsDoc(fs, T.col, arg));
@@ -3627,11 +3626,12 @@ const firestoreDb = {
     return r;
   }
   const exifData = (t) => { const m = String(t || '').match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?/); return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)) : null; };
-  let logoCarimbo = null;
-  function carregarLogoCarimbo() {
-    if (logoCarimbo) return logoCarimbo;
-    logoCarimbo = new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = '/icones/app-redondo.png'; });
-    return logoCarimbo;
+  const logosCarimbo = {};
+  function carregarLogoCarimbo(src) {
+    src = src || '/icones/app-redondo.png';
+    if (logosCarimbo[src]) return logosCarimbo[src];
+    logosCarimbo[src] = new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+    return logosCarimbo[src];
   }
   // Decide data e local de cada foto: da própria foto (EXIF); se foi tirada agora, usa a hora e o GPS do celular
   async function dadosDaFoto(file, localAgora) {
@@ -3642,31 +3642,37 @@ const firestoreDb = {
     const local = ex.lat != null ? { lat: ex.lat, lng: ex.lng } : (recente && localAgora ? localAgora : null);
     return { quando, local, daCamera: !!ex.data || recente };
   }
-  function desenharCarimbo(x, w, h, logo, d, texto) {
+  function desenharCarimbo(x, w, h, logo, d, texto, tema) {
+    const coop = tema === 'coop';
     const base = Math.max(14, Math.round(Math.min(w, h) * 0.034));
     const pad = Math.round(base * 0.8), alt = Math.round(base * 3.9) + pad;
     const y0 = h - alt;
-    x.fillStyle = 'rgba(16, 18, 21, .72)'; x.fillRect(0, y0, w, alt);
+    x.fillStyle = coop ? 'rgba(0, 39, 70, .85)' : 'rgba(16, 18, 21, .72)'; x.fillRect(0, y0, w, alt);
     // faixa amarela e preta (marca Koneg)
     const fx = Math.max(3, Math.round(base * 0.28));
     x.save(); x.beginPath(); x.rect(0, y0 - fx, w, fx); x.clip();
-    for (let i = -fx * 2; i < w + fx * 2; i += fx * 4) { x.fillStyle = '#f2b705'; x.beginPath(); x.moveTo(i, y0); x.lineTo(i + fx * 2, y0); x.lineTo(i + fx * 3, y0 - fx); x.lineTo(i + fx, y0 - fx); x.fill(); }
+    if (coop) { x.fillStyle = '#dd3b46'; x.fillRect(0, y0 - fx, w, fx); }
+    else for (let i = -fx * 2; i < w + fx * 2; i += fx * 4) { x.fillStyle = '#f2b705'; x.beginPath(); x.moveTo(i, y0); x.lineTo(i + fx * 2, y0); x.lineTo(i + fx * 3, y0 - fx); x.lineTo(i + fx, y0 - fx); x.fill(); }
     x.restore();
     let tx = pad;
-    if (logo) { const ls = alt - pad * 2; x.drawImage(logo, pad, y0 + pad, ls, ls); tx = pad * 2 + ls; }
+    if (logo) {
+      const lh = alt - pad * 2, lw = Math.round(lh * (logo.naturalWidth || 1) / (logo.naturalHeight || 1));
+      x.fillStyle = '#fff'; x.fillRect(pad - 2, y0 + pad - 2, lw + 4, lh + 4);
+      x.drawImage(logo, pad, y0 + pad, lw, lh); tx = pad * 2 + lw;
+    }
     const quando = d.quando.toLocaleDateString('pt-BR') + ' ' + d.quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const onde = d.local ? `${d.local.lat.toFixed(5)}, ${d.local.lng.toFixed(5)}${d.local.prec ? ` (±${d.local.prec} m)` : ''}` : 'Local não registrado';
     x.textBaseline = 'top'; x.fillStyle = '#fff';
     x.font = `700 ${Math.round(base * 1.15)}px "IBM Plex Sans", Arial, sans-serif`; x.fillText(quando, tx, y0 + pad * 0.7, w - tx - pad);
     x.font = `500 ${base}px "IBM Plex Sans", Arial, sans-serif`; x.fillStyle = '#e4e7ea';
     x.fillText(onde, tx, y0 + pad * 0.7 + base * 1.35, w - tx - pad);
-    x.fillStyle = '#f2b705'; x.font = `600 ${base}px "IBM Plex Sans", Arial, sans-serif`;
+    x.fillStyle = coop ? '#ffffff' : '#f2b705'; x.font = `600 ${base}px "IBM Plex Sans", Arial, sans-serif`;
     x.fillText(texto || 'Koneg Manutenção', tx, y0 + pad * 0.7 + base * 2.6, w - tx - pad);
   }
   // Reduz a foto (e carimba, se pedido). Sem carimbo devolve o texto da imagem; com carimbo, { img, meta }
   async function reduzirFoto(file, carimbo) {
     const d = carimbo ? await dadosDaFoto(file, carimbo.local) : null;
-    const logo = carimbo ? await carregarLogoCarimbo() : null;
+    const logo = carimbo ? await carregarLogoCarimbo(carimbo.logo) : null;
     const img = await new Promise((res, rej) => {
       const url = URL.createObjectURL(file); const im = new Image();
       im.onload = () => { URL.revokeObjectURL(url); res(im); };
@@ -3677,7 +3683,7 @@ const firestoreDb = {
     if (Math.max(w, h) > max) { const r = max / Math.max(w, h); w = Math.round(w * r); h = Math.round(h * r); }
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
-    if (d) desenharCarimbo(x, w, h, logo, d, carimbo.texto);
+    if (d) desenharCarimbo(x, w, h, logo, d, carimbo.texto, carimbo.tema);
     let q = 0.72, d2 = c.toDataURL('image/jpeg', q);
     while (d2.length > 700000 && q > 0.35) { q -= 0.1; d2 = c.toDataURL('image/jpeg', q); }
     if (!d) return d2;
@@ -3703,11 +3709,12 @@ const firestoreDb = {
       let ok = 0;
       $('ft-dica').textContent = 'Preparando…';
       const local = arqs.some((f) => Date.now() - (f.lastModified || 0) < 15 * 60 * 1000) ? await pegarLocal() : null;
-      const texto = ['Koneg', ed.numero ? `Relatório ${ed.numero}` : '', ed.cliente].filter(Boolean).join(' · ');
+      const coop = edTipo === 'coop';
+      const texto = [coop ? 'Coop' : 'Koneg', ed.numero ? `Relatório ${ed.numero}` : '', coop ? ed.loja : ed.cliente].filter(Boolean).join(' · ');
       for (const [i, f] of arqs.entries()) {
         $('ft-dica').textContent = `Enviando foto ${i + 1} de ${arqs.length}…`;
         try {
-          const r = await reduzirFoto(f, { local, texto });
+          const r = await reduzirFoto(f, { local, texto, logo: coop ? '/icones/coop-logo.png' : null, tema: coop ? 'coop' : '' });
           await gravarNuvem(setDoc(fsDoc(colFotos(ed.id)), { img: r.img, ...r.meta, legenda: '', ordem: Date.now() + i }));
           ok++;
         } catch (_) { edStatus('Uma das fotos não pôde ser enviada.', 'erro'); }
@@ -3927,6 +3934,8 @@ const firestoreDb = {
     if (comValor) { const tr = document.createElement('tr'); tr.append(el('td', '', ''), el('td', '', ''), el('td', '', 'TOTAL:'), el('td', '', brl.format(totalItens(itens)))); t.appendChild(tr); }
     return t;
   }
+  // "KAYOWAN MACEDO ANCHIETA" -> "Kayowan Macedo Anchieta"
+  const nomeBonito = (t) => String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/ (Da|De|Do|Das|Dos|E) /g, (m) => m.toLowerCase());
   function documentoCoop(d, fotosImp) {
     const doc = el('div', 'folha doc coop');
     const topo = el('div', 'cp-topo');
@@ -3935,7 +3944,7 @@ const firestoreDb = {
     topo.append(logo, tt); doc.appendChild(topo);
     doc.appendChild(el('div', 'cp-faixa'));
     const meta = el('div', 'cp-meta');
-    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['Chamado / OS Coop', d.chamado], ['Horário', d.periodo], ['Solicitante', d.solicitante], ['Prestador', `${EMP.nome} · CNPJ ${EMP.cnpj}`]]
+    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['OS', d.chamado], ['Horário', d.periodo]]
       .forEach(([k, v]) => { const c = el('div', 'cp-cel'); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
     doc.appendChild(meta);
     const sec = (n, t) => doc.appendChild(el('h2', 'cp-h2', `${n}. ${t}`));
@@ -3953,13 +3962,9 @@ const firestoreDb = {
       });
     }
     const as = el('div', 'assin2');
-    const c1 = el('div', 'ln2'); c1.append(d.tecnico || EMP.assinatura, document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
+    const c1 = el('div', 'ln2'); c1.append(d.tecnico || ' ', document.createElement('br'), 'Técnico responsável');
     const c2 = el('div', 'ln2'); c2.append(d.responsavel || ' ', document.createElement('br'), `Responsável da loja · ${d.loja || 'Coop'}`);
     as.append(c1, c2); doc.appendChild(as);
-    const rod = el('div', 'cp-rod');
-    const kl = document.createElement('img'); kl.src = '/icones/logo-koneg.png'; kl.alt = ''; 
-    rod.append(kl, el('span', '', `Serviço executado por ${EMP.nome} · ${EMP.contato} · ${EMP.site}`));
-    doc.appendChild(rod);
     return doc;
   }
   function montarDocumento(tipo, d, fotosImp) {
@@ -4108,7 +4113,9 @@ const firestoreDb = {
       const tam = blob.size < 1048576 ? Math.max(1, Math.round(blob.size / 1024)) + ' KB' : (blob.size / 1048576).toFixed(1).replace('.', ',') + ' MB';
       $('wa-msg').textContent = `✓ PDF pronto: ${waNome} (${tam})`;
       $('wa-fone').value = $('wa-fone').value || foneDoCliente(ed.cliente);
-      $('wa-texto').value = edTipo === 'orc'
+      $('wa-texto').value = edTipo === 'coop'
+        ? `Olá! Segue o relatório de serviço executado nº ${ed.numero || ''}${ed.loja ? ' – ' + ed.loja : ''}${ed.data ? ', ' + dataBR(ed.data) : ''}.`
+        : edTipo === 'orc'
         ? `Olá! Segue o orçamento nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}, no valor total de ${brl.format(totalItens(ed.itens))}. Qualquer dúvida, estou à disposição.`
         : `Olá! Segue o relatório de serviço executado nº ${ed.numero || ''} da ${EMP.nome || 'Koneg Manutenção'}${ed.data ? ', referente ao serviço de ' + dataBR(ed.data) : ''}. Qualquer dúvida, estou à disposição.`;
       const podeComp = !!PONTE() || !!(navigator.canShare && navigator.canShare({ files: [waPdf] }));
