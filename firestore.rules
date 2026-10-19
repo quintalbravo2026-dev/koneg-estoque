@@ -51,9 +51,10 @@ service cloud.firestore {
       }
     }
     match /servicoscoop/{id} {
-      allow read, write: if admin();
+      allow read, create, update: if pode('coop');
+      allow delete: if admin();
       match /fotos/{foto} {
-        allow read, write: if admin();
+        allow read, write: if pode('coop');
       }
     }
     match /receber/{id} {
