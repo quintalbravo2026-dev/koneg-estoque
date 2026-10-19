@@ -772,7 +772,9 @@ html, body { margin: 0; }
 #impressao .doc.coop .cp-faixa { height: 2.2mm; background: #dd3b46; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 #impressao .doc.coop .cp-meta { display: grid; grid-template-columns: 1fr 1fr; margin: 5mm 10mm 2mm; border: .7pt solid #c9d2db; border-radius: 2mm; overflow: hidden; }
 #impressao .doc.coop .cp-cel { padding: 2mm 3mm; border-bottom: .5pt solid #e1e6eb; display: flex; flex-direction: column; gap: .5mm; }
-#impressao .doc.coop .cp-cel:nth-child(odd) { border-right: .5pt solid #e1e6eb; }
+#impressao .doc.coop .cp-cel.cp-larga { grid-column: 1 / -1; }
+#impressao .doc.coop .cp-cel:nth-child(2) { border-right: .5pt solid #e1e6eb; }
+#impressao .doc.coop .cp-cel:nth-child(n+2) { border-bottom: 0; }
 #impressao .doc.coop .cp-cel span { font-size: 8pt; color: #5b6b7b; text-transform: uppercase; letter-spacing: .4pt; }
 #impressao .doc.coop .cp-cel b { font-size: 10.5pt; color: #002746; }
 #impressao .doc.coop > p, #impressao .doc.coop > .bul, #impressao .doc.coop > table, #impressao .doc.coop > .fotos-imp, #impressao .doc.coop > .assin2 { margin-left: 10mm; margin-right: 10mm; }
@@ -2229,6 +2231,7 @@ const firestoreDb = {
     pararLojas = fsSnap(fsCol(fs, 'lojas'), (snap) => {
       LOJAS = snap.docs.map((d) => { const v = d.data(); return { id: d.id, nome: String(v.nome || d.id), cidade: String(v.cidade || 'Outras'), ordem: Number(v.ordem) || 0 }; });
       LOJAS_POR_ID.clear(); LOJAS.forEach((l) => LOJAS_POR_ID.set(l.id, { nome: l.nome, cidade: l.cidade }));
+      encherSelectLoja();
       lojasCarregadas = true; desenharLojas();
       if (!$('tela-relatorio').hidden) { desenharRelLojas(); desenharPrevia(); }
       if (rotaPendente) { rotaPendente = false; rota(); }
@@ -3113,26 +3116,38 @@ const firestoreDb = {
     col: 'servicoscoop', nome: 'Serviço executado COOP', plural: 'Serviços executados COOP', novo: 'Novo serviço COOP', lista: 'servicoscoop', fotos: true,
     campos: [
       ['g', 'Identificação'],
-      ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'], ['periodo', 'text', 'Horário (início e fim)'],
+      ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'],
       ['chamado', 'text', 'Nº da OS'],
       ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'], ['setor', 'text', 'Setor / local na loja'],
       ['g', '2. Equipamento'], ['equipamento', 'area', 'Equipamento atendido (modelo, série, patrimônio)', 'full'],
       ['g', '3. Serviços Executados'], ['servicos', 'lista', 'Serviços (um por linha)', 'full'],
-      ['g', '4. Peças e Materiais'], ['pecas', 'pecas', 'Peças', 'full'],
-      ['g', '5. Observações e Recomendações'], ['observacoes', 'area', 'Texto', 'full'],
-      ['g', '6. Situação Final'], ['situacao', 'area', 'Texto', 'full'],
-      ['g', '7. Registro Fotográfico'], ['fotos', 'fotos', 'Fotos', 'full'],
+      ['g', '4. Observações e Recomendações'], ['observacoes', 'area', 'Texto', 'full'],
+      ['g', '5. Situação Final'], ['situacao', 'area', 'Texto', 'full'],
+      ['g', '6. Registro Fotográfico'], ['fotos', 'fotos', 'Fotos', 'full'],
       ['g', 'Assinaturas'], ['tecnico', 'text', 'Técnico responsável'], ['responsavel', 'text', 'Responsável da loja'],
     ],
     padrao: () => ({
-      numero: '', data: hojeISO(), periodo: '', chamado: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
+      numero: '', data: hojeISO(), chamado: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
       lojaId: '', loja: '', cidade: '', cliente: '', setor: '',
-      equipamento: '', servicos: '', pecas: [], observacoes: '',
+      equipamento: '', servicos: '', observacoes: '',
       situacao: 'Equipamento testado e liberado em pleno funcionamento.',
       tecnico: '', responsavel: '',
     }),
   };
   DOCS.rel.fotos = true;
+  // Lista de lojas cadastradas (as mesmas do Check List), agrupadas por cidade
+  function encherSelectLoja(sel) {
+    sel = sel || $('ed-lojaId'); if (!sel || !sel._obj) return;
+    const obj = sel._obj;
+    sel.replaceChildren(new Option(LOJAS.length ? 'Escolha a loja…' : 'Carregando as lojas…', ''));
+    const porCidade = new Map();
+    [...LOJAS].sort((a, b) => a.cidade.localeCompare(b.cidade, 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR')).forEach((l) => {
+      if (!porCidade.has(l.cidade)) { const g = document.createElement('optgroup'); g.label = l.cidade; porCidade.set(l.cidade, g); sel.appendChild(g); }
+      porCidade.get(l.cidade).appendChild(new Option(l.nome, l.id));
+    });
+    if (obj.lojaId && !LOJAS_POR_ID.get(obj.lojaId)) sel.appendChild(new Option(obj.loja || obj.lojaId, obj.lojaId));
+    sel.value = obj.lojaId || '';
+  }
 
   const dataLonga = (iso) => {
     if (!iso) return '';
@@ -3263,10 +3278,7 @@ const firestoreDb = {
         const lb = document.createElement('label'); lb.className = 'fld full'; lb.htmlFor = 'ed-lojaId';
         const sp = document.createElement('span'); sp.textContent = def[2];
         const sel = document.createElement('select'); sel.id = 'ed-lojaId'; sel.className = 'eqf-sel';
-        sel.appendChild(new Option(LOJAS.length ? 'Escolha a loja…' : 'Abra o Check List uma vez para carregar as lojas', ''));
-        [...LOJAS].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).forEach((l) => sel.appendChild(new Option(`${l.nome} – ${l.cidade}`, l.id)));
-        if (obj.lojaId && !LOJAS_POR_ID.get(obj.lojaId)) sel.appendChild(new Option(obj.loja || obj.lojaId, obj.lojaId));
-        sel.value = obj.lojaId || '';
+        sel._obj = obj; encherSelectLoja(sel);
         sel.addEventListener('change', () => { const l = LOJAS_POR_ID.get(sel.value); obj.lojaId = sel.value; obj.loja = l ? l.nome : ''; obj.cidade = l ? l.cidade : ''; obj.cliente = obj.loja; aoMudar('lojaId'); });
         lb.append(sp, sel); grid.appendChild(lb); return;
       }
@@ -3286,7 +3298,13 @@ const firestoreDb = {
     $('wa-painel').hidden = true;
     $('ed-st').hidden = edTipo !== 'orc';
     pintarStatus(); pintarReceber();
-    montarFormulario($('ed-form'), T.campos, ed, (k) => { if (k === 'numero') $('ed-tit').textContent = `${T.nome} ${ed.numero || ''}`.trim(); edMudou(); });
+    montarFormulario($('ed-form'), T.campos, ed, async (k) => {
+      // mudou a data para outro mês: refaz o número do mês (se ainda for o automático)
+      if (edTipo === 'coop' && k === 'data' && numeroCoopAuto(ed.numero) && ed.data) {
+        const alvo = ed, novo = numeroCoop(await listaAtual('coop'), ed.data, ed.id);
+        if (alvo === ed && novo.split(' / ')[1] !== String(ed.numero).split(' / ')[1]) { ed.numero = novo; const i = $('ed-form').querySelector('#ed-numero'); if (i) i.value = novo; $('ed-tit').textContent = `${T.nome} ${novo}`; }
+      }
+      if (k === 'numero') $('ed-tit').textContent = `${T.nome} ${ed.numero || ''}`.trim(); edMudou(); });
     edStatus(ed.id ? 'Salvo' : '');
   }
   function edMudou() { edStatus('Salvando…'); clearTimeout(edTimer); edTimer = setTimeout(salvarDoc, 700); }
@@ -3336,7 +3354,7 @@ const firestoreDb = {
           delete base.criadoEm; delete base.atualizadoEm;
         }
         base.numero = proximoNumero(await listaAtual(tipo), base.data);
-        if (tipo === 'coop') base.tecnico = nomeBonito(await nomeDoUsuario());
+        if (tipo === 'coop') { base.tecnico = nomeBonito(await nomeDoUsuario()); base.numero = numeroCoop(await listaAtual(tipo), base.data, null); }
         ed = { id: null, ...base };
       } else {
         const s = await getDoc(fsDoc(fs, T.col, arg));
@@ -3934,6 +3952,15 @@ const firestoreDb = {
     if (comValor) { const tr = document.createElement('tr'); tr.append(el('td', '', ''), el('td', '', ''), el('td', '', 'TOTAL:'), el('td', '', brl.format(totalItens(itens)))); t.appendChild(tr); }
     return t;
   }
+  // Numeração do Serviço COOP: contador por mês, ex.: "001 / Outubro" (recomeça todo mês)
+  const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const numeroCoopAuto = (n) => /^\d{3} \/ [A-Za-zç]+$/.test(String(n || ''));
+  function numeroCoop(lista, iso, idAtual) {
+    const ym = String(iso || hojeISO()).slice(0, 7);
+    const max = lista.filter((d) => d.id !== idAtual && String(d.data || '').slice(0, 7) === ym)
+      .reduce((m, d) => { const r = String(d.numero || '').match(/^(\d+)/); return r ? Math.max(m, Number(r[1])) : m; }, 0);
+    return `${String(max + 1).padStart(3, '0')} / ${MESES[Number(ym.slice(5, 7)) - 1]}`;
+  }
   // "KAYOWAN MACEDO ANCHIETA" -> "Kayowan Macedo Anchieta"
   const nomeBonito = (t) => String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/ (Da|De|Do|Das|Dos|E) /g, (m) => m.toLowerCase());
   function documentoCoop(d, fotosImp) {
@@ -3944,17 +3971,16 @@ const firestoreDb = {
     topo.append(logo, tt); doc.appendChild(topo);
     doc.appendChild(el('div', 'cp-faixa'));
     const meta = el('div', 'cp-meta');
-    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['OS', d.chamado], ['Horário', d.periodo]]
-      .forEach(([k, v]) => { const c = el('div', 'cp-cel'); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
+    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['OS', d.chamado]]
+      .forEach(([k, v], i) => { const c = el('div', 'cp-cel' + (i === 0 ? ' cp-larga' : '')); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
     doc.appendChild(meta);
     const sec = (n, t) => doc.appendChild(el('h2', 'cp-h2', `${n}. ${t}`));
     sec(1, 'Equipamento'); doc.appendChild(String(d.equipamento || '').trim() ? linhasP(d.equipamento) : el('p', '', '—'));
     sec(2, 'Serviços executados'); doc.appendChild(String(d.servicos || '').trim() ? linhasP(d.servicos, true) : el('p', '', '—'));
-    sec(3, 'Peças e materiais'); doc.appendChild((d.pecas || []).length ? tabelaItens(d.pecas, false) : el('p', '', 'Não houve substituição de peças ou uso de materiais.'));
-    sec(4, 'Observações e recomendações'); doc.appendChild(String(d.observacoes || '').trim() ? linhasP(d.observacoes) : el('p', '', 'Sem observações.'));
-    sec(5, 'Situação final'); doc.appendChild(linhasP(d.situacao || '—'));
+    sec(3, 'Observações e recomendações'); doc.appendChild(String(d.observacoes || '').trim() ? linhasP(d.observacoes) : el('p', '', 'Sem observações.'));
+    sec(4, 'Situação final'); doc.appendChild(linhasP(d.situacao || '—'));
     if (fotosImp && fotosImp.length) {
-      sec(6, 'Registro fotográfico');
+      sec(5, 'Registro fotográfico');
       let gr = null;
       fotosImp.forEach((f, i) => {
         if (i % 2 === 0) { gr = el('div', 'fotos-imp'); doc.appendChild(gr); }
