@@ -624,6 +624,16 @@ html, body { margin: 0; }
 .app-ck:not(.app-celular) .login-rodape a { display: none; }
 .app-ck .login-zebra { width: 100%; }
 
+/* Funcionários da Coop: app com a marca e as cores da Coop (azul #002746, vermelho #DD3B46) */
+.marca-coop { --accent: #dd3b46; --accent-ink: #ffffff; --accent-soft: #fbe3e5; }
+@media (prefers-color-scheme: dark) { :root.marca-coop:not([data-theme="light"]) { --accent: #e5555f; --accent-ink: #ffffff; --accent-soft: #3a1c20; } }
+.marca-coop.casca .appbar { background: #002746; }
+.marca-coop.casca .appbar::after { background: #dd3b46; }
+.marca-coop .ab-logo { width: auto; height: 26px; border-radius: 0; margin-left: 12px; }
+.marca-coop .bottomnav button[aria-current="page"] svg { stroke: #fff; }
+.marca-coop .in-card.amarelo { background: #002746; color: #fff; }
+.marca-coop .in-card.amarelo span { color: #c9d6e2; }
+.marca-coop .eyebrow::before { background: #dd3b46; }
 .sem-rede { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: #16191d; color: #fff; font-size: 13px; text-align: center; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 3px solid var(--accent); }
 .sem-rede[hidden] { display: none; }
 .busca-geral { position: relative; max-width: 30rem; width: 100%; margin-inline: auto; }
@@ -2896,8 +2906,19 @@ const firestoreDb = {
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
+  function aplicarMarca() {
+    const coop = !P.admin && !!P.coop;
+    document.documentElement.classList.toggle('marca-coop', coop);
+    $('ab-logo').src = coop ? '/icones/coop-logo-branco.png' : '/icones/app-redondo.png';
+    document.querySelectorAll('.eyebrow').forEach((e) => {
+      if (!e.dataset.orig) e.dataset.orig = e.textContent;
+      if (e.dataset.orig === 'Koneg Manutenção') e.textContent = coop ? 'Coop' : e.dataset.orig;
+    });
+    document.title = coop ? 'Coop' : (APP_CK ? 'Koneg' : 'Estoque · Koneg');
+  }
   function aplicarPermissoes() {
     const a = P.admin;
+    aplicarMarca();
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
     document.querySelector('.mitem[data-go="os"]').hidden = !podeOS();
@@ -5116,7 +5137,8 @@ const firestoreDb = {
     const inicio = m.id === 'tela-menu';
     // título e "voltar"
     const h1 = m.querySelector('h1');
-    $('ab-tit').textContent = inicio ? 'Koneg' : (h1 && h1.textContent.trim()) || 'Koneg';
+    const marca = document.documentElement.classList.contains('marca-coop') ? 'Coop' : 'Koneg';
+    $('ab-tit').textContent = inicio ? marca : (h1 && h1.textContent.trim()) || marca;
     $('ab-logo').hidden = !inicio;
     const voltar = m.querySelector('.voltar');
     $('ab-voltar').hidden = !!RAIZES[m.id] || !voltar;
@@ -5272,6 +5294,7 @@ const firestoreDb = {
     logado = false;
     ['tela-menu', 'tela-checklist', 'tela-loja', 'tela-form', 'tela-relatorio', 'tela-func', 'tela-admin', 'tela-docs', 'tela-doc', 'tela-empresa', 'tela-clientes', 'tela-receber', 'tela-downloads', 'tela-os', 'tela-osf', 'tela-equip', 'tela-eq', 'tela-eqf', 'tela-semacesso', 'app'].forEach((k) => { $(k).hidden = true; });
     pararOS(); pararEquipamentos(); pendenteCk = null; pendenteOS = null;
+    aplicarMarca();
     buscaDados = null; $('busca-geral').value = ''; $('busca-res').hidden = true; $('tela-menu').classList.remove('busca-com-texto');
     if (APP_CK) { $('in-resumo').replaceChildren(); $('inicio').hidden = true; casca(); }
     fecharHistorico(); pararLojasBanco(); pararFuncionarios(); pararListaDocs(); pararClientes(); pararFotosRel(); pararContasReceber(); $('bkp-status').textContent = BKP_TXT; ed = null; EMP = { ...EMPRESA_PADRAO }; empCarregada = false; sairExcluir(); sairEditar(); alternarEdicao(false);
