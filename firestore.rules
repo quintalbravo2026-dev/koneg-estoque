@@ -50,6 +50,12 @@ service cloud.firestore {
         allow read, write: if admin();
       }
     }
+    match /servicoscoop/{id} {
+      allow read, write: if admin();
+      match /fotos/{foto} {
+        allow read, write: if admin();
+      }
+    }
     match /receber/{id} {
       allow read, write: if admin();
     }

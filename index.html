@@ -762,6 +762,27 @@ html, body { margin: 0; }
 .ft-item figcaption input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
 .ft-item figcaption .btn { font-size: 13px; padding: 6px 9px; }
 .ft-item figcaption .btn.conf { background: var(--danger); color: #fff; border-color: var(--danger); }
+/* Serviço executado COOP — cores oficiais da Coop (azul #002746, vermelho #DD3B46) */
+#impressao .doc.coop { padding: 0 0 6mm; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; }
+#impressao .doc.coop .cp-topo { display: flex; align-items: center; gap: 8mm; background: #002746; color: #fff; padding: 6mm 10mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+#impressao .doc.coop .cp-logo { height: 22mm; width: auto; flex: none; }
+#impressao .doc.coop .cp-tt { flex: 1; text-align: right; }
+#impressao .doc.coop .cp-t1 { font-size: 15pt; font-weight: 700; letter-spacing: .3pt; }
+#impressao .doc.coop .cp-t2 { font-size: 10pt; margin-top: 1.5mm; opacity: .9; }
+#impressao .doc.coop .cp-faixa { height: 2.2mm; background: #dd3b46; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+#impressao .doc.coop .cp-meta { display: grid; grid-template-columns: 1fr 1fr; margin: 5mm 10mm 2mm; border: .7pt solid #c9d2db; border-radius: 2mm; overflow: hidden; }
+#impressao .doc.coop .cp-cel { padding: 2mm 3mm; border-bottom: .5pt solid #e1e6eb; display: flex; flex-direction: column; gap: .5mm; }
+#impressao .doc.coop .cp-cel:nth-child(odd) { border-right: .5pt solid #e1e6eb; }
+#impressao .doc.coop .cp-cel span { font-size: 8pt; color: #5b6b7b; text-transform: uppercase; letter-spacing: .4pt; }
+#impressao .doc.coop .cp-cel b { font-size: 10.5pt; color: #002746; }
+#impressao .doc.coop > p, #impressao .doc.coop > .bul, #impressao .doc.coop > table, #impressao .doc.coop > .fotos-imp, #impressao .doc.coop > .assin2 { margin-left: 10mm; margin-right: 10mm; }
+#impressao .doc.coop > table.it { width: calc(100% - 20mm); }
+#impressao .doc.coop h2.cp-h2 { color: #002746; font-family: Arial, Helvetica, sans-serif; font-size: 12pt; margin: 5mm 10mm 1.5mm; padding-left: 2.5mm; border-left: 1.6mm solid #dd3b46; }
+#impressao .doc.coop table.it tr:first-child td { background: #002746; color: #fff; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+#impressao .doc.coop .cp-rod { margin: 8mm 10mm 0; padding-top: 2mm; border-top: .7pt solid #002746; display: flex; align-items: center; gap: 3mm; font-size: 8.5pt; color: #3d4b59; }
+#impressao .doc.coop .cp-rod img { height: 9mm; width: auto; }
+.mitem .mi-logo { grid-area: ic; width: 40px; height: 40px; object-fit: contain; background: #fff; border-radius: 10px; padding: 4px; box-sizing: border-box; }
+.app-ck.casca .mitem .mi-logo { width: 44px; height: 44px; border-radius: 12px; }
 #impressao .doc .fotos-imp { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 3mm; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .fotos-imp figure { margin: 0; break-inside: avoid; page-break-inside: avoid; }
 #impressao .doc .fotos-imp img { width: 100%; height: 62mm; object-fit: contain; background: #f2f2f2; display: block; border: .5pt solid #999; }
@@ -981,6 +1002,11 @@ html, body { margin: 0; }
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 12l2 2 4-4"/><path d="M8.5 17h7"/></svg>
         <span class="mi-t">Relatório de serviço executado</span>
         <span class="mi-d">Registrar o que foi feito e imprimir para o cliente assinar</span>
+      </button>
+      <button class="mitem coop" type="button" data-go="servicoscoop">
+        <img class="mi-logo" src="/icones/coop-logo.png" alt="" width="40" height="40">
+        <span class="mi-t">Serviço executado COOP</span>
+        <span class="mi-d">Relatório no padrão visual da Coop, por loja, com fotos</span>
       </button>
       <button class="mitem rec" type="button" data-go="receber">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></svg>
@@ -2856,7 +2882,7 @@ const firestoreDb = {
     if (h === '#estoque') return podeEstoque();
     if (h === '#checklist') return podeCk();
     if (h === '#relatorio') return P.admin || P.relatorio;
-    if (['#downloads', '#funcionarios', '#admin', '#orcamentos', '#relatorios', '#empresa', '#clientes', '#receber'].includes(h) || h.startsWith('#doc-')) return P.admin;
+    if (['#downloads', '#funcionarios', '#admin', '#orcamentos', '#relatorios', '#servicoscoop', '#empresa', '#clientes', '#receber'].includes(h) || h.startsWith('#doc-')) return P.admin;
     if (h.startsWith('#loja-')) return P.admin || P.checklist;
     return true;
   }
@@ -3085,6 +3111,31 @@ const firestoreDb = {
     },
   };
 
+  DOCS.coop = {
+    col: 'servicoscoop', nome: 'Serviço executado COOP', plural: 'Serviços executados COOP', novo: 'Novo serviço COOP', lista: 'servicoscoop', fotos: true,
+    campos: [
+      ['g', 'Identificação'],
+      ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'], ['periodo', 'text', 'Horário (início e fim)'],
+      ['chamado', 'text', 'Nº do chamado / OS da Coop'],
+      ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'], ['setor', 'text', 'Setor / local na loja'], ['solicitante', 'text', 'Solicitante (Coop)'],
+      ['g', '2. Equipamento'], ['equipamento', 'area', 'Equipamento atendido (modelo, série, patrimônio)', 'full'],
+      ['g', '3. Serviços Executados'], ['servicos', 'lista', 'Serviços (um por linha)', 'full'],
+      ['g', '4. Peças e Materiais'], ['pecas', 'pecas', 'Peças', 'full'],
+      ['g', '5. Observações e Recomendações'], ['observacoes', 'area', 'Texto', 'full'],
+      ['g', '6. Situação Final'], ['situacao', 'area', 'Texto', 'full'],
+      ['g', '7. Registro Fotográfico'], ['fotos', 'fotos', 'Fotos', 'full'],
+      ['g', 'Assinaturas'], ['tecnico', 'text', 'Técnico responsável'], ['responsavel', 'text', 'Responsável da loja'],
+    ],
+    padrao: () => ({
+      numero: '', data: hojeISO(), periodo: '', chamado: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
+      lojaId: '', loja: '', cidade: '', cliente: '', setor: '', solicitante: '',
+      equipamento: '', servicos: '', pecas: [], observacoes: '',
+      situacao: 'Equipamento testado e liberado em pleno funcionamento.',
+      tecnico: 'Kayowan Macedo Anchieta', responsavel: '',
+    }),
+  };
+  DOCS.rel.fotos = true;
+
   const dataLonga = (iso) => {
     if (!iso) return '';
     const [a, m, d] = iso.split('-').map(Number);
@@ -3128,6 +3179,7 @@ const firestoreDb = {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'lj-item';
       const t = document.createElement('b'); t.textContent = `${d.numero || 'Sem número'} · ${d.cliente || 'Sem cliente'}`;
       const s = document.createElement('span'); s.className = 'sub';
+      if (dcTipo === 'coop') t.textContent = `${d.numero || 'Sem número'} · ${d.loja || 'Sem loja'}`;
       s.textContent = (dcTipo === 'orc' ? `${dataBR(d.data)} · ${brl.format(totalItens(d.itens))}` : `${dataBR(d.data)} · ${String(d.equipamento || '').split('\n')[0]}`) + (d.receberId ? ' · lançado a receber' : '');
       const tag = document.createElement('span'); tag.className = 'tag';
       if (dcTipo === 'orc') { const st = d.status || ''; tag.textContent = ST_ORC[st] || 'Não enviado'; tag.classList.toggle('ok', st === 'aprovado'); tag.classList.toggle('nok', st === 'recusado'); tag.classList.toggle('env', st === 'enviado'); }
@@ -3209,6 +3261,17 @@ const firestoreDb = {
         sec.append(h, grid); box.appendChild(sec); return;
       }
       if (def[0] === 'cliente' && obj === ed) { grid.appendChild(seletorCliente()); ouvirClientes(); setTimeout(atualizarSelectCliente, 0); }
+      if (def[1] === 'loja') {
+        const lb = document.createElement('label'); lb.className = 'fld full'; lb.htmlFor = 'ed-lojaId';
+        const sp = document.createElement('span'); sp.textContent = def[2];
+        const sel = document.createElement('select'); sel.id = 'ed-lojaId'; sel.className = 'eqf-sel';
+        sel.appendChild(new Option(LOJAS.length ? 'Escolha a loja…' : 'Abra o Check List uma vez para carregar as lojas', ''));
+        [...LOJAS].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).forEach((l) => sel.appendChild(new Option(`${l.nome} – ${l.cidade}`, l.id)));
+        if (obj.lojaId && !LOJAS_POR_ID.get(obj.lojaId)) sel.appendChild(new Option(obj.loja || obj.lojaId, obj.lojaId));
+        sel.value = obj.lojaId || '';
+        sel.addEventListener('change', () => { const l = LOJAS_POR_ID.get(sel.value); obj.lojaId = sel.value; obj.loja = l ? l.nome : ''; obj.cidade = l ? l.cidade : ''; obj.cliente = obj.loja; aoMudar('lojaId'); });
+        lb.append(sp, sel); grid.appendChild(lb); return;
+      }
       if (def[1] === 'fotos') { const d = document.createElement('div'); d.className = 'ed-fotos full'; grid.appendChild(d); editorFotos(d); return; }
       if (def[1] === 'itens' || def[1] === 'pecas') { const d = document.createElement('div'); d.className = 'ed-itens full'; grid.appendChild(d); editorItens(d, def[1] === 'itens'); return; }
       grid.appendChild(campoEl(def, obj[def[0]], (v) => { obj[def[0]] = v; aoMudar(def[0]); }));
@@ -3236,7 +3299,7 @@ const firestoreDb = {
     edFila = edFila.catch(() => {}).then(async () => {
       if (!alvo.id) {
         alvo.id = fsDoc(fsCol(fs, T.col)).id; alvo.criadoEm = new Date().toISOString();
-        if (ed === alvo && /^#doc-(orc|rel)-novo/.test(location.hash)) history.replaceState(null, '', `#doc-${tipo}-${alvo.id}`);
+        if (ed === alvo && /^#doc-(orc|rel|coop)-novo/.test(location.hash)) history.replaceState(null, '', `#doc-${tipo}-${alvo.id}`);
       }
       const { id, ...dados } = alvo;
       const r = await gravarNuvem(setDoc(fsDoc(fs, T.col, id), { ...dados, atualizadoEm: new Date().toISOString() }));
@@ -3259,7 +3322,7 @@ const firestoreDb = {
       if (arg === 'novo' || arg.startsWith('novo-de-')) {
         const base = T.padrao();
         if (arg.startsWith('novo-de-')) {
-          const [, origemTipo, origemId] = arg.match(/^novo-de-(orc|rel)-(.+)$/) || [];
+          const [, origemTipo, origemId] = arg.match(/^novo-de-(orc|rel|coop)-(.+)$/) || [];
           const o = origemId ? await getDoc(fsDoc(fs, DOCS[origemTipo].col, origemId)) : null;
           if (o && o.exists()) {
             const v = o.data();
@@ -3328,7 +3391,7 @@ const firestoreDb = {
     if (!ed || !ed.id) return;
     clearTimeout(edTimer); edTimer = null;
     try {
-      if (edTipo === 'rel') { const fs2 = await fotosDoRelatorio(ed.id); for (const f of fs2) await deleteDoc(fsDoc(colFotos(ed.id), f.id)); pararFotosRel(); }
+      if (DOCS[edTipo].fotos) { const fs2 = await fotosDoRelatorio(ed.id); for (const f of fs2) await deleteDoc(fsDoc(colFotos(ed.id), f.id)); pararFotosRel(); }
       await deleteDoc(fsDoc(fs, DOCS[edTipo].col, ed.id)); const l = DOCS[edTipo].lista; ed = null; location.hash = l;
     }
     catch (_) { edStatus('Não foi possível excluir.', 'erro'); }
@@ -3514,7 +3577,7 @@ const firestoreDb = {
 
   // ----- Fotos do relatório (guardadas no banco, uma por documento, já reduzidas) -----
   let fotos = [], pararFotos = null, fotosDe = null, fotosBox = null;
-  const colFotos = (id) => fsCol(fs, 'relatorios', id, 'fotos');
+  const colFotos = (id) => fsCol(fs, DOCS[edTipo] && DOCS[edTipo].fotos ? DOCS[edTipo].col : 'relatorios', id, 'fotos');
   function ouvirFotos(id) {
     if (fotosDe === id && pararFotos) return;
     pararFotosRel();
@@ -3864,7 +3927,43 @@ const firestoreDb = {
     if (comValor) { const tr = document.createElement('tr'); tr.append(el('td', '', ''), el('td', '', ''), el('td', '', 'TOTAL:'), el('td', '', brl.format(totalItens(itens)))); t.appendChild(tr); }
     return t;
   }
+  function documentoCoop(d, fotosImp) {
+    const doc = el('div', 'folha doc coop');
+    const topo = el('div', 'cp-topo');
+    const logo = document.createElement('img'); logo.src = '/icones/coop-logo-branco.png'; logo.alt = 'Coop'; logo.className = 'cp-logo';
+    const tt = el('div', 'cp-tt'); tt.append(el('div', 'cp-t1', d.titulo || 'RELATÓRIO DE SERVIÇO EXECUTADO'), el('div', 'cp-t2', `Nº ${d.numero || '—'} · ${dataLonga(d.data)}`));
+    topo.append(logo, tt); doc.appendChild(topo);
+    doc.appendChild(el('div', 'cp-faixa'));
+    const meta = el('div', 'cp-meta');
+    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['Chamado / OS Coop', d.chamado], ['Horário', d.periodo], ['Solicitante', d.solicitante], ['Prestador', `${EMP.nome} · CNPJ ${EMP.cnpj}`]]
+      .forEach(([k, v]) => { const c = el('div', 'cp-cel'); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
+    doc.appendChild(meta);
+    const sec = (n, t) => doc.appendChild(el('h2', 'cp-h2', `${n}. ${t}`));
+    sec(1, 'Equipamento'); doc.appendChild(String(d.equipamento || '').trim() ? linhasP(d.equipamento) : el('p', '', '—'));
+    sec(2, 'Serviços executados'); doc.appendChild(String(d.servicos || '').trim() ? linhasP(d.servicos, true) : el('p', '', '—'));
+    sec(3, 'Peças e materiais'); doc.appendChild((d.pecas || []).length ? tabelaItens(d.pecas, false) : el('p', '', 'Não houve substituição de peças ou uso de materiais.'));
+    sec(4, 'Observações e recomendações'); doc.appendChild(String(d.observacoes || '').trim() ? linhasP(d.observacoes) : el('p', '', 'Sem observações.'));
+    sec(5, 'Situação final'); doc.appendChild(linhasP(d.situacao || '—'));
+    if (fotosImp && fotosImp.length) {
+      sec(6, 'Registro fotográfico');
+      let gr = null;
+      fotosImp.forEach((f, i) => {
+        if (i % 2 === 0) { gr = el('div', 'fotos-imp'); doc.appendChild(gr); }
+        const fg = document.createElement('figure'); const im = document.createElement('img'); im.src = f.img; im.alt = ''; fg.append(im, el('figcaption', '', `Foto ${i + 1}${f.legenda ? ' – ' + f.legenda : ''}`)); gr.appendChild(fg);
+      });
+    }
+    const as = el('div', 'assin2');
+    const c1 = el('div', 'ln2'); c1.append(d.tecnico || EMP.assinatura, document.createElement('br'), `Técnico responsável · ${EMP.nome}`);
+    const c2 = el('div', 'ln2'); c2.append(d.responsavel || ' ', document.createElement('br'), `Responsável da loja · ${d.loja || 'Coop'}`);
+    as.append(c1, c2); doc.appendChild(as);
+    const rod = el('div', 'cp-rod');
+    const kl = document.createElement('img'); kl.src = '/icones/logo-koneg.png'; kl.alt = ''; 
+    rod.append(kl, el('span', '', `Serviço executado por ${EMP.nome} · ${EMP.contato} · ${EMP.site}`));
+    doc.appendChild(rod);
+    return doc;
+  }
   function montarDocumento(tipo, d, fotosImp) {
+    if (tipo === 'coop') return documentoCoop(d, fotosImp);
     const doc = el('div', 'folha doc');
     doc.appendChild(cabecalho(d.titulo || ''));
     if (tipo === 'orc') {
@@ -3906,7 +4005,7 @@ const firestoreDb = {
     if (edTimer) await salvarDoc();
     await carregarEmpresa();
     const nome = [edTipo === 'orc' ? 'Orçamento' : 'Relatório de serviço', String(ed.numero || '').replace('/', '-'), ed.cliente].filter(Boolean).join(' - ');
-    const fotosImp = edTipo === 'rel' ? await fotosDoRelatorio(ed.id) : [];
+    const fotosImp = DOCS[edTipo].fotos ? await fotosDoRelatorio(ed.id) : [];
     imprimirConteudo([montarDocumento(edTipo, ed, fotosImp)], nome);
   });
 
@@ -4001,7 +4100,7 @@ const firestoreDb = {
     waGerando = true; $('ed-whats').disabled = true;
     try {
       await carregarEmpresa();
-      const fotosImp = edTipo === 'rel' ? await fotosDoRelatorio(ed.id) : [];
+      const fotosImp = DOCS[edTipo].fotos ? await fotosDoRelatorio(ed.id) : [];
       const blob = await gerarPdf(montarDocumento(edTipo, ed, fotosImp));
       waNome = ([edTipo === 'orc' ? 'Orcamento' : 'Relatorio de servico', String(ed.numero || '').replace('/', '-'), ed.cliente].filter(Boolean).join(' - ')
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\- ]+/g, '').trim() || 'documento') + '.pdf';
@@ -4607,8 +4706,8 @@ const firestoreDb = {
     $('tela-func').hidden = location.hash !== '#funcionarios';
     $('tela-admin').hidden = location.hash !== '#admin';
     {
-      const hh = location.hash; const md = hh.match(/^#doc-(orc|rel)-(.+)$/);
-      $('tela-docs').hidden = hh !== '#orcamentos' && hh !== '#relatorios';
+      const hh = location.hash; const md = hh.match(/^#doc-(orc|rel|coop)-(.+)$/);
+      $('tela-docs').hidden = hh !== '#orcamentos' && hh !== '#relatorios' && hh !== '#servicoscoop';
       $('tela-doc').hidden = !md;
       $('tela-empresa').hidden = hh !== '#empresa';
       $('tela-clientes').hidden = hh !== '#clientes';
@@ -4618,6 +4717,7 @@ const firestoreDb = {
       if (hh === '#clientes') ouvirClientes();
       if (hh === '#orcamentos') abrirListaDocs('orc');
       if (hh === '#relatorios') abrirListaDocs('rel');
+      if (hh === '#servicoscoop') abrirListaDocs('coop');
       if (md) abrirEditor(md[1], md[2]);
       if (hh === '#empresa') abrirEmpresa();
     }
@@ -4639,7 +4739,7 @@ const firestoreDb = {
     if (loja) { $('lj-nome').textContent = loja.nome; $('lj-cidade').textContent = loja.cidade; ckLoja = loja; }
     if (loja && !noForm) abrirHistorico(loja); else fecharHistorico();
     if (noForm) abrirForm(loja, m[3] || null);
-    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#empresa' || h === '#clientes' || h === '#receber' || h === '#downloads' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-') || h === '#equip' || h.startsWith('#eq-') || h.startsWith('#eqf-') || h.startsWith('#eqc-');
+    $('tela-menu').hidden = h === '#estoque' || h === '#checklist' || !!loja || h === '#relatorio' || h === '#funcionarios' || h === '#admin' || h === '#orcamentos' || h === '#relatorios' || h === '#servicoscoop' || h === '#empresa' || h === '#clientes' || h === '#receber' || h === '#downloads' || h.startsWith('#doc-') || h === '#os' || h.startsWith('#os-') || h === '#equip' || h.startsWith('#eq-') || h.startsWith('#eqf-') || h.startsWith('#eqc-');
     window.scrollTo(0, 0);
     casca();
   }
@@ -5067,7 +5167,7 @@ const firestoreDb = {
   $('m-sair').addEventListener('click', () => signOut(auth));
 
   // ---------- Backup (somente administrador) ----------
-  const BKP_COLECOES = ['itens', 'lojas', 'checklists', 'usuarios', 'orcamentos', 'relatorios', 'ordens', 'receber', 'clientes', 'config', 'admin'];
+  const BKP_COLECOES = ['itens', 'lojas', 'checklists', 'usuarios', 'orcamentos', 'relatorios', 'servicoscoop', 'ordens', 'receber', 'clientes', 'config', 'admin'];
   const BKP_TXT = 'Baixar uma cópia de todos os dados do painel';
   let bkpRodando = false;
   async function fazerBackup() {
@@ -5086,7 +5186,7 @@ const firestoreDb = {
       }
       if (comFotos) {
         let n = 0;
-        for (const col of ['relatorios', 'ordens']) {
+        for (const col of ['relatorios', 'servicoscoop', 'ordens']) {
           const ids = Object.keys(dados[col]);
           for (let i = 0; i < ids.length; i++) {
             st.textContent = `Copiando fotos de ${col} ${i + 1}/${ids.length}…`;
