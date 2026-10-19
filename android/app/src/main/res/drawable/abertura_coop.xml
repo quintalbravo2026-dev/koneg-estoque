@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/coop_azul" />
+    <item android:width="180dp" android:height="130dp" android:gravity="center">
+        <bitmap android:src="@drawable/abertura_coop_logo" android:gravity="fill" />
+    </item>
+</layer-list>

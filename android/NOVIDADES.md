@@ -1,3 +1,4 @@
+• Funcionários da Coop: abertura do app com o logo e as cores da Coop
 • Equipamentos com QR code: aponte a câmera para a etiqueta e o app abre o histórico
 • Agenda de preventivas: avisa o que está vencido ou vence nesta semana
 • OS enviada para o técnico, com aviso no celular mesmo com o app fechado

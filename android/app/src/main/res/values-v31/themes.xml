@@ -8,4 +8,12 @@
         <item name="android:windowSplashScreenBackground">#FFFFFF</item>
         <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
     </style>
+
+    <!-- Abertura do app no aparelho de funcionário da Coop (Android 13+) -->
+    <style name="SplashCoop" parent="Tema">
+        <item name="android:windowSplashScreenBackground">@color/coop_azul</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_coop</item>
+        <item name="android:windowBackground">@drawable/abertura_coop</item>
+        <item name="android:statusBarColor">@color/coop_azul</item>
+    </style>
 </resources>

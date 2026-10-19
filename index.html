@@ -23,6 +23,8 @@
     document.title = 'Koneg';
     document.documentElement.classList.add('app-ck');
   })();
+  // Aparelho de funcionário da Coop (lembrado do último login): carregamento com a marca Coop
+  try { if (localStorage.getItem('koneg-marca') === 'coop') document.documentElement.classList.add('marca-coop-salva'); } catch (e) {}
   // No celular (tela pequena e toque), o painel também usa o visual de aplicativo
   (function () {
     try { if (matchMedia('(max-width: 760px) and (pointer: coarse)').matches) document.documentElement.classList.add('app-ck', 'app-celular'); } catch (e) {}
@@ -441,8 +443,22 @@ html, body { margin: 0; }
 }
 
 /* Carregamento, sem acesso e funcionários */
-.boot { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center; color: var(--muted); }
-.boot p { margin: 0; max-width: 28rem; }
+.boot { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px; text-align: center; color: #c9ced4; background: #16191d; position: relative; }
+.boot[hidden] { display: none; }
+.boot p { margin: 0; max-width: 28rem; font-size: 14px; }
+.boot::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: repeating-linear-gradient(135deg, #f2b705 0 12px, #16191d 12px 24px); }
+.boot-logo { width: 96px; height: 96px; background: url('/icones/app-redondo.png') center / contain no-repeat; }
+.boot-gira { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .16); border-top-color: #f2b705; animation: bootGira .8s linear infinite; }
+@keyframes bootGira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .boot-gira { animation-duration: 2.4s; } }
+/* Carregamento e login com a marca Coop (aparelho de funcionário da Coop) */
+.marca-coop-salva .boot, .marca-coop .boot { background: #002746; color: #c9d6e2; }
+.marca-coop-salva .boot::after, .marca-coop .boot::after { background: #dd3b46; }
+.marca-coop-salva .boot-logo, .marca-coop .boot-logo { width: 170px; height: 124px; background-image: url('/icones/coop-logo-branco.png'); }
+.marca-coop-salva .boot-gira, .marca-coop .boot-gira { border-top-color: #dd3b46; }
+.app-ck.marca-coop-salva .login, .app-ck.marca-coop-salva .login-card { background: #002746; }
+.app-ck.marca-coop-salva .login-topo { background: #002746 url('/icones/coop-logo-branco.png') center 45% / 150px auto no-repeat; }
+.marca-coop-salva .login-zebra { background: #dd3b46; }
 .fu-desc { margin: 6px 0 0; color: var(--muted); max-width: 40rem; }
 .fu-novo { justify-content: center; min-height: 46px; }
 .fu-perms { flex-basis: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px 10px; margin: 0; background: var(--panel); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 2px 14px; }
@@ -853,8 +869,9 @@ html, body { margin: 0; }
 </head>
 <body>
 <div class="boot" id="carregando" role="status">
-  <span class="eyebrow">Koneg Manutenção</span>
-  <p id="carregando-txt">Carregando o painel…</p>
+  <div class="boot-logo" aria-hidden="true"></div>
+  <div class="boot-gira" aria-hidden="true"></div>
+  <p id="carregando-txt">Carregando…</p>
 </div>
 <script>
   // Se o painel não carregar em 12 s, mostra o motivo em vez de uma tela em branco
@@ -2919,6 +2936,11 @@ const firestoreDb = {
   function aplicarPermissoes() {
     const a = P.admin;
     aplicarMarca();
+    // lembra a marca neste aparelho (tela de carregamento, login e abertura do app)
+    const marca = !a && P.coop ? 'coop' : 'koneg';
+    gravarLS('koneg-marca', marca);
+    document.documentElement.classList.toggle('marca-coop-salva', marca === 'coop');
+    try { if (window.KonegApp && window.KonegApp.definirMarca) window.KonegApp.definirMarca(marca); } catch (_) {}
     document.querySelector('.mitem[data-go="estoque"]').hidden = !podeEstoque();
     document.querySelector('.mitem[data-go="checklist"]').hidden = !podeCk();
     document.querySelector('.mitem[data-go="os"]').hidden = !podeOS();
@@ -5319,7 +5341,7 @@ const firestoreDb = {
       return;
     }
     $('tela-login').hidden = true;
-    $('carregando').hidden = false; $('carregando-txt').textContent = 'Carregando o painel…';
+    $('carregando').hidden = false; $('carregando-txt').textContent = 'Carregando…';
     const perfil = await descobrirPerfil(u);
     if (auth.currentUser !== u) return;
     $('carregando').hidden = true;

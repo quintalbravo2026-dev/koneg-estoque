@@ -5,4 +5,8 @@
         <item name="android:navigationBarColor">#F3F4F5</item>
         <item name="android:windowBackground">@drawable/abertura</item>
     </style>
+    <!-- Usado só no Android 13+ (versão completa em values-v31) -->
+    <style name="SplashCoop" parent="Tema">
+        <item name="android:windowBackground">@drawable/abertura_coop</item>
+    </style>
 </resources>

@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
         web = new WebView(this);
         boolean noite = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         web.setBackgroundColor(noite ? 0xFF121417 : 0xFFF3F4F5);
+        if ("coop".equals(Avisos.prefs(this).getString("marca", ""))) aplicarMarcaCoop(true);
         puxar.addView(web, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         puxar.setColorSchemeColors(0xFFF2B705, 0xFF16191D);
         puxar.setOnChildScrollUpCallback((pai, filho) -> travado || web.getScrollY() > 0);
@@ -189,6 +190,14 @@ public class MainActivity extends Activity {
         setIntent(i);
         String d = destinoDo(i);
         if (d != null) web.evaluateJavascript("location.hash=" + JSONObject.quote(d.substring(1)), null);
+    }
+
+    private void aplicarMarcaCoop(boolean coop) {
+        getWindow().setStatusBarColor(coop ? 0xFF002746 : 0xFF16191D);
+        getWindow().setBackgroundDrawableResource(coop ? R.drawable.abertura_coop : R.drawable.abertura);
+        if (Build.VERSION.SDK_INT >= 33) {
+            try { getSplashScreen().setSplashScreenTheme(coop ? R.style.SplashCoop : 0); } catch (Exception ignorado) { }
+        }
     }
 
     private boolean temLocal() {
@@ -360,6 +369,13 @@ public class MainActivity extends Activity {
                     requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, PEDIDO_AVISOS);
                 }
             });
+        }
+
+        /** Marca do aparelho ("coop" ou "koneg"): abertura e barra de status com a identidade certa. */
+        @JavascriptInterface
+        public void definirMarca(final String marca) {
+            Avisos.prefs(MainActivity.this).edit().putString("marca", marca == null ? "" : marca).apply();
+            runOnUiThread(() -> aplicarMarcaCoop("coop".equals(marca)));
         }
 
         @JavascriptInterface
