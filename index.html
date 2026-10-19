@@ -776,11 +776,11 @@ html, body { margin: 0; }
 #impressao .doc.coop .cp-faixa { height: 2.2mm; background: #dd3b46; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 #impressao .doc.coop .cp-meta { display: grid; grid-template-columns: 1fr 1fr; margin: 5mm 10mm 2mm; border: .7pt solid #c9d2db; border-radius: 2mm; overflow: hidden; }
 #impressao .doc.coop .cp-cel { padding: 2mm 3mm; border-bottom: .5pt solid #e1e6eb; display: flex; flex-direction: column; gap: .5mm; }
-#impressao .doc.coop .cp-cel.cp-larga { grid-column: 1 / -1; }
 #impressao .doc.coop .assin2.cp-assin { grid-template-columns: 1fr; justify-items: center; }
 #impressao .doc.coop .assin2.cp-assin .ln2 { width: 80mm; }
-#impressao .doc.coop .cp-cel:nth-child(2) { border-right: .5pt solid #e1e6eb; }
-#impressao .doc.coop .cp-cel:nth-child(n+2) { border-bottom: 0; }
+#impressao .doc.coop .cp-meta { grid-template-columns: 2fr 1fr; }
+#impressao .doc.coop .cp-cel { border-bottom: 0; }
+#impressao .doc.coop .cp-cel:first-child { border-right: .5pt solid #e1e6eb; }
 #impressao .doc.coop .cp-cel span { font-size: 8pt; color: #5b6b7b; text-transform: uppercase; letter-spacing: .4pt; }
 #impressao .doc.coop .cp-cel b { font-size: 10.5pt; color: #002746; }
 #impressao .doc.coop > p, #impressao .doc.coop > .bul, #impressao .doc.coop > table, #impressao .doc.coop > .fotos-imp, #impressao .doc.coop > .assin2 { margin-left: 10mm; margin-right: 10mm; }
@@ -3128,7 +3128,7 @@ const firestoreDb = {
       ['g', 'Identificação'],
       ['numero', 'text', 'Número do relatório'], ['data', 'date', 'Data do serviço'],
       ['chamado', 'text', 'Nº da OS'],
-      ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'], ['setor', 'text', 'Setor / local na loja'],
+      ['g', '1. Loja Coop'], ['loja', 'loja', 'Loja', 'full'],
       ['g', '2. Equipamento'], ['equipamento', 'area', 'Equipamento atendido (modelo, série, patrimônio)', 'full'],
       ['g', '3. Serviços Executados'], ['servicos', 'lista', 'Serviços (um por linha)', 'full'],
       ['g', '4. Observações e Recomendações'], ['observacoes', 'area', 'Texto', 'full'],
@@ -3138,7 +3138,7 @@ const firestoreDb = {
     ],
     padrao: () => ({
       numero: '', data: hojeISO(), chamado: '', titulo: 'RELATÓRIO DE SERVIÇO EXECUTADO',
-      lojaId: '', loja: '', cidade: '', cliente: '', setor: '',
+      lojaId: '', loja: '', cidade: '', cliente: '',
       equipamento: '', servicos: '', observacoes: '',
       situacao: 'Equipamento testado e liberado em pleno funcionamento.',
       tecnico: '',
@@ -3983,8 +3983,8 @@ const firestoreDb = {
     topo.append(logo, tt); doc.appendChild(topo);
     doc.appendChild(el('div', 'cp-faixa'));
     const meta = el('div', 'cp-meta');
-    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['Setor / local', d.setor], ['OS', d.chamado]]
-      .forEach(([k, v], i) => { const c = el('div', 'cp-cel' + (i === 0 ? ' cp-larga' : '')); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
+    [['Loja', [d.loja, d.cidade].filter(Boolean).join(' – ')], ['OS', d.chamado]]
+      .forEach(([k, v]) => { const c = el('div', 'cp-cel'); c.append(el('span', '', k), el('b', '', v || '—')); meta.appendChild(c); });
     doc.appendChild(meta);
     const sec = (n, t) => doc.appendChild(el('h2', 'cp-h2', `${n}. ${t}`));
     sec(1, 'Equipamento'); doc.appendChild(String(d.equipamento || '').trim() ? linhasP(d.equipamento) : el('p', '', '—'));
